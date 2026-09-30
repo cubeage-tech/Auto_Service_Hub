@@ -149,6 +149,24 @@
 
 
         <!-- =====================================================
+             REPORT EXPORT (FR-REP-8: PDF / Excel)
+             POI writes .xlsx; OpenPDF writes .pdf. Both are
+             used only at the export layer, never in domain logic.
+        ====================================================== -->
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>1.3.30</version>
+        </dependency>
+
+        <!-- =====================================================
              TESTING
         ====================================================== -->
 
@@ -191,6 +209,26 @@
                         <artifactId>lombok</artifactId>
                     </exclude>
                 </excludes>
+            </configuration>
+        </plugin>
+
+        <!--
+            Activate the "test" Spring profile for the whole test run so that
+            src/test/.../application-test.yml is loaded. The real
+            application.yml is git-ignored (it holds credentials), so the test
+            context would otherwise fail to resolve app.jwt.* and
+            app.cors.* and would have no DataSource.
+
+            application-test.yml points at an in-memory H2 database and uses a
+            throwaway, non-secret JWT key — it is safe to commit.
+        -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+                <systemPropertyVariables>
+                    <spring.profiles.active>test</spring.profiles.active>
+                </systemPropertyVariables>
             </configuration>
         </plugin>
 

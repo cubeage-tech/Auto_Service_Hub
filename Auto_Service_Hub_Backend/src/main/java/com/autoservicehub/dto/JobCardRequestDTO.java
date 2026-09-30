@@ -14,6 +14,14 @@ public class JobCardRequestDTO {
     private Long customerId;
     @NotNull
     private Long vehicleId;
+
+    /**
+     * Optional — the vehicle inspection this job card is raised from. When
+     * supplied, the inspection must belong to {@code vehicleId} and must not
+     * already be linked to a different job card.
+     */
+    private Long inspectionId;
+
     private Long mechanicId;
     private Long appointmentId;
     @NotBlank

@@ -8,8 +8,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 /**
  * Customer Follow-up & Retention (SRS 4.10)
@@ -47,6 +51,41 @@ public class FollowupController {
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<Page<FollowupResponseDTO>> list(Pageable pageable) {
         return ApiResponse.ok(service.list(pageable));
+    }
+
+    /**
+     * Open follow-ups, oldest due date first.
+     * GET /api/v1/followups/pending?page=0&size=20
+     */
+    @GetMapping("/pending")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    public ApiResponse<Page<FollowupResponseDTO>> listPending(Pageable pageable) {
+        return ApiResponse.ok(service.listPending(pageable));
+    }
+
+    /**
+     * Open follow-ups due on or before the given date (today when omitted).
+     * GET /api/v1/followups/due?asOf=2026-10-01
+     */
+    @GetMapping("/due")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    public ApiResponse<Page<FollowupResponseDTO>> listDue(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate asOf,
+            Pageable pageable) {
+        return ApiResponse.ok(service.listDue(asOf != null ? asOf : LocalDate.now(), pageable));
+    }
+
+    /**
+     * Follow-ups belonging to one customer.
+     * GET /api/v1/followups/customer/{customerId}?page=0&size=20
+     */
+    @GetMapping("/customer/{customerId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    public ApiResponse<Page<FollowupResponseDTO>> listByCustomer(
+            @PathVariable Long customerId,
+            Pageable pageable) {
+        return ApiResponse.ok(service.listByCustomer(customerId, pageable));
     }
 
     @DeleteMapping("/{id}")

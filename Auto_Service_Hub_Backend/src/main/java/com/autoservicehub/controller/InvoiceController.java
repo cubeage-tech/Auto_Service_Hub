@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 /**
  * Billing - Invoices (SRS 4.9)
  * Base path: /api/v1/invoices
@@ -48,6 +50,28 @@ public class InvoiceController {
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<Page<InvoiceResponseDTO>> list(Pageable pageable) {
         return ApiResponse.ok(service.list(pageable));
+    }
+
+    /**
+     * Invoices raised against one job card, newest first.
+     * GET /api/v1/invoices/job-card/{jobCardId}?page=0&size=20
+     */
+    @GetMapping("/job-card/{jobCardId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    public ApiResponse<Page<InvoiceResponseDTO>> listByJobCard(
+            @PathVariable Long jobCardId,
+            Pageable pageable) {
+        return ApiResponse.ok(service.listByJobCard(jobCardId, pageable));
+    }
+
+    /**
+     * Amount still owed on an invoice (total minus its successful payments).
+     * GET /api/v1/invoices/{id}/outstanding
+     */
+    @GetMapping("/{id}/outstanding")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    public ApiResponse<BigDecimal> getOutstandingAmount(@PathVariable Long id) {
+        return ApiResponse.ok(service.getOutstandingAmount(id));
     }
 
     @DeleteMapping("/{id}")

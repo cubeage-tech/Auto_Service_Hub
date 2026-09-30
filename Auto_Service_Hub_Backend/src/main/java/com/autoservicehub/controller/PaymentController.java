@@ -50,6 +50,21 @@ public class PaymentController {
         return ApiResponse.ok(service.list(pageable));
     }
 
+    /**
+     * Payments recorded against one invoice, oldest first.
+     * GET /api/v1/payments/invoice/{invoiceId}?page=0&size=20
+     *
+     * Ordered oldest first so the sequence the customer paid in is preserved.
+     * Restricted to the same roles that may already read a payment by id.
+     */
+    @GetMapping("/invoice/{invoiceId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    public ApiResponse<Page<PaymentResponseDTO>> listByInvoice(
+            @PathVariable Long invoiceId,
+            Pageable pageable) {
+        return ApiResponse.ok(service.listByInvoice(invoiceId, pageable));
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'BILLING_USER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -53,6 +53,25 @@ public class PartServiceImpl implements PartService {
         repository.deleteById(id);
     }
 
+    /**
+     * Parts at or below their own reorder level.
+     *
+     * <p>Delegates to {@link PartRepository#findLowStock(Pageable)} so the list
+     * and {@link #countLowStock()} apply exactly the same
+     * {@code stockQty <= minStock} rule, rather than re-deriving it here.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PartResponseDTO> listLowStock(Pageable pageable) {
+        return repository.findLowStock(pageable).map(this::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countLowStock() {
+        return repository.countLowStock();
+    }
+
     private void mapToEntity(PartRequestDTO r, Part e) {
         e.setSku(r.getSku());
         e.setName(r.getName());

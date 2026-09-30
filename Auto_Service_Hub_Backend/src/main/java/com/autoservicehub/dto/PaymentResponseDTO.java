@@ -13,6 +13,20 @@ import java.time.LocalDateTime;
 @Setter
 public class PaymentResponseDTO {
     private Long id;
+    private Long invoiceId;
+
+    /**
+     * The invoice's status after this payment was applied. Derived server-side
+     * from the balance, never taken from the request.
+     */
+    private String invoiceStatus;
+
+    /**
+     * What remains owed on the invoice after this payment, recomputed from the
+     * invoice total and the successful payments recorded against it.
+     */
+    private BigDecimal invoiceOutstandingAmount;
+
     private BigDecimal amount;
     private String mode;
     private String transactionRef;

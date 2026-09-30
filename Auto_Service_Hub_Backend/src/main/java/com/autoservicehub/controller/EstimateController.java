@@ -50,6 +50,18 @@ public class EstimateController {
         return ApiResponse.ok(service.list(pageable));
     }
 
+    /**
+     * Estimates raised against one job card, newest first.
+     * GET /api/v1/estimates/job-card/{jobCardId}?page=0&size=20
+     */
+    @GetMapping("/job-card/{jobCardId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    public ApiResponse<Page<EstimateResponseDTO>> listByJobCard(
+            @PathVariable Long jobCardId,
+            Pageable pageable) {
+        return ApiResponse.ok(service.listByJobCard(jobCardId, pageable));
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
