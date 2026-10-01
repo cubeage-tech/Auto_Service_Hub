@@ -3,6 +3,7 @@ package com.autoservicehub.ai;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Generic inbound payload for any AI feature. Concrete fields vary by
@@ -16,5 +17,7 @@ public class AiRequest {
     private Long customerId;
     private Long vehicleId;
     private Long jobCardId;
+    private String repairType;
+    private Set<String> requiredSkills;
     private Map<String, Object> context;
 }

@@ -1,10 +1,12 @@
 package com.autoservicehub.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Inbound payload for Estimate create/update endpoints. Billing - Estimates (SRS 4.9)
@@ -14,17 +16,20 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class EstimateRequestDTO {
-    @NotNull
+    private Long jobCardId;
+
+    @DecimalMin("0.00")
     private BigDecimal subtotal;
 
-    @NotNull
+    @DecimalMin("0.00")
     private BigDecimal discount;
 
-    @NotNull
+    @DecimalMin("0.00")
     private BigDecimal tax;
 
-    @NotNull
     private BigDecimal total;
 
     private String status;
+
+    private List<@Valid EstimateItemRequestDTO> items;
 }

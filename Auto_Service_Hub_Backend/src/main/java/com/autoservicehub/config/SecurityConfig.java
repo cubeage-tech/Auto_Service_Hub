@@ -1,7 +1,8 @@
 package com.autoservicehub.config;
 
 import com.autoservicehub.security.JwtAuthenticationFilter;
-import jakarta.servlet.http.HttpServletResponse;
+import com.autoservicehub.security.RestAccessDeniedHandler;
+import com.autoservicehub.security.RestAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,13 +20,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * Spring Security + JWT + RBAC configuration (SRS 2.4, 13, 19).
  * Every protected endpoint enforces role-based authorization server-side,
  * even when the corresponding menu item is hidden in the React UI.
+ *
+ * <p>Authentication and authorization failures are rendered as the project's
+ * standard {@code ApiErrorResponse} JSON (SRS 9.1, 15) by the two handlers below
+ * rather than Spring's default error page. Endpoint access rules, CORS behaviour,
+ * the JWT filter position and the stateless session policy are unchanged.
  */
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter   jwtAuthenticationFilter;
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+    private final RestAccessDeniedHandler     restAccessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -43,10 +51,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(ex -> ex
-                .authenticationEntryPoint((request, response, authException) ->
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
-                .accessDeniedHandler((request, response, accessDeniedException) ->
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden")))
+                .authenticationEntryPoint(restAuthenticationEntryPoint)
+                .accessDeniedHandler(restAccessDeniedHandler))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**",
                                   "/actuator/health").permitAll()

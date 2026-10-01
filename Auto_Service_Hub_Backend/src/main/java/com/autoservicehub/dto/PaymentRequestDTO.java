@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class PaymentRequestDTO {
+    private Long invoiceId;
     private BigDecimal amount;
     private String mode;
     private String transactionRef;

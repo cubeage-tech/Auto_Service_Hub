@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Maps to the 'inspections' table (SRS section 8.2 High-Level Entities).
@@ -13,6 +15,17 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "inspections")
 public class Inspection extends BaseEntity {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vehicle_id")
+    private Vehicle vehicle;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_card_id")
+    private JobCard jobCard;
+
+    @OneToMany(mappedBy = "inspection", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InspectionItem> items = new ArrayList<>();
 
     @Column(name = "complaint")
     private String complaint;

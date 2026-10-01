@@ -83,11 +83,21 @@ public class CustomerController {
     }
 
     /**
-     * Admin hard-delete. Normal flows should use PATCH /{id}/deactivate.
-     * DELETE /api/v1/customers/{id}
+     * Hard-delete — restricted to ADMIN and OWNER only (SRS 13 Roles & Permissions).
+     *
+     * <p>A hard delete permanently removes the customer together with their
+     * related job cards, invoices and service history. Mid-level roles
+     * (MANAGER, SERVICE_ADVISOR) must not be able to destroy that financial
+     * and operational history; normal flows should use
+     * {@code PATCH /{id}/deactivate}, which preserves all historical records.
+     *
+     * <p>The endpoint and its service implementation remain available to
+     * ADMIN/OWNER as an administrative escape hatch.
+     *
+     * <p>DELETE /api/v1/customers/{id}
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);

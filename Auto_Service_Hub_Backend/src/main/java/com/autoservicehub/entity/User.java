@@ -30,4 +30,7 @@ public class User extends BaseEntity {
     private String phone;
     @Column(name = "active")
     private Boolean active;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private Mechanic mechanic;
 }

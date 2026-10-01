@@ -12,6 +12,11 @@ public class CustomerResponseDTO {
     private String phone;
     private String email;
     private String address;
+    private String city;
+    private String pincode;
+    private String loyaltyTier;
+    private String notes;
+    private String preferences;
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -20,4 +20,8 @@ public class EstimateItem extends BaseEntity {
     private Integer quantity;
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "estimate_id")
+    private Estimate estimate;
 }

@@ -1,3 +1,4 @@
+
 package com.autoservicehub.entity;
 
 import jakarta.persistence.*;
@@ -5,9 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Stores customer feedback and star ratings after completed service (SRS FR-CRM-5).
+ * Stores customer feedback and star ratings after completed service.
  * Rating range: 1–5.
- * FK to customers (who gave feedback) and job_cards (which service it relates to).
+ * Foreign keys reference the customer and job card.
  */
 @Getter
 @Setter
@@ -26,10 +27,13 @@ public class Feedback extends BaseEntity {
     @JoinColumn(name = "job_card_id", nullable = false)
     private JobCard jobCard;
 
-    /** Star rating 1–5 (SRS FR-CRM-5). */
     @Column(name = "rating", nullable = false)
     private Integer rating;
 
     @Column(name = "comments", columnDefinition = "TEXT")
     private String comments;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mechanic_id")
+    private Mechanic mechanic;
 }

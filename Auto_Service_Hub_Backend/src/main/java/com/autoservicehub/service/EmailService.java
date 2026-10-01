@@ -11,13 +11,18 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-    public void sendOtpEmail(String toEmail, String otp) {
-
+    public void sendEmail(String toEmail, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject(subject);
+        message.setText(body);
+        mailSender.send(message);
+    }
 
+    public void sendOtpEmail(String toEmail, String otp) {
+        SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);
         message.setSubject("SmartGarage AI - Password Reset OTP");
-
         message.setText(
                 "Hello,\n\n" +
                 "Your SmartGarage AI password reset OTP is:\n\n" +
@@ -27,7 +32,6 @@ public class EmailService {
                 "Regards,\n" +
                 "SmartGarage AI CRM"
         );
-
         mailSender.send(message);
     }
 }

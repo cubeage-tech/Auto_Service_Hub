@@ -66,12 +66,14 @@ public class VehicleServiceImpl implements VehicleService {
         e.setMake(r.getMake());
         e.setModel(r.getModel());
         e.setVariant(r.getVariant());
+        if (r.getFuelType() != null) e.setFuelType(r.getFuelType());
         e.setYear(r.getYear());
         e.setEngineNo(r.getEngineNo());
         e.setChassisNo(r.getChassisNo());
         e.setMileage(r.getMileage());
         e.setInsuranceExpiry(r.getInsuranceExpiry());
         e.setWarrantyExpiry(r.getWarrantyExpiry());
+        if (r.getNotes() != null) e.setNotes(r.getNotes());
     }
 
     private VehicleResponseDTO toResponse(Vehicle e) {
@@ -81,12 +83,14 @@ public class VehicleServiceImpl implements VehicleService {
         dto.setMake(e.getMake());
         dto.setModel(e.getModel());
         dto.setVariant(e.getVariant());
+        dto.setFuelType(e.getFuelType());
         dto.setYear(e.getYear());
         dto.setEngineNo(e.getEngineNo());
         dto.setChassisNo(e.getChassisNo());
         dto.setMileage(e.getMileage());
         dto.setInsuranceExpiry(e.getInsuranceExpiry());
         dto.setWarrantyExpiry(e.getWarrantyExpiry());
+        dto.setNotes(e.getNotes());
         if (e.getCustomer() != null) {
             dto.setCustomerId(e.getCustomer().getId());
             dto.setCustomerName(e.getCustomer().getName());

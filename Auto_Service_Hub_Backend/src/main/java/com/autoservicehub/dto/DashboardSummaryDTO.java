@@ -18,4 +18,6 @@ public class DashboardSummaryDTO {
     private BigDecimal revenue;
     private long lowStockParts;
     private long upcomingAppointments;
+    private long pendingInvoices;
+    private long activeAssignedJobs;
 }

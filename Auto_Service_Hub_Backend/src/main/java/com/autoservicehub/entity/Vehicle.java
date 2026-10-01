@@ -23,6 +23,8 @@ public class Vehicle extends BaseEntity {
     private String model;
     @Column(name = "variant")
     private String variant;
+    @Column(name = "fuel_type")
+    private String fuelType;
     @Column(name = "year")
     private Integer year;
     @Column(name = "engine_no")
@@ -35,4 +37,6 @@ public class Vehicle extends BaseEntity {
     private LocalDate insuranceExpiry;
     @Column(name = "warranty_expiry")
     private LocalDate warrantyExpiry;
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
 }

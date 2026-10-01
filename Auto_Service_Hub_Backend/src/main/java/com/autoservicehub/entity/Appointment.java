@@ -19,10 +19,20 @@ public class Appointment extends BaseEntity {
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_advisor_id")
+    private User assignedAdvisor;
+
+    @Column(name = "appointment_type")
+    private String appointmentType;
     @Column(name = "service_type")
     private String serviceType;
     @Column(name = "appointment_at")
     private LocalDateTime appointmentAt;
+    @Column(name = "time_slot")
+    private String timeSlot;
+    @Column(name = "bay")
+    private String bay;
     @Column(name = "pickup_drop")
     private Boolean pickupDrop;
     @Column(name = "status")

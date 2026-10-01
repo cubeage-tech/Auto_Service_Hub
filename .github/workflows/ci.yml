@@ -1,0 +1,56 @@
+name: Backend CI
+
+# Phase 1: build and test the Spring Boot backend on every pull request and on
+# pushes to the dev-* branches. This workflow does NOT merge, push, or alter
+# branch protection - automerge.yml remains the only workflow that pushes.
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches:
+      - "dev-*"
+
+# Read-only token: this workflow only checks out and builds.
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-test:
+    name: Backend build and test (Java 17)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        # The Maven project lives in this subdirectory of the repository.
+        working-directory: Auto_Service_Hub_Backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        # Java 17 matches <java.version>17</java.version> in pom.xml. Do not raise
+        # this without also upgrading: Spring Boot 3.3.4's bundled Byte Buddy does
+        # not support class-file versions newer than Java 23, which makes the
+        # Mockito-based tests fail on newer JDKs.
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build and run backend tests
+        run: mvn -B -ntp test
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-surefire-reports
+          path: Auto_Service_Hub_Backend/target/surefire-reports/
+          retention-days: 7
+          if-no-files-found: ignore

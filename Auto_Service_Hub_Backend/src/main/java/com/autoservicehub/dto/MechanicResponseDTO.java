@@ -11,6 +11,7 @@ public class MechanicResponseDTO {
     private String employeeCode;
     private String name;
     private String phone;
+    private Long userId;
     private Integer experienceYears;
     private String status;
     private LocalDateTime createdAt;

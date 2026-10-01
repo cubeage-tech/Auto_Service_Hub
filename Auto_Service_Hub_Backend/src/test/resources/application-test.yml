@@ -1,0 +1,49 @@
+# =============================================================================
+# SmartGarage AI CRM - EFFECTIVE test profile configuration
+# =============================================================================
+# NOTE: this file lives in src/test/resources and therefore SHADOWS
+# src/main/resources/application-test.yml on the test classpath (Maven puts
+# target/test-classes ahead of target/classes). This copy is the one Spring
+# Boot actually loads for the "test" profile, so the settings the test context
+# needs must live here.
+#
+# Safe to commit: contains NO real credentials, tokens, passwords or API keys.
+# The JWT key below is a THROWAWAY, NON-SECRET constant that only exists to
+# satisfy the startup key-material validation in JwtTokenProvider. It must never
+# be promoted into, or used as, a real signing key in any deployed environment.
+# =============================================================================
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:autoservicehub-test;MODE=MySQL;NON_KEYWORDS=YEAR;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    show-sql: false
+
+app:
+  jwt:
+    # THROWAWAY TEST KEY - NOT A SECRET, NOT USABLE IN ANY DEPLOYED ENV.
+    # 64 characters, so it clears the 32-byte HS256 minimum enforced at startup.
+    secret: dGVzdC1vbmx5LW5vbi1wcm9kdWN0aW9uLWp3dC1zaWduaW5nLWtleS0tLTAwMDAwMDAwMDA=
+    access-token-expiry-ms: 3600000
+
+  cors:
+    allowed-origins: http://localhost:5173,http://localhost:3000
+
+  # Keep AI on the no-op provider so tests never call a real AI service.
+  ai:
+    provider: none
+
+logging:
+  level:
+    root: WARN
+    com.autoservicehub: INFO
+    org.hibernate.SQL: WARN

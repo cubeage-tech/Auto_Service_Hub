@@ -16,6 +16,8 @@ public interface MechanicService {
 
     MechanicResponseDTO getById(Long id);
 
+    MechanicResponseDTO getMine();
+
     Page<MechanicResponseDTO> list(Pageable pageable);
 
     void delete(Long id);

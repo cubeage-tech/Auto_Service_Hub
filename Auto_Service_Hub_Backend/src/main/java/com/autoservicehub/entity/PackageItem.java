@@ -18,4 +18,12 @@ public class PackageItem extends BaseEntity {
     private String itemName;
     @Column(name = "item_type")
     private String itemType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_package_id")
+    private ServicePackage servicePackage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "part_id")
+    private Part part;
 }

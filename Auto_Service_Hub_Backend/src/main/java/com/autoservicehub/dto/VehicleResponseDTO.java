@@ -13,12 +13,14 @@ public class VehicleResponseDTO {
     private String make;
     private String model;
     private String variant;
+    private String fuelType;
     private Integer year;
     private String engineNo;
     private String chassisNo;
     private Integer mileage;
     private LocalDate insuranceExpiry;
     private LocalDate warrantyExpiry;
+    private String notes;
     private Long customerId;
     private String customerName;
     private LocalDateTime createdAt;

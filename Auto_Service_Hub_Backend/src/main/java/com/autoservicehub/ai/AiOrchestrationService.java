@@ -15,9 +15,12 @@ public class AiOrchestrationService {
 
     private final AiProviderClient providerClient;
     private final AiInsightRepository aiInsightRepository;
+    private final MechanicRecommendationService mechanicRecommendationService;
 
     public AiResult process(AiRequest request) {
-        AiResult result = providerClient.invoke(request);
+        AiResult result = request.getFeatureType() == AiFeatureType.MECHANIC_ASSIGNMENT
+                ? mechanicRecommendationService.recommend(request)
+                : providerClient.invoke(request);
 
         AiInsight insight = new AiInsight();
         insight.setFeatureType(request.getFeatureType().name());

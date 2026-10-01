@@ -15,6 +15,10 @@ import java.time.LocalDateTime;
 @Table(name = "payments")
 public class Payment extends BaseEntity {
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "invoice_id")
+    private Invoice invoice;
+
     @Column(name = "amount")
     private BigDecimal amount;
     @Column(name = "mode")

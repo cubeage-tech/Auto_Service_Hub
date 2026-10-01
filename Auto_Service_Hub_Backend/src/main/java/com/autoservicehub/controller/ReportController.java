@@ -5,6 +5,7 @@ import com.autoservicehub.dto.CustomerGrowthReportDTO;
 import com.autoservicehub.dto.DashboardSummaryDTO;
 import com.autoservicehub.dto.MechanicPerformanceReportDTO;
 import com.autoservicehub.dto.RevenueReportDTO;
+import com.autoservicehub.dto.ServiceAdvisorOperationsReportDTO;
 import com.autoservicehub.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -30,14 +31,22 @@ public class ReportController {
     }
 
     @GetMapping("/revenue")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'BILLING_USER')")
     public ApiResponse<RevenueReportDTO> revenue(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
                                                 @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         return ApiResponse.ok(reportService.getRevenueReport(from, to));
     }
 
+    @GetMapping("/advisor-operations")
+    @PreAuthorize("hasRole('SERVICE_ADVISOR')")
+    public ApiResponse<ServiceAdvisorOperationsReportDTO> advisorOperations(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return ApiResponse.ok(reportService.getAdvisorOperationsReport(from, to));
+    }
+
     @GetMapping("/mechanic-performance")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'MECHANIC')")
     public ApiResponse<MechanicPerformanceReportDTO> mechanicPerformance(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
                                                                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
                                                                         @RequestParam(required = false) Long mechanicId) {
@@ -45,7 +54,7 @@ public class ReportController {
     }
 
     @GetMapping("/parts-usage")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'INVENTORY_MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'INVENTORY_MANAGER')")
     public ApiResponse<Object> partsUsage(@RequestParam LocalDate from, @RequestParam LocalDate to) {
         return ApiResponse.ok(reportService.getPartsUsageReport(from, to));
     }

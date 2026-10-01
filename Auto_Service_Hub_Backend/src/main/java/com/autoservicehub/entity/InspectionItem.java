@@ -20,4 +20,8 @@ public class InspectionItem extends BaseEntity {
     private String finding;
     @Column(name = "photo_url")
     private String photoUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inspection_id")
+    private Inspection inspection;
 }

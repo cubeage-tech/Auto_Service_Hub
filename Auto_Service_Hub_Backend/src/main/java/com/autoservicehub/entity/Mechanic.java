@@ -3,6 +3,8 @@ package com.autoservicehub.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -24,4 +26,11 @@ public class Mechanic extends BaseEntity {
     private Integer experienceYears;
     @Column(name = "status")
     private String status;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
+
+    @OneToMany(mappedBy = "mechanic", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MechanicSkill> skills = new ArrayList<>();
 }

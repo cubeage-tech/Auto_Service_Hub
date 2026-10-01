@@ -22,6 +22,16 @@ public class Customer extends BaseEntity {
     private String email;
     @Column(name = "address")
     private String address;
+    @Column(name = "city")
+    private String city;
+    @Column(name = "pincode")
+    private String pincode;
+    @Column(name = "loyalty_tier")
+    private String loyaltyTier;
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
+    @Column(name = "preferences", columnDefinition = "TEXT")
+    private String preferences;
     @Column(name = "status")
     private String status;
 }

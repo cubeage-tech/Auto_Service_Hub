@@ -15,6 +15,11 @@ public class AppointmentResponseDTO {
     private String vehicleInfo;
     private String serviceType;
     private LocalDateTime appointmentAt;
+    private String appointmentType;
+    private String timeSlot;
+    private String bay;
+    private Long assignedAdvisorId;
+    private String assignedAdvisorName;
     private Boolean pickupDrop;
     private String notes;
     private String status;

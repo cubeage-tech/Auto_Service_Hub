@@ -5,11 +5,13 @@ import com.autoservicehub.dto.FollowupResponseDTO;
 import com.autoservicehub.entity.Customer;
 import com.autoservicehub.entity.Followup;
 import com.autoservicehub.entity.JobCard;
+import com.autoservicehub.exception.BusinessRuleException;
 import com.autoservicehub.exception.ResourceNotFoundException;
 import com.autoservicehub.repository.CustomerRepository;
 import com.autoservicehub.repository.FollowupRepository;
 import com.autoservicehub.repository.JobCardRepository;
 import com.autoservicehub.service.FollowupService;
+import com.autoservicehub.service.ServiceAdvisorAccessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,11 +26,13 @@ public class FollowupServiceImpl implements FollowupService {
     private final FollowupRepository repository;
     private final CustomerRepository customerRepository;
     private final JobCardRepository jobCardRepository;
+    private final ServiceAdvisorAccessService advisorAccessService;
 
     @Override
     public FollowupResponseDTO create(FollowupRequestDTO request) {
         Followup entity = new Followup();
         mapToEntity(request, entity);
+        advisorAccessService.assertCanAccess(entity);
         return toResponse(repository.save(entity));
     }
 
@@ -36,27 +40,40 @@ public class FollowupServiceImpl implements FollowupService {
     public FollowupResponseDTO update(Long id, FollowupRequestDTO request) {
         Followup existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Followup not found: " + id));
+        advisorAccessService.assertCanAccess(existing);
+        if (advisorAccessService.isAdvisorUser() && request.getJobCardId() != null
+                && (existing.getJobCard() == null || !request.getJobCardId().equals(existing.getJobCard().getId()))) {
+            throw new org.springframework.security.access.AccessDeniedException("Service Advisors cannot move a follow-up to another job card.");
+        }
         mapToEntity(request, existing);
+        advisorAccessService.assertCanAccess(existing);
         return toResponse(repository.save(existing));
     }
 
     @Override
     @Transactional(readOnly = true)
     public FollowupResponseDTO getById(Long id) {
-        return toResponse(repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Followup not found: " + id)));
+        Followup followup = repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Followup not found: " + id));
+        advisorAccessService.assertCanAccess(followup);
+        return toResponse(followup);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<FollowupResponseDTO> list(Pageable pageable) {
+        if (advisorAccessService.isAdvisorUser()) {
+            return repository.findVisibleToAdvisor(advisorAccessService.currentAdvisor().getId(), pageable).map(this::toResponse);
+        }
         return repository.findAll(pageable).map(this::toResponse);
     }
 
     @Override
     public void delete(Long id) {
-        if (!repository.existsById(id)) throw new ResourceNotFoundException("Followup not found: " + id);
-        repository.deleteById(id);
+        Followup followup = repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Followup not found: " + id));
+        advisorAccessService.assertCanAccess(followup);
+        repository.delete(followup);
     }
 
     private void mapToEntity(FollowupRequestDTO r, Followup e) {
@@ -67,6 +84,10 @@ public class FollowupServiceImpl implements FollowupService {
             JobCard jobCard = jobCardRepository.findById(r.getJobCardId())
                     .orElseThrow(() -> new ResourceNotFoundException("JobCard not found: " + r.getJobCardId()));
             e.setJobCard(jobCard);
+        }
+        if (e.getJobCard() != null && e.getJobCard().getCustomer() != null
+                && !customer.getId().equals(e.getJobCard().getCustomer().getId())) {
+            throw new BusinessRuleException("Follow-up customer must match the linked job card customer.");
         }
         e.setDueDate(r.getDueDate());
         e.setReason(r.getReason());

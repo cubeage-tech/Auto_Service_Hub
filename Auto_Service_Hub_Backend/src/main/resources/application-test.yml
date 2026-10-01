@@ -1,0 +1,64 @@
+# =============================================================================
+# SmartGarage AI CRM — TEST profile configuration
+# =============================================================================
+# Safe to commit: contains NO real credentials, tokens, passwords or API keys.
+#
+# PURPOSE
+#   Supplies the configuration that AutoServiceHubApplicationTests
+#   (@SpringBootTest contextLoads) needs. The real application.yml is
+#   git-ignored, so without this file the test context cannot resolve
+#   app.cors.allowed-origins / app.jwt.secret and cannot build a DataSource.
+#
+# ISOLATION
+#   - Uses an in-memory H2 database: no network, no MySQL, no shared state.
+#     The database is discarded when the JVM exits.
+#   - Uses a THROWAWAY, NON-SECRET JWT key. It is intentionally a public
+#     constant so it can never be mistaken for, or promoted into, a real
+#     signing key. It exists only to satisfy key-length checks in tests.
+#   - Mail is not configured: sending mail is out of scope for the tests.
+#
+# No test currently asserts on mail, AI provider or datasource credentials.
+# =============================================================================
+
+spring:
+  # ── In-memory datasource (no external DB, no secrets) ────────────────────
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  # ── JPA ──────────────────────────────────────────────────────────────────
+  jpa:
+    hibernate:
+      # Create the throwaway schema from the JPA model for each test run.
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  # ── Mail disabled for tests ──────────────────────────────────────────────
+  mail:
+    host: localhost
+    port: 3025
+
+app:
+  jwt:
+    # THROWAWAY TEST KEY — NOT A SECRET, NOT USABLE IN ANY DEPLOYED ENV.
+    # Base64-encoded 48 bytes; satisfies the HS256 minimum key length.
+    secret: dGVzdC1vbmx5LW5vbi1wcm9kdWN0aW9uLWp3dC1zaWduaW5nLWtleS0tLTAwMDAwMDAwMDA=
+    access-token-expiry-ms: 3600000
+
+  cors:
+    allowed-origins: http://localhost:5173,http://localhost:3000
+
+  # Keep AI on the no-op provider so tests never call a real AI service.
+  ai:
+    provider: none
+
+logging:
+  level:
+    root: WARN
+    com.autoservicehub: INFO
+    org.hibernate.SQL: WARN

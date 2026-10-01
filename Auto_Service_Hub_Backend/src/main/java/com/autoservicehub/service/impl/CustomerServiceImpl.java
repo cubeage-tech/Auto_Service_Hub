@@ -232,6 +232,11 @@ public class CustomerServiceImpl implements CustomerService {
         e.setPhone(r.getPhone());
         e.setEmail(r.getEmail());
         e.setAddress(r.getAddress());
+        if (r.getCity() != null) e.setCity(r.getCity());
+        if (r.getPincode() != null) e.setPincode(r.getPincode());
+        if (r.getLoyaltyTier() != null) e.setLoyaltyTier(r.getLoyaltyTier());
+        if (r.getNotes() != null) e.setNotes(r.getNotes());
+        if (r.getPreferences() != null) e.setPreferences(r.getPreferences());
         e.setStatus(r.getStatus() != null ? r.getStatus() : "ACTIVE");
     }
 
@@ -242,6 +247,11 @@ public class CustomerServiceImpl implements CustomerService {
         dto.setPhone(e.getPhone());
         dto.setEmail(e.getEmail());
         dto.setAddress(e.getAddress());
+        dto.setCity(e.getCity());
+        dto.setPincode(e.getPincode());
+        dto.setLoyaltyTier(e.getLoyaltyTier());
+        dto.setNotes(e.getNotes());
+        dto.setPreferences(e.getPreferences());
         dto.setStatus(e.getStatus());
         dto.setCreatedAt(e.getCreatedAt());
         dto.setUpdatedAt(e.getUpdatedAt());

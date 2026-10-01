@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -23,6 +25,17 @@ public class JobCard extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mechanic_id")
     private Mechanic mechanic;
+
+        @ManyToMany
+        @JoinTable(name = "job_card_mechanics",
+            joinColumns = @JoinColumn(name = "job_card_id"),
+            inverseJoinColumns = @JoinColumn(name = "mechanic_id"))
+        private Set<Mechanic> assignedMechanics = new LinkedHashSet<>();
+
+        @ElementCollection
+        @CollectionTable(name = "job_card_required_skills", joinColumns = @JoinColumn(name = "job_card_id"))
+        @Column(name = "required_skill", nullable = false)
+        private Set<String> requiredSkills = new LinkedHashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
@@ -46,6 +59,8 @@ public class JobCard extends BaseEntity {
     private String status;
     @Column(name = "assigned_date")
     private LocalDateTime assignedDate;
+    @Column(name = "started_date")
+    private LocalDateTime startedDate;
     @Column(name = "completed_date")
     private LocalDateTime completedDate;
 }

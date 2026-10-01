@@ -18,4 +18,8 @@ public class MechanicSkill extends BaseEntity {
     private String skillName;
     @Column(name = "level")
     private String level;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mechanic_id", nullable = false)
+    private Mechanic mechanic;
 }

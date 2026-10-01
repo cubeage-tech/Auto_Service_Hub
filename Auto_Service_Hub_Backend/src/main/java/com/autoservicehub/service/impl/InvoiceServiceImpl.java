@@ -8,6 +8,7 @@ import com.autoservicehub.exception.ResourceNotFoundException;
 import com.autoservicehub.repository.InvoiceRepository;
 import com.autoservicehub.repository.JobCardRepository;
 import com.autoservicehub.service.InvoiceService;
+import com.autoservicehub.service.ServiceAdvisorAccessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +24,13 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private final InvoiceRepository repository;
     private final JobCardRepository jobCardRepository;
+    private final ServiceAdvisorAccessService advisorAccessService;
 
     @Override
     public InvoiceResponseDTO create(InvoiceRequestDTO request) {
         Invoice entity = new Invoice();
         mapToEntity(request, entity);
+        advisorAccessService.assertCanAccess(entity);
         entity.setInvoiceDate(LocalDate.now());
         entity.setStatus(request.getStatus() != null ? request.getStatus() : "PENDING");
         return toResponse(repository.save(entity));
@@ -37,27 +40,36 @@ public class InvoiceServiceImpl implements InvoiceService {
     public InvoiceResponseDTO update(Long id, InvoiceRequestDTO request) {
         Invoice existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found: " + id));
+        advisorAccessService.assertCanAccess(existing);
         mapToEntity(request, existing);
+        advisorAccessService.assertCanAccess(existing);
         return toResponse(repository.save(existing));
     }
 
     @Override
     @Transactional(readOnly = true)
     public InvoiceResponseDTO getById(Long id) {
-        return toResponse(repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Invoice not found: " + id)));
+        Invoice invoice = repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Invoice not found: " + id));
+        advisorAccessService.assertCanAccess(invoice);
+        return toResponse(invoice);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<InvoiceResponseDTO> list(Pageable pageable) {
+        if (advisorAccessService.isAdvisorUser()) {
+            return repository.findVisibleToAdvisor(advisorAccessService.currentAdvisor().getId(), pageable).map(this::toResponse);
+        }
         return repository.findAll(pageable).map(this::toResponse);
     }
 
     @Override
     public void delete(Long id) {
-        if (!repository.existsById(id)) throw new ResourceNotFoundException("Invoice not found: " + id);
-        repository.deleteById(id);
+        Invoice invoice = repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Invoice not found: " + id));
+        advisorAccessService.assertCanAccess(invoice);
+        repository.delete(invoice);
     }
 
     private void mapToEntity(InvoiceRequestDTO r, Invoice e) {

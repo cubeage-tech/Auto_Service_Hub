@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -15,6 +17,9 @@ public class JobCardRequestDTO {
     @NotNull
     private Long vehicleId;
     private Long mechanicId;
+    private List<Long> mechanicIds;
+    private Set<String> requiredSkills;
+    private Boolean clearAssignment;
     private Long appointmentId;
     @NotBlank
     private String serviceType;

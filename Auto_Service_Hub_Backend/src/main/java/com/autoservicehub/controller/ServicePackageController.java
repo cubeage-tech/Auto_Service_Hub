@@ -25,14 +25,14 @@ public class ServicePackageController {
     private final ServicePackageService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ServicePackageResponseDTO> create(@Valid @RequestBody ServicePackageRequestDTO request) {
         return ApiResponse.ok("Created", service.create(request));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER')")
     public ApiResponse<ServicePackageResponseDTO> update(@PathVariable Long id,
                                                     @Valid @RequestBody ServicePackageRequestDTO request) {
         return ApiResponse.ok("Updated", service.update(id, request));
@@ -51,7 +51,7 @@ public class ServicePackageController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);

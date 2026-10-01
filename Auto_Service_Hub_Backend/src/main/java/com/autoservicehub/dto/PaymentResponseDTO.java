@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 public class PaymentResponseDTO {
     private Long id;
+    private Long invoiceId;
     private BigDecimal amount;
     private String mode;
     private String transactionRef;

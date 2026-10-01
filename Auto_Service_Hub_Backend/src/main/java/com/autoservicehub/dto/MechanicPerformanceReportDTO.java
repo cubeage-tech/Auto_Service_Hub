@@ -18,4 +18,8 @@ public class MechanicPerformanceReportDTO {
     private long completedJobs;
     private BigDecimal totalRevenue;
     private BigDecimal averageRevenuePerJob;
+    private BigDecimal averageTurnaroundHours;
+    private long activeAssignedJobs;
+    private Double averageFeedbackRating;
+    private long feedbackCount;
 }

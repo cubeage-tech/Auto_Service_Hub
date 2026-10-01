@@ -21,4 +21,8 @@ public class Attendance extends BaseEntity {
     private LocalDateTime checkIn;
     @Column(name = "check_out")
     private LocalDateTime checkOut;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mechanic_id")
+    private Mechanic mechanic;
 }

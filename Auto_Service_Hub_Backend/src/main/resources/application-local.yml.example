@@ -1,0 +1,51 @@
+# =============================================================================
+# SmartGarage AI CRM — LOCAL development configuration TEMPLATE
+# =============================================================================
+# THIS FILE IS A TEMPLATE AND CONTAINS NO REAL CREDENTIALS.
+# Every value below is a placeholder you must replace locally.
+#
+# HOW TO USE
+#   1. Copy this file:
+#        Auto_Service_Hub_Backend/src/main/resources/application-local.yml.example
+#        -> Auto_Service_Hub_Backend/src/main/resources/application-local.yml
+#   2. Fill in your own values in the COPY.
+#   3. Run the backend with the "local" profile, e.g.:
+#        mvn spring-boot:run -Dspring-boot.run.profiles=local
+#        (combine with dev logging if wanted: -Dspring-boot.run.profiles=local,dev)
+#
+# IGNORE SAFETY
+#   application-local.yml is already listed in
+#   Auto_Service_Hub_Backend/.gitignore, so Git will NOT track it.
+#   Verify before you ever type a secret in here:
+#        git check-ignore -v Auto_Service_Hub_Backend/src/main/resources/application-local.yml
+#   NEVER rename it to a tracked name such as application.yml.example variants
+#   that are not ignored, and never paste a real secret into THIS file.
+#
+# ALTERNATIVE: instead of this file you may export the same keys as real
+# environment variables (DB_USER, DB_PASSWORD, MAIL_*, JWT_SECRET, ...).
+# Environment variables take precedence over this profile file.
+# =============================================================================
+
+spring:
+  datasource:
+    # Replace with your local MySQL connection settings.
+    url: jdbc:mysql://localhost:3306/YOUR_DATABASE_NAME
+    username: YOUR_DB_USERNAME
+    password: YOUR_DB_PASSWORD
+
+  mail:
+    # Only needed if you use the password-reset email feature locally.
+    # Leave host/credentials empty to disable mail.
+    host: YOUR_SMTP_HOST
+    port: 587
+    username: YOUR_SMTP_USERNAME
+    password: YOUR_SMTP_APP_PASSWORD
+
+app:
+  jwt:
+    # REQUIRED. Minimum 32 bytes of key material (HS256 floor enforced by JJWT).
+    # Generate a strong random value, e.g. one of:
+    #   openssl rand -base64 48
+    #   [Convert]::ByteArray]::new(48) | Get-Random ... (see README for details)
+    # NEVER reuse the same value across environments and never commit it.
+    secret: PASTE_A_RANDOM_JWT_SECRET_OF_AT_LEAST_32_BYTES_HERE
