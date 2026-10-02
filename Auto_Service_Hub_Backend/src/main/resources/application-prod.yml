@@ -1,7 +1,52 @@
+# =============================================================================
+# PRODUCTION profile — SmartGarage AI CRM backend (SRS 19, 20)
+# =============================================================================
+# Secrets are NOT defaulted here. SRS 19 requires database passwords, JWT secrets
+# and provider credentials to come from environment/secret management rather than
+# source code, so every value below is ${ENV_VAR} with no fallback. A missing
+# variable therefore fails startup loudly instead of silently running with a
+# well-known secret.
+#
+# Local development is unaffected: it uses application.yml, which keeps
+# developer-friendly defaults.
+# =============================================================================
+
 spring:
   jpa:
     hibernate:
       ddl-auto: validate
+
+  datasource:
+    # No defaults. DB_URL / DB_USERNAME / DB_PASSWORD must be supplied.
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+server:
+  # SRS 20 places HTTPS termination at the reverse proxy, not in Spring Boot.
+  # Trusting forwarded headers is what makes the app aware it is being served
+  # over HTTPS, so redirects and any absolute URLs are generated with https://
+  # instead of http://.
+  forward-headers-strategy: framework
+
+app:
+  jwt:
+    # No default. The development placeholder must not be reachable in prod —
+    # a known signing key would let anyone forge an ADMIN token.
+    secret: ${JWT_SECRET}
+    access-token-expiry-ms: 3600000
+    refresh-token-expiry-ms: 604800000
+
+  cors:
+    # No default: the deployed frontend origins must be stated explicitly, so
+    # production cannot silently fall back to allowing localhost.
+    allowed-origins: ${CORS_ORIGINS}
+
+  ai:
+    provider: ${AI_PROVIDER:none}
+    base-url: ${AI_BASE_URL:}
+    api-key: ${AI_API_KEY:}
+
 logging:
   level:
     com.autoservicehub: INFO

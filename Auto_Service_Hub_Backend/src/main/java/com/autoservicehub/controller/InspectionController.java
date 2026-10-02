@@ -50,6 +50,36 @@ public class InspectionController {
         return ApiResponse.ok(service.list(pageable));
     }
 
+    /**
+     * Inspections carried out on one vehicle, newest first.
+     * GET /api/v1/inspections/vehicle/{vehicleId}?page=0&size=20
+     *
+     * Follows the Vehicle → Inspection step of the core workflow: shows the
+     * inspection history for the vehicle a job card is about to be raised for.
+     */
+    @GetMapping("/vehicle/{vehicleId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    public ApiResponse<Page<InspectionResponseDTO>> listByVehicle(
+            @PathVariable Long vehicleId,
+            Pageable pageable) {
+        return ApiResponse.ok(service.listByVehicle(vehicleId, pageable));
+    }
+
+    /**
+     * The inspection that produced a given job card, with its findings.
+     * GET /api/v1/inspections/job-card/{jobCardId}
+     *
+     * This is the read path for the Inspection → Job Card link: a technician
+     * working on a job card can pull the originating findings. Returns 404 when
+     * the job card has no inspection, since a job card raised without an
+     * inspection is valid and simply has nothing to show.
+     */
+    @GetMapping("/job-card/{jobCardId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    public ApiResponse<InspectionResponseDTO> getByJobCardId(@PathVariable Long jobCardId) {
+        return ApiResponse.ok(service.getByJobCardId(jobCardId));
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     @ResponseStatus(HttpStatus.NO_CONTENT)

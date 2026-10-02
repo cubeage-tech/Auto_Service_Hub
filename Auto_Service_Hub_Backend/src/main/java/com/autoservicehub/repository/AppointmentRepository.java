@@ -20,4 +20,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long>,
 
     // ── FR-CRM-7: All appointments for a customer, newest first ──────────
     List<Appointment> findByCustomerIdOrderByAppointmentAtDesc(Long customerId);
+
+    /**
+     * FR-AI-09: Appointments for a specific vehicle, newest first.
+     * Used by AI Maintenance Prediction to ground the prediction in the
+     * vehicle's actual booking history. Derived query — no schema change.
+     */
+    List<Appointment> findByVehicleIdOrderByAppointmentAtDesc(Long vehicleId);
 }

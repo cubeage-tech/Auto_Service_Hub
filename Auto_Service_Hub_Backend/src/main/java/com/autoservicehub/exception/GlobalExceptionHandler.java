@@ -3,11 +3,14 @@ package com.autoservicehub.exception;
 import com.autoservicehub.dto.ApiErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -42,6 +45,34 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining("; "));
         return build(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", message);
+    }
+
+    /**
+     * A required query parameter that was not supplied, or one that could not be
+     * converted to its declared type (e.g. {@code date=not-a-date}).
+     *
+     * <p>Both are the caller's malformed request, so both are 400. Without these,
+     * Spring's own exceptions fall through to the generic handler below and are
+     * reported as 500 — which blames the server for a client mistake and hides the
+     * real cause behind a generic "something went wrong".
+     */
+    @ExceptionHandler({
+            MissingServletRequestParameterException.class,
+            MethodArgumentTypeMismatchException.class,
+            HttpMessageNotReadableException.class
+    })
+    public ResponseEntity<ApiErrorResponse> handleBadRequest(Exception ex) {
+        if (ex instanceof MissingServletRequestParameterException missing) {
+            return build(HttpStatus.BAD_REQUEST, "BAD_REQUEST",
+                    "Required parameter '" + missing.getParameterName() + "' is missing.");
+        }
+        if (ex instanceof MethodArgumentTypeMismatchException mismatch) {
+            return build(HttpStatus.BAD_REQUEST, "BAD_REQUEST",
+                    "Parameter '" + mismatch.getName() + "' has an invalid value.");
+        }
+        // A malformed JSON body: the message is deliberately generic, since the
+        // parser's own text can echo the payload back to the client.
+        return build(HttpStatus.BAD_REQUEST, "BAD_REQUEST", "Request body is malformed.");
     }
 
     @ExceptionHandler(Exception.class)
