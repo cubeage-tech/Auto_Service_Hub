@@ -55,6 +55,16 @@ public class Invoice extends BaseEntity {
     @Column(name = "gst")
     private BigDecimal gst;
 
+    /**
+     * The GST percentage actually applied to this invoice.
+     *
+     * <p>Stored rather than recomputed on read so the document always shows the
+     * rate it was billed at, even if {@code app.billing.tax-rate-percent} is
+     * changed later. Null means the configured default was used.
+     */
+    @Column(name = "gst_rate")
+    private BigDecimal gstRate;
+
     /** (subtotal - discount) + gst, calculated server-side. */
     @Column(name = "total")
     private BigDecimal total;
@@ -62,4 +72,20 @@ public class Invoice extends BaseEntity {
     private String status;
     @Column(name = "invoice_date")
     private LocalDate invoiceDate;
+
+    /**
+     * Free-text remarks typed by the service advisor on the invoice itself
+     * (FR-BILL-9).
+     *
+     * <p>Nullable and deliberately not {@code @NotBlank}: an invoice with no
+     * notes is the common case, and clearing the box must be a legal edit. A
+     * blank string is normalised to {@code null} on the way in (see
+     * {@code InvoiceServiceImpl.mapToEntity}) so "cleared" and "never filled
+     * in" are stored identically rather than as a row of empty strings.
+     *
+     * <p>Kept as TEXT rather than a bounded VARCHAR because there is nothing
+     * arithmetic about it and nothing to index.
+     */
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
 }

@@ -209,6 +209,176 @@
     background: #d6ff4b;
 }
 
+.garage-ai-primary-button:disabled {
+    background: #2b3320;
+    color: #6b7560;
+    cursor: not-allowed;
+}
+
+.garage-ai-primary-button:disabled:hover {
+    background: #2b3320;
+}
+
+
+/* =========================================================
+   CARD INPUTS (connected AI card)
+   ========================================================= */
+
+.garage-ai-card-inputs {
+    margin-left: 49px;
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.garage-ai-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.garage-ai-field > span {
+    width: 108px;
+    min-width: 108px;
+    color: #666666;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.garage-ai-select,
+.garage-ai-textarea {
+    flex: 1;
+    min-width: 0;
+    padding: 7px 9px;
+    background: #181818;
+    border: 1px solid #292929;
+    border-radius: 4px;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.garage-ai-textarea {
+    resize: vertical;
+}
+
+.garage-ai-select:focus,
+.garage-ai-textarea:focus {
+    outline: none;
+    border-color: #c9ff20;
+}
+
+.garage-ai-select:disabled,
+.garage-ai-textarea:disabled {
+    color: #666666;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   AI RESULT DETAIL
+   ========================================================= */
+
+.garage-ai-result {
+    margin-left: 49px;
+    margin-top: 12px;
+    padding: 10px 11px;
+    background: #101010;
+    border: 1px solid #292929;
+    border-radius: 5px;
+}
+
+.garage-ai-result-line {
+    margin: 0;
+    color: #b5b5b5;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.garage-ai-result-line strong {
+    color: #c9ff20;
+    font-weight: 700;
+}
+
+.garage-ai-result-limitations {
+    margin: 7px 0 0;
+    color: #8a6b2f;
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.garage-ai-result-disclaimer {
+    margin: 9px 0 0;
+    padding-top: 8px;
+    border-top: 1px solid #1f1f1f;
+    color: #5f5f5f;
+    font-size: 10px;
+    line-height: 1.45;
+}
+
+.garage-ai-result-unavailable {
+    margin: 0;
+    color: #8a6b2f;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   STATE MESSAGES
+   ========================================================= */
+
+.garage-ai-message {
+    margin: 12px 0 0 49px;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.garage-ai-message-loading {
+    color: #666666;
+}
+
+.garage-ai-message-empty {
+    color: #666666;
+}
+
+.garage-ai-message-error {
+    color: #e0685f;
+}
+
+.garage-ai-message-advisory {
+    padding: 9px 11px;
+    background: #141a06;
+    border: 1px solid #3d4a12;
+    border-radius: 5px;
+    color: #c9ff20;
+}
+
+.garage-ai-retry-button {
+    margin-left: 9px;
+    padding: 3px 9px;
+    background: #181818;
+    border: 1px solid #292929;
+    border-radius: 4px;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.garage-ai-retry-button:hover {
+    border-color: #3a3a3a;
+}
+
+.garage-ai-retry-button:disabled {
+    color: #666666;
+    cursor: not-allowed;
+}
+
 
 /* =========================================================
    DISMISS BUTTON
@@ -281,6 +451,26 @@
         white-space: normal;
     }
     .garage-ai-actions {
+        margin-left: 47px;
+    }
+    .garage-ai-card-inputs,
+    .garage-ai-result {
+        margin-left: 47px;
+    }
+    .garage-ai-field {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    .garage-ai-field > span {
+        width: auto;
+        min-width: auto;
+    }
+    .garage-ai-select,
+    .garage-ai-textarea {
+        width: 100%;
+    }
+    .garage-ai-message {
         margin-left: 47px;
     }
 }

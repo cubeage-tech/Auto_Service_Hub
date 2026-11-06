@@ -7,6 +7,7 @@ import com.autoservicehub.entity.AuditAction;
 import com.autoservicehub.entity.Supplier;
 import com.autoservicehub.exception.BusinessRuleException;
 import com.autoservicehub.exception.ResourceNotFoundException;
+import com.autoservicehub.repository.PartRepository;
 import com.autoservicehub.repository.PurchaseRepository;
 import com.autoservicehub.repository.SupplierRepository;
 import com.autoservicehub.service.AuditService;
@@ -35,6 +36,7 @@ public class SupplierServiceImpl implements SupplierService {
     private final SupplierRepository repository;
     private final PurchaseRepository purchaseRepository;
     private final PurchaseService purchaseService;
+    private final PartRepository partRepository;
     private final AuditService auditService;
 
     /** Entity name recorded on this module's audit entries. */
@@ -117,6 +119,14 @@ public class SupplierServiceImpl implements SupplierService {
             throw new BusinessRuleException(
                     "Supplier " + existing.getName()
                     + " cannot be deleted because it has purchase history.");
+        }
+
+        // Parts reference their usual supplier. Without this the foreign key
+        // would reject the delete and surface as a 500 instead of a 409.
+        if (partRepository.existsBySupplierId(id)) {
+            throw new BusinessRuleException(
+                    "Supplier " + existing.getName()
+                    + " cannot be deleted because parts still reference it.");
         }
 
         repository.delete(existing);

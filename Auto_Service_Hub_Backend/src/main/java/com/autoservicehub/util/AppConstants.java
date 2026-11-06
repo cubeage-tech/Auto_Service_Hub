@@ -16,7 +16,6 @@ public final class AppConstants {
     public static final String JOB_STATUS_DELIVERED = "DELIVERED";
 
     // Roles (SRS 13)
-    public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_OWNER = "OWNER";
     public static final String ROLE_MANAGER = "MANAGER";
     public static final String ROLE_SERVICE_ADVISOR = "SERVICE_ADVISOR";

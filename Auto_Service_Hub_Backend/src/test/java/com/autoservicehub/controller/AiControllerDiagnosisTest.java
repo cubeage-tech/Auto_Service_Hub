@@ -274,7 +274,7 @@ class AiControllerDiagnosisTest {
     // ── CT8: providerUnavailable=true flows through → 200 ─────────────────
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "OWNER")
     @DisplayName("CT8 — providerUnavailable=true flows through to client response")
     void ct8_providerUnavailable_flaggedInResponse() throws Exception {
         DiagnosisResponseDTO unavailable = DiagnosisResponseDTO.builder()

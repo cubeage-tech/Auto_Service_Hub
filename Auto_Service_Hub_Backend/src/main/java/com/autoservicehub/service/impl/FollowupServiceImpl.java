@@ -59,14 +59,27 @@ public class FollowupServiceImpl implements FollowupService {
             List.of(STATUS_PENDING, STATUS_IN_PROGRESS, STATUS_COMPLETED, STATUS_CANCELLED);
 
     /**
+     * The garage-owner role as it is spelled in the {@code roles} table by a
+     * deployment that does not store it as {@link AppConstants#ROLE_OWNER}.
+     *
+     * <p>A literal rather than an {@code AppConstants} entry because it names a
+     * stored row, not a role the code reasons about — and the lookup below
+     * matches the database name, so the stored spelling is the one it needs.
+     * Listing both spellings means the owner is notified either way; neither
+     * replaces the other.
+     */
+    private static final String OWNER_STORED_ALIAS = "GARAGE_OWNER";
+
+    /**
      * Roles that handle customer contact, and so are notified when a follow-up
-     * falls due. Taken from the project's existing role constants.
+     * falls due. Taken from the project's existing role constants, plus the
+     * garage-owner spelling above.
      */
     private static final List<String> NOTIFY_ROLES = List.of(
             AppConstants.ROLE_SERVICE_ADVISOR,
             AppConstants.ROLE_MANAGER,
             AppConstants.ROLE_OWNER,
-            AppConstants.ROLE_ADMIN);
+            OWNER_STORED_ALIAS);
 
     private final FollowupRepository        repository;
     private final CustomerRepository       customerRepository;

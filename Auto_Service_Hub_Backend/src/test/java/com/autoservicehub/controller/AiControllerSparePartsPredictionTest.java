@@ -312,7 +312,7 @@ class AiControllerSparePartsPredictionTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "OWNER")
     @DisplayName("CT12 — response body leaks no API key or provider internals")
     void ct12_noSensitiveInformationLeakage() throws Exception {
         when(sparePartsPredictionService.predict(any()))

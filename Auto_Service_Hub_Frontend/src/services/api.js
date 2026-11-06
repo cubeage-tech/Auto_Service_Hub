@@ -18,7 +18,8 @@ async function request(path, { method = "GET", body, params, headers = {} } = {}
     });
   }
 
-  const token = localStorage.getItem("accessToken");
+  const token =
+    sessionStorage.getItem("accessToken") || localStorage.getItem("accessToken");
   const requestHeaders = new Headers(headers);
   requestHeaders.set("Accept", "application/json");
   if (token) requestHeaders.set("Authorization", `Bearer ${token}`);
@@ -36,6 +37,9 @@ async function request(path, { method = "GET", body, params, headers = {} } = {}
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("refreshToken");
+    sessionStorage.removeItem("user");
     window.dispatchEvent(new Event("autoservicehub:unauthorized"));
   }
 
@@ -100,3 +104,12 @@ export function getErrorMessage(error, fallback = "The request could not be comp
   if (error instanceof Error && error.message) return error.message;
   return fallback;
 }
+
+// The merge kept both service layers. The .jsx services (aiService,
+// appointmentService, billingService, customerService, dashboardService,
+// inventoryService, jobCardService, mechanicService, packageService,
+// reportService, userService, vehicleService, authService) were written
+// against api.jsx and import from "./api" - which Vite resolves to this
+// module. Re-export the api.jsx request helpers so those modules keep
+// working without touching every call site.
+export { fetchWithAuth, post } from "./api.jsx";

@@ -145,7 +145,7 @@ function GarageOwnerLogin() {
 
           <form
             className="garage-login-form"
-            onSubmit={(event) => submit(event, email, password)}
+            onSubmit={(event) => submit(event, email, password, rememberMe)}
           >
             {error && <p role="alert" className="login-error">{error}</p>}
 
@@ -186,6 +186,8 @@ function GarageOwnerLogin() {
                 placeholder="••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
                 autoComplete="current-password"
                 required
               />

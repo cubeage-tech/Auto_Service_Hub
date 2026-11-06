@@ -275,7 +275,7 @@ class AiControllerRepairCostEstimationTest {
     // ── CT10: Provider unavailable → 200, no figure invented ─────────────
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "OWNER")
     @DisplayName("CT10 — providerUnavailable → 200 with null total and human review required")
     void ct10_providerUnavailable_flaggedInResponse() throws Exception {
         RepairCostEstimationResponseDTO unavailable = RepairCostEstimationResponseDTO.builder()

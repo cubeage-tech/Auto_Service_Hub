@@ -4,8 +4,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ROLES (SRS v1.0 Roles & Permissions)
 -- ============================================================
 INSERT INTO roles (created_at, updated_at, name) VALUES
-(NOW(6), NOW(6), 'ADMIN'),
-(NOW(6), NOW(6), 'OWNER'),
+(NOW(6), NOW(6), 'GARAGE_OWNER'),
 (NOW(6), NOW(6), 'MANAGER'),
 (NOW(6), NOW(6), 'SERVICE_ADVISOR'),
 (NOW(6), NOW(6), 'MECHANIC'),
@@ -14,17 +13,32 @@ INSERT INTO roles (created_at, updated_at, name) VALUES
 (NOW(6), NOW(6), 'CUSTOMER');
 
 -- ============================================================
--- Development-only test users (password = "password123")
+-- USERS  (password = "password123" BCrypt)
+-- There is no ADMIN account: the ADMIN role was removed, so every account
+-- below carries one of the roles seeded above. Each user's role_id is
+-- resolved by matching the role NAME of the account against a `roles` row,
+-- instead of a hard-coded numeric id, so the assignments stay correct even
+-- when the role rows receive different auto-generated ids.
+-- The `roles` insert above must therefore run first (it does, earlier in
+-- this file); a name listed below with no matching role row is skipped
+-- rather than being mapped onto some other role.
 -- ============================================================
-INSERT INTO users (created_at, updated_at, username, password_hash, active, full_name, role_id) VALUES
-(NOW(6), NOW(6), 'admin',      '$2a$10$me8od/ZdSiJYspdk19B3oege42F55MQfwXXNQjcl1ebSvUDS4LlBy', 1, 'Admin User', 1),
-(NOW(6), NOW(6), 'owner',      '$2a$10$me8od/ZdSiJYspdk19B3oege42F55MQfwXXNQjcl1ebSvUDS4LlBy', 1, 'Garage Owner', 2),
-(NOW(6), NOW(6), 'manager',    '$2a$10$me8od/ZdSiJYspdk19B3oege42F55MQfwXXNQjcl1ebSvUDS4LlBy', 1, 'Operations Manager', 3),
-(NOW(6), NOW(6), 'advisor',    '$2a$10$me8od/ZdSiJYspdk19B3oege42F55MQfwXXNQjcl1ebSvUDS4LlBy', 1, 'Service Advisor', 4),
-(NOW(6), NOW(6), 'mechanic1',  '$2a$10$me8od/ZdSiJYspdk19B3oege42F55MQfwXXNQjcl1ebSvUDS4LlBy', 1, 'Ravi Kumar', 5),
-(NOW(6), NOW(6), 'inventory1', '$2a$10$me8od/ZdSiJYspdk19B3oege42F55MQfwXXNQjcl1ebSvUDS4LlBy', 1, 'Inventory Manager', 6),
-(NOW(6), NOW(6), 'billing1',   '$2a$10$me8od/ZdSiJYspdk19B3oege42F55MQfwXXNQjcl1ebSvUDS4LlBy', 1, 'Billing User', 7),
-(NOW(6), NOW(6), 'customer1',  '$2a$10$me8od/ZdSiJYspdk19B3oege42F55MQfwXXNQjcl1ebSvUDS4LlBy', 1, 'Customer Portal User', 8);
+INSERT INTO users (created_at, updated_at, username, password_hash, active, full_name, role_id)
+SELECT NOW(6), NOW(6), u.username, u.password_hash, u.active, u.full_name, r.id
+FROM (
+              SELECT 'owner'      AS username,
+                     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh7y' AS password_hash,
+                     1 AS active,
+                     'Garage Owner' AS full_name,
+                     'GARAGE_OWNER' AS role_name
+    UNION ALL SELECT 'manager',    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh7y', 1, 'Operations Manager',   'MANAGER'
+    UNION ALL SELECT 'advisor',    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh7y', 1, 'Service Advisor',      'SERVICE_ADVISOR'
+    UNION ALL SELECT 'mechanic1',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh7y', 1, 'Ravi Kumar',           'MECHANIC'
+    UNION ALL SELECT 'inventory1', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh7y', 1, 'Inventory Manager',    'INVENTORY_MANAGER'
+    UNION ALL SELECT 'billing1',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh7y', 1, 'Billing User',         'BILLING_USER'
+    UNION ALL SELECT 'customer1',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh7y', 1, 'Customer Portal User', 'CUSTOMER'
+) AS u
+JOIN roles r ON r.name = u.role_name;
 
 -- ============================================================
 -- CUSTOMERS

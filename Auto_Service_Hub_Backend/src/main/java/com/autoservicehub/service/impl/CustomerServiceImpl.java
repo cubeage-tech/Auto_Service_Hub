@@ -42,6 +42,7 @@ public class CustomerServiceImpl implements CustomerService {
                     "A customer with phone '" + request.getPhone() + "' already exists.");
         }
         Customer entity = new Customer();
+        entity.setLoyaltyTier("Bronze");
         mapToEntity(request, entity);
         return toResponse(repository.save(entity));
     }
@@ -165,6 +166,8 @@ public class CustomerServiceImpl implements CustomerService {
         dto.setEmail(customer.getEmail());
         dto.setAddress(customer.getAddress());
         dto.setStatus(customer.getStatus());
+        dto.setLoyaltyTier(customer.getLoyaltyTier());
+        dto.setNotes(customer.getNotes());
         dto.setCreatedAt(customer.getCreatedAt());
 
         // Vehicles
@@ -233,6 +236,13 @@ public class CustomerServiceImpl implements CustomerService {
         e.setEmail(r.getEmail());
         e.setAddress(r.getAddress());
         e.setStatus(r.getStatus() != null ? r.getStatus() : "ACTIVE");
+        if (r.getLoyaltyTier() != null) {
+            e.setLoyaltyTier(canonicalLoyaltyTier(r.getLoyaltyTier()));
+        }
+        if (r.getNotes() != null) {
+            String notes = r.getNotes().trim();
+            e.setNotes(notes.isEmpty() ? null : notes);
+        }
     }
 
     private CustomerResponseDTO toResponse(Customer e) {
@@ -243,9 +253,21 @@ public class CustomerServiceImpl implements CustomerService {
         dto.setEmail(e.getEmail());
         dto.setAddress(e.getAddress());
         dto.setStatus(e.getStatus());
+        dto.setLoyaltyTier(e.getLoyaltyTier());
+        dto.setNotes(e.getNotes());
         dto.setCreatedAt(e.getCreatedAt());
         dto.setUpdatedAt(e.getUpdatedAt());
         return dto;
+    }
+
+    private String canonicalLoyaltyTier(String loyaltyTier) {
+        return switch (loyaltyTier.trim().toLowerCase(java.util.Locale.ROOT)) {
+            case "bronze" -> "Bronze";
+            case "silver" -> "Silver";
+            case "gold" -> "Gold";
+            case "platinum" -> "Platinum";
+            default -> throw new IllegalArgumentException("Unsupported loyalty tier");
+        };
     }
 
     private VehicleResponseDTO vehicleToResponse(Vehicle e) {
@@ -254,6 +276,8 @@ public class CustomerServiceImpl implements CustomerService {
         dto.setRegistrationNo(e.getRegistrationNo());
         dto.setMake(e.getMake());
         dto.setModel(e.getModel());
+        dto.setFuelType(e.getFuelType());
+        dto.setStatus(e.getStatus());
         dto.setVariant(e.getVariant());
         dto.setYear(e.getYear());
         dto.setEngineNo(e.getEngineNo());

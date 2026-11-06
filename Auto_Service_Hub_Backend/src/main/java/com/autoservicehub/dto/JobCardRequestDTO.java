@@ -22,6 +22,16 @@ public class JobCardRequestDTO {
      */
     private Long inspectionId;
 
+    /**
+     * Optional — the applied service package this job is carried out under.
+     *
+     * <p>When supplied, the application must belong to both {@code vehicleId}
+     * and {@code customerId}, so a package applied to somebody else's car can
+     * never be attached. Omitted, the job card's existing link is left alone,
+     * which is what keeps an ordinary edit from silently dropping it.
+     */
+    private Long packageApplicationId;
+
     private Long mechanicId;
     private Long appointmentId;
     @NotBlank

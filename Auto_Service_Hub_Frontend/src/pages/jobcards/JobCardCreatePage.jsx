@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./JobCardCreatePage.css";
 
 const JOB_CARDS_STORAGE_KEY = "auto_service_hub_jobcards";
 const LEGACY_JOB_CARDS_STORAGE_KEY = "smartgarage_jobcards";

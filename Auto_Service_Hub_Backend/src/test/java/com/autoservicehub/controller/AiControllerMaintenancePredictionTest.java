@@ -288,7 +288,7 @@ class AiControllerMaintenancePredictionTest {
     // ── CT10: No sensitive information leakage ────────────────────────────
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "OWNER")
     @DisplayName("CT10 — response body leaks no API key, token or provider internals")
     void ct10_noSensitiveInformationLeakage() throws Exception {
         when(maintenancePredictionService.predict(any()))

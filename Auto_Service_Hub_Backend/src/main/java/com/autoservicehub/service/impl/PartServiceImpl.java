@@ -3,8 +3,10 @@ package com.autoservicehub.service.impl;
 import com.autoservicehub.dto.PartRequestDTO;
 import com.autoservicehub.dto.PartResponseDTO;
 import com.autoservicehub.entity.Part;
+import com.autoservicehub.entity.Supplier;
 import com.autoservicehub.exception.ResourceNotFoundException;
 import com.autoservicehub.repository.PartRepository;
+import com.autoservicehub.repository.SupplierRepository;
 import com.autoservicehub.service.PartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PartServiceImpl implements PartService {
 
     private final PartRepository repository;
+    private final SupplierRepository supplierRepository;
 
     @Override
     public PartResponseDTO create(PartRequestDTO request) {
@@ -80,6 +83,36 @@ public class PartServiceImpl implements PartService {
         e.setPurchasePrice(r.getPurchasePrice());
         e.setStockQty(r.getStockQty() != null ? r.getStockQty() : 0);
         e.setMinStock(r.getMinStock() != null ? r.getMinStock() : 0);
+        e.setCategory(r.getCategory());
+        e.setStorageLocation(trimToNull(r.getStorageLocation()));
+        e.setHsnCode(trimToNull(r.getHsnCode()));
+        e.setSupplier(resolveSupplier(r.getSupplierId()));
+    }
+
+    /**
+     * Resolves a supplier id to a managed entity.
+     *
+     * <p>An absent id clears the supplier — an update that omits the field
+     * detaches the part rather than silently keeping a stale reference the
+     * caller can no longer see. A supplied id that does not exist is a 404
+     * rather than a silent drop, so a client working from a stale supplier list
+     * finds out instead of saving an unassigned part.
+     */
+    private Supplier resolveSupplier(Long supplierId) {
+        if (supplierId == null) {
+            return null;
+        }
+        return supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new ResourceNotFoundException("Supplier not found: " + supplierId));
+    }
+
+    /** Blank optional fields are stored as null rather than as an empty string. */
+    private String trimToNull(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     private PartResponseDTO toResponse(Part e) {
@@ -94,6 +127,15 @@ public class PartServiceImpl implements PartService {
         dto.setMinStock(e.getMinStock());
         dto.setLowStock(e.getStockQty() != null && e.getMinStock() != null
                 && e.getStockQty() <= e.getMinStock());
+        dto.setCategory(e.getCategory());
+        // Read inside the service's transaction, so touching the lazy
+        // supplier proxy here does not trigger a query per listed part.
+        if (e.getSupplier() != null) {
+            dto.setSupplierId(e.getSupplier().getId());
+            dto.setSupplierName(e.getSupplier().getName());
+        }
+        dto.setStorageLocation(e.getStorageLocation());
+        dto.setHsnCode(e.getHsnCode());
         dto.setCreatedAt(e.getCreatedAt());
         dto.setUpdatedAt(e.getUpdatedAt());
         return dto;

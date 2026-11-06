@@ -12,6 +12,8 @@ public class VehicleResponseDTO {
     private String registrationNo;
     private String make;
     private String model;
+    private String fuelType;
+    private String status;
     private String variant;
     private Integer year;
     private String engineNo;
@@ -21,6 +23,7 @@ public class VehicleResponseDTO {
     private LocalDate warrantyExpiry;
     private Long customerId;
     private String customerName;
+    private String notes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

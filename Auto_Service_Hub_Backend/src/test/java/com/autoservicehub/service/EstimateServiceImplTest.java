@@ -11,6 +11,7 @@ import com.autoservicehub.exception.ResourceNotFoundException;
 import com.autoservicehub.repository.EstimateItemRepository;
 import com.autoservicehub.repository.EstimateRepository;
 import com.autoservicehub.repository.JobCardRepository;
+import com.autoservicehub.repository.InvoiceRepository;
 import com.autoservicehub.service.impl.EstimateServiceImpl;
 import com.autoservicehub.util.BillingCalculator;
 import org.junit.jupiter.api.DisplayName;
@@ -63,6 +64,7 @@ class EstimateServiceImplTest {
     @Mock EstimateRepository     repository;
     @Mock EstimateItemRepository itemRepository;
     @Mock JobCardRepository      jobCardRepository;
+    @Mock InvoiceRepository      invoiceRepository;
     @Mock AuditService auditService;
 
     /** Real calculator, so the money rules under test are the production ones. */
@@ -378,5 +380,56 @@ class EstimateServiceImplTest {
                 service.listByJobCard(99L, org.springframework.data.domain.PageRequest.of(0, 20)))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("JobCard not found: 99");
+    }
+
+    /* ================================================================
+       Per-document GST rate (gstRate)
+       ================================================================ */
+
+    @Test
+    @DisplayName("E14 — a supplied gstRate is applied, not the configured default")
+    void e14_suppliedGstRate_isApplied() {
+        EstimateRequestDTO req = request();
+        req.setItems(List.of(item("Brake pads", 1, "1000.00")));
+        req.setGstRate(new BigDecimal("12"));
+
+        when(jobCardRepository.findById(55L)).thenReturn(Optional.of(jobCard(55L)));
+        givenPersisted();
+
+        EstimateResponseDTO response = service.create(req);
+
+        assertThat(response.getGstRate()).isEqualByComparingTo("12");
+        assertThat(response.getTax()).isEqualByComparingTo("120.00");
+        assertThat(response.getTotal()).isEqualByComparingTo("1120.00");
+    }
+
+    @Test
+    @DisplayName("E15 — omitting gstRate keeps the configured default")
+    void e15_omittedGstRate_usesDefault() {
+        EstimateRequestDTO req = request();
+        req.setItems(List.of(item("Brake pads", 1, "1000.00")));
+
+        when(jobCardRepository.findById(55L)).thenReturn(Optional.of(jobCard(55L)));
+        givenPersisted();
+
+        EstimateResponseDTO response = service.create(req);
+
+        assertThat(response.getGstRate()).isEqualByComparingTo("18");
+        assertThat(response.getTax()).isEqualByComparingTo("180.00");
+    }
+
+    @Test
+    @DisplayName("E16 — an out-of-range gstRate is rejected")
+    void e16_invalidGstRate_rejected() {
+        EstimateRequestDTO req = request();
+        req.setItems(List.of(item("Brake pads", 1, "100.00")));
+        req.setGstRate(new BigDecimal("250"));
+
+        when(jobCardRepository.findById(55L)).thenReturn(Optional.of(jobCard(55L)));
+
+        assertThatThrownBy(() -> service.create(req))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("gstRate must not exceed 100");
+        verify(repository, never()).save(any(Estimate.class));
     }
 }

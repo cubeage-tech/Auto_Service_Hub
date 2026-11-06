@@ -59,7 +59,7 @@ export default function ServiceAdvisorLogin() {
           </div>
 
           {/* Form Actions */}
-          <form className="sa-login-form" onSubmit={(event) => submit(event, email, password)}>
+          <form className="sa-login-form" onSubmit={(event) => submit(event, email, password, rememberMe)}>
             {error && <p role="alert" className="login-error">{error}</p>}
             <div className="sa-login-title-group">
               <h2 className="sa-form-title">SIGN IN</h2>

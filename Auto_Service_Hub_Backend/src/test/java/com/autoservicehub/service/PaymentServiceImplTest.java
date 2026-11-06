@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -59,6 +61,14 @@ import static org.mockito.Mockito.when;
  * W12 payment history for an unknown invoice → ResourceNotFoundException
  * W13 deleting a payment restores the invoice status
  * W14 amount is rounded to money scale
+ *
+ * PM1 every supported mode (UPI/CASH/CARD/BANK_TRANSFER) is accepted and stored
+ * PM2 a mode is case-insensitive and trimmed to its stored constant
+ * PM3 PAY_LATER is refused as a payment — nothing saved, invoice stays PENDING
+ * PM4 every spelling of Pay Later is refused
+ * PM5 an unknown mode is refused, naming the supported ones
+ * PM6 an absent mode is still accepted (older clients sent none)
+ * PM7 updating a payment to PAY_LATER is refused
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -429,5 +439,118 @@ class PaymentServiceImplTest {
 
         // PAID still arrives through the payment flow, never from a client status.
         assertThat(inv.getStatus()).isEqualTo(PaymentServiceImpl.INVOICE_STATUS_PAID);
+    }
+
+    // ── Payment mode (the Figma dropdown) ───────────────────────────────────
+
+    @ParameterizedTest(name = "mode {0} is accepted and stored")
+    @ValueSource(strings = {"UPI", "CASH", "CARD", "BANK_TRANSFER"})
+    @DisplayName("PM1 — each supported payment mode is stored on the payment row")
+    void pm1_supportedModes_acceptedAndStored(String mode) {
+        given(invoice(42L, "PENDING", "1000.00"), "0");
+
+        ArgumentCaptor<Payment> captor = ArgumentCaptor.forClass(Payment.class);
+        PaymentRequestDTO req = request("100.00");
+        req.setMode(mode);
+        service.create(req);
+        verify(repository).save(captor.capture());
+
+        assertThat(captor.getValue().getMode()).isEqualTo(mode);
+    }
+
+    @Test
+    @DisplayName("PM2 — a mode is normalised to its stored constant regardless of case")
+    void pm2_modeCaseInsensitive() {
+        given(invoice(42L, "PENDING", "1000.00"), "0");
+
+        ArgumentCaptor<Payment> captor = ArgumentCaptor.forClass(Payment.class);
+        PaymentRequestDTO req = request("100.00");
+        req.setMode("  bank_transfer  ");
+        service.create(req);
+        verify(repository).save(captor.capture());
+
+        // Trimmed and upper-cased, so "Payments by mode" cannot end up with
+        // "Bank Transfer" and "BANK_TRANSFER" as two separate buckets.
+        assertThat(captor.getValue().getMode()).isEqualTo("BANK_TRANSFER");
+    }
+
+    @Test
+    @DisplayName("PM3 — PAY_LATER is refused, so no payment is recorded")
+    void pm3_payLaterRefused_noPaymentSaved() {
+        Invoice inv = invoice(42L, "PENDING", "1000.00");
+        given(inv, "0");
+
+        PaymentRequestDTO req = request("1000.00");
+        req.setMode("PAY_LATER");
+
+        assertThatThrownBy(() -> service.create(req))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("PAY_LATER is not a payment mode");
+
+        verify(repository, never()).save(any(Payment.class));
+        // The invoice must be untouched: still PENDING, nothing paid.
+        assertThat(inv.getStatus()).isEqualTo(PaymentServiceImpl.INVOICE_STATUS_PENDING);
+        assertThat(inv.getStatus()).isNotEqualTo(PaymentServiceImpl.INVOICE_STATUS_PAID);
+    }
+
+    @ParameterizedTest(name = "alias {0} is refused as a payment")
+    @ValueSource(strings = {"PAY_LATER", "Pay Later", "paylater", "DEFERRED", "CREDIT"})
+    @DisplayName("PM4 — every spelling of Pay Later is refused as a payment")
+    void pm4_payLaterAliasesRefused(String alias) {
+        given(invoice(42L, "PENDING", "1000.00"), "0");
+
+        PaymentRequestDTO req = request("1000.00");
+        req.setMode(alias);
+
+        assertThatThrownBy(() -> service.create(req))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("not a payment mode");
+
+        verify(repository, never()).save(any(Payment.class));
+    }
+
+    @Test
+    @DisplayName("PM5 — a genuinely unknown mode is refused, naming the supported ones")
+    void pm5_unknownModeRefused() {
+        given(invoice(42L, "PENDING", "1000.00"), "0");
+
+        PaymentRequestDTO req = request("100.00");
+        req.setMode("CHEQUE");
+
+        assertThatThrownBy(() -> service.create(req))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("Unsupported payment mode")
+                .hasMessageContaining("UPI, CASH, CARD, BANK_TRANSFER");
+
+        verify(repository, never()).save(any(Payment.class));
+    }
+
+    @Test
+    @DisplayName("PM6 — an absent mode is still accepted, as older clients sent none")
+    void pm6_absentModeAccepted() {
+        given(invoice(42L, "PENDING", "1000.00"), "0");
+
+        ArgumentCaptor<Payment> captor = ArgumentCaptor.forClass(Payment.class);
+        service.create(request("100.00"));
+        verify(repository).save(captor.capture());
+
+        assertThat(captor.getValue().getMode()).isNull();
+    }
+
+    @Test
+    @DisplayName("PM7 — updating a payment to PAY_LATER is refused and saves nothing")
+    void pm7_updateToPayLaterRefused() {
+        Invoice inv = invoice(42L, "PENDING", "1000.00");
+        given(inv, "0");
+        when(repository.findById(100L)).thenReturn(Optional.of(new Payment()));
+
+        PaymentRequestDTO req = request("100.00");
+        req.setMode("PAY_LATER");
+
+        assertThatThrownBy(() -> service.update(100L, req))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("not a payment mode");
+
+        verify(repository, never()).save(any(Payment.class));
     }
 }

@@ -4,7 +4,7 @@ import { jobCardsApi } from "../../services/resources";
 import { getErrorMessage } from "../../services/api";
 import "./JobCardDetailsPage.css";
 
-function JobCardDetailsPage() {
+export default function JobCardDetailsPage() {
   const { jobId } = useParams();
   const [job, setJob] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -85,5 +85,3 @@ function JobCardDetailsPage() {
     </main>
   );
 }
-
-export default JobCardDetailsPage;

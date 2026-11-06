@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
  * audit trail that can be edited is not evidence. Adding a delete here would
  * defeat the purpose of the table.
  *
- * <p>Restricted to ADMIN, OWNER and MANAGER. Workshop roles (mechanics, service
+ * <p>Restricted to OWNER and MANAGER. Workshop roles (mechanics, service
  * advisors, inventory staff, billing users) are deliberately excluded: the trail
  * records who refused or deleted what across the whole business, which is
  * management information and not something every employee should be able to
@@ -49,7 +49,7 @@ public class AuditLogController {
      * day includes that day whole.
      */
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER')")
     public ApiResponse<Page<AuditLogResponseDTO>> list(
             @RequestParam(required = false) String entityName,
             @RequestParam(required = false) String entityId,

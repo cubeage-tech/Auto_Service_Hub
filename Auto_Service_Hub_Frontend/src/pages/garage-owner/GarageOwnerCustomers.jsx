@@ -1,18 +1,16 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import { customersApi } from "../../services/resources";
-import { getErrorMessage } from "../../services/api";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { createCustomer, getCustomers } from "../../services/customerService";
 import "./GarageOwnerCustomers.css";
 
 function GarageOwnerCustomers() {
-  const { user } = useContext(AuthContext);
-  const isAdmin = user?.role === "ADMIN";
+  const [customers, setCustomers] = useState([]);
   const [search, setSearch] = useState("");
   const [showNewCustomer, setShowNewCustomer] = useState(false);
-  const [customers, setCustomers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [saving, setSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+  const [loadError, setLoadError] = useState("");
+  const [createError, setCreateError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -22,14 +20,53 @@ function GarageOwnerCustomers() {
     address: "",
     city: "",
     pincode: "",
+    loyaltyTier: "Bronze",
+    notes: "",
   });
 
-  useEffect(() => {
-    customersApi.list()
-      .then(setCustomers)
-      .catch((requestError) => setError(getErrorMessage(requestError)))
-      .finally(() => setLoading(false));
+  const loadCustomers = useCallback(async ({
+    showLoading = true,
+    savedCustomer = null,
+  } = {}) => {
+    if (showLoading) {
+      setIsLoading(true);
+    }
+    setLoadError("");
+
+    try {
+      const fetchedCustomers = await getCustomers();
+      const refreshed = [...fetchedCustomers];
+      if (
+        savedCustomer?.id != null &&
+        !refreshed.some((customer) => String(customer.id) === String(savedCustomer.id))
+      ) {
+        refreshed.unshift(savedCustomer);
+      }
+      setCustomers([
+        ...new Map(refreshed.map((customer) => [String(customer.id), customer])).values(),
+      ]);
+      return true;
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : "Unable to load customers.");
+      if (savedCustomer?.id != null) {
+        setCustomers((current) => [
+          savedCustomer,
+          ...current.filter(
+            (customer) => String(customer.id) !== String(savedCustomer.id)
+          ),
+        ]);
+      }
+      return false;
+    } finally {
+      if (showLoading) {
+        setIsLoading(false);
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    void loadCustomers();
+  }, [loadCustomers]);
 
   const filteredCustomers = useMemo(() => {
     const value = search.trim().toLowerCase();
@@ -39,10 +76,14 @@ function GarageOwnerCustomers() {
     }
 
     return customers.filter((customer) => {
-      return [customer.id, customer.name, customer.phone, customer.email]
-        .some((field) => String(field || "").toLowerCase().includes(value));
+      return (
+        String(customer.id ?? "").toLowerCase().includes(value) ||
+        String(customer.name ?? "").toLowerCase().includes(value) ||
+        String(customer.phone ?? "").toLowerCase().includes(value) ||
+        String(customer.email ?? "").toLowerCase().includes(value)
+      );
     });
-  }, [search, customers]);
+  }, [customers, search]);
 
   /* =========================================================
      FORM HANDLER
@@ -51,6 +92,7 @@ function GarageOwnerCustomers() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    setCreateError("");
     setFormData((previous) => ({
       ...previous,
       [name]: value,
@@ -64,36 +106,45 @@ function GarageOwnerCustomers() {
   const handleCreateCustomer = async (e) => {
     e.preventDefault();
 
+    if (isCreating) {
+      return;
+    }
+
     if (
       !formData.firstName.trim() ||
       !formData.lastName.trim() ||
       !formData.phone.trim() ||
       !formData.email.trim()
     ) {
-      alert("Please fill in all required fields.");
+      setCreateError("Please fill in all required fields.");
       return;
     }
 
-    setError("");
-    setSaving(true);
+    setIsCreating(true);
+    setCreateError("");
+    setSuccessMessage("");
+
+    const address = [formData.address, formData.city, formData.pincode]
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .join(", ");
+
     try {
-      const created = await customersApi.create({
+      const savedCustomer = await createCustomer({
         name: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
         phone: formData.phone.trim(),
         email: formData.email.trim(),
-        address: [formData.address.trim(), formData.city.trim(), formData.pincode.trim()]
-          .filter(Boolean)
-          .join(", "),
+        address,
         status: "ACTIVE",
+        loyaltyTier: formData.loyaltyTier,
+        notes: formData.notes.trim(),
       });
-      const customer = {
-        id: created.id,
-        name: created.name,
-        email: created.email,
-        phone: formData.phone.trim(),
-        status: "ACTIVE",
-      };
-      setCustomers((existing) => [customer, ...existing]);
+
+      setSearch("");
+      setSuccessMessage(`${savedCustomer.name || "Customer"} created successfully.`);
+      setShowNewCustomer(false);
+      await loadCustomers({ showLoading: false, savedCustomer });
+
       setFormData({
         firstName: "",
         lastName: "",
@@ -102,12 +153,14 @@ function GarageOwnerCustomers() {
         address: "",
         city: "",
         pincode: "",
+        loyaltyTier: "Bronze",
+        notes: "",
       });
-      setShowNewCustomer(false);
-    } catch (requestError) {
-      setError(getErrorMessage(requestError, "Could not create customer."));
+
+    } catch (error) {
+      setCreateError(error instanceof Error ? error.message : "Unable to create customer.");
     } finally {
-      setSaving(false);
+      setIsCreating(false);
     }
   };
 
@@ -116,17 +169,9 @@ function GarageOwnerCustomers() {
   ========================================================= */
 
   const closeModal = () => {
-    setShowNewCustomer(false);
-    setError("");
-    setFormData({
-      firstName: "",
-      lastName: "",
-      phone: "",
-      email: "",
-      address: "",
-      city: "",
-      pincode: "",
-    });
+    if (!isCreating) {
+      setShowNewCustomer(false);
+    }
   };
 
   return (
@@ -143,15 +188,33 @@ function GarageOwnerCustomers() {
             CUSTOMERS
           </h1>
 
-          {isAdmin && <button
+          <button
             type="button"
             className="garage-customers-new-button"
-            onClick={() => setShowNewCustomer(true)}
+            onClick={() => {
+              setCreateError("");
+              setShowNewCustomer(true);
+            }}
           >
             + NEW CUSTOMER
-          </button>}
+          </button>
 
         </div>
+
+        {successMessage && (
+          <div className="customers-feedback customers-feedback-success" role="status">
+            {successMessage}
+          </div>
+        )}
+
+        {loadError && (
+          <div className="customers-feedback customers-feedback-error" role="alert">
+            <span>{loadError}</span>
+            <button type="button" onClick={() => void loadCustomers()}>
+              Retry
+            </button>
+          </div>
+        )}
 
 
         {/* =====================================================
@@ -192,55 +255,93 @@ function GarageOwnerCustomers() {
                 <th>NAME</th>
                 <th>PHONE</th>
                 <th>EMAIL</th>
-                <th>STATUS</th>
+                <th>VEHICLES</th>
+                <th>VISITS</th>
+                <th>LAST VISIT</th>
+                <th>LOYALTY</th>
+                <th>BALANCE</th>
               </tr>
             </thead>
 
             <tbody>
-
-              {loading && <tr><td colSpan="5">Loading customers…</td></tr>}
-              {!loading && error && <tr><td colSpan="5" role="alert">{error}</td></tr>}
-
-              {filteredCustomers.map((customer) => (
-                <tr key={customer.id}>
+              {isLoading && customers.length === 0 ? (
+                <tr>
+                  <td className="customer-table-state" colSpan={9}>Loading customers…</td>
+                </tr>
+              ) : filteredCustomers.length > 0 ? (
+                filteredCustomers.map((customer) => (
+                <tr key={customer.id ?? `${customer.phone}-${customer.name}`}>
 
                   <td>
                     <span className="customer-id">
-                      {customer.id}
+                      {customer.id ?? "—"}
                     </span>
                   </td>
 
                   <td>
-                    <span className="customer-name">
-                      {customer.name}
+                    <span className="customer-name-cell">
+                      <span className="customer-name">{customer.name || "—"}</span>
+                      {customer.notes && (
+                        <span className="customer-notes" title={customer.notes}>
+                          {customer.notes}
+                        </span>
+                      )}
                     </span>
                   </td>
 
                   <td>
                     <span className="customer-phone">
-                      {customer.phone}
+                      {customer.phone || "—"}
                     </span>
                   </td>
 
                   <td>
                     <span className="customer-email">
-                      {customer.email}
+                      {customer.email || "—"}
                     </span>
                   </td>
 
-                  <td>{customer.status || "—"}</td>
-                </tr>
-              ))}
+                  <td className="customer-number">
+                    —
+                  </td>
 
+                  <td className="customer-number">
+                    —
+                  </td>
+
+                  <td>
+                    <span className="customer-date">
+                      —
+                    </span>
+                  </td>
+
+                  <td>
+                    <span className="customer-loyalty">
+                      {customer.loyaltyTier || "—"}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span className="customer-balance">—</span>
+                  </td>
+
+                </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="customer-table-state" colSpan={9}>
+                    {loadError
+                      ? "Customers could not be loaded."
+                      : search
+                        ? "No customers match your search."
+                        : "No customers found."}
+                  </td>
+                </tr>
+              )}
             </tbody>
 
           </table>
 
-          {!loading && !error && filteredCustomers.length === 0 && (
-            <div className="no-customers">
-              No customers found.
-            </div>
-          )}
         </div>
 
       </div>
@@ -250,11 +351,11 @@ function GarageOwnerCustomers() {
           NEW CUSTOMER MODAL
       ========================================================= */}
 
-      {isAdmin && showNewCustomer && (
+      {showNewCustomer && (
         <div
           className="garage-customer-modal-overlay"
           onMouseDown={(e) => {
-            if (e.target === e.currentTarget) {
+            if (e.target === e.currentTarget && !isCreating) {
               closeModal();
             }
           }}
@@ -281,7 +382,6 @@ function GarageOwnerCustomers() {
 
             </div>
 
-            {error && <p role="alert" className="login-error">{error}</p>}
 
             {/* MODAL BODY */}
 
@@ -289,6 +389,8 @@ function GarageOwnerCustomers() {
               className="garage-customer-modal-form"
               onSubmit={handleCreateCustomer}
             >
+
+              <div className="garage-customer-form-scroll">
 
               {/* FIRST + LAST NAME */}
 
@@ -430,6 +532,56 @@ function GarageOwnerCustomers() {
 
               </div>
 
+              <div className="garage-customer-form-group">
+
+                <label htmlFor="customer-loyalty-tier">
+                  LOYALTY TIER
+                </label>
+
+                <select
+                  id="customer-loyalty-tier"
+                  name="loyaltyTier"
+                  value={formData.loyaltyTier}
+                  onChange={handleChange}
+                >
+                  <option value="Bronze">Bronze</option>
+                  <option value="Silver">Silver</option>
+                  <option value="Gold">Gold</option>
+                  <option value="Platinum">Platinum</option>
+                </select>
+
+              </div>
+
+              <div className="garage-customer-form-group">
+
+                <label htmlFor="customer-notes">
+                  NOTES / PREFERENCES
+                </label>
+
+                <textarea
+                  id="customer-notes"
+                  name="notes"
+                  placeholder="VIP customer, prefers weekend appointments..."
+                  value={formData.notes}
+                  onChange={handleChange}
+                  maxLength={2000}
+                  rows="2"
+                />
+
+              </div>
+
+              {createError && (
+                <div className="customers-feedback customers-feedback-error" role="alert">
+                  {createError}
+                </div>
+              )}
+
+              </div>
+
+              {/* DIVIDER */}
+
+              <div className="garage-customer-modal-divider"></div>
+
 
               {/* BUTTONS */}
 
@@ -438,14 +590,16 @@ function GarageOwnerCustomers() {
                 <button
                   type="submit"
                   className="garage-customer-create-button"
+                  disabled={isCreating}
                 >
-                  {saving ? "SAVING..." : "CREATE CUSTOMER RECORD"}
+                  {isCreating ? "CREATING..." : "CREATE CUSTOMER"}
                 </button>
 
                 <button
                   type="button"
                   className="garage-customer-cancel-button"
                   onClick={closeModal}
+                  disabled={isCreating}
                 >
                   Cancel
                 </button>

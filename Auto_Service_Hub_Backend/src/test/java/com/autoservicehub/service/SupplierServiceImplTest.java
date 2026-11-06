@@ -5,6 +5,7 @@ import com.autoservicehub.dto.SupplierResponseDTO;
 import com.autoservicehub.entity.Supplier;
 import com.autoservicehub.exception.BusinessRuleException;
 import com.autoservicehub.exception.ResourceNotFoundException;
+import com.autoservicehub.repository.PartRepository;
 import com.autoservicehub.repository.PurchaseRepository;
 import com.autoservicehub.repository.SupplierRepository;
 import com.autoservicehub.service.impl.SupplierServiceImpl;
@@ -59,6 +60,7 @@ class SupplierServiceImplTest {
 
     @Mock SupplierRepository repository;
     @Mock PurchaseRepository purchaseRepository;
+    @Mock PartRepository     partRepository;
     @Mock PurchaseService   purchaseService;
     @Mock AuditService     auditService;
 
@@ -257,6 +259,33 @@ class SupplierServiceImplTest {
                 .hasMessageContaining("purchase history");
 
         verify(repository, never()).delete(any(Supplier.class));
+    }
+
+    @Test
+    @DisplayName("SU26 — a supplier still referenced by a part cannot be deleted")
+    void su26_deleteReferencedByPart_throws() {
+        when(repository.findById(7L)).thenReturn(Optional.of(supplier(7L, "Bharat Auto")));
+        when(purchaseRepository.existsBySupplierId(7L)).thenReturn(false);
+        when(partRepository.existsBySupplierId(7L)).thenReturn(true);
+
+        // Without this guard the parts.supplier_id FK would fail and surface as a 500.
+        assertThatThrownBy(() -> service.delete(7L))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("parts still reference it");
+
+        verify(repository, never()).delete(any(Supplier.class));
+    }
+
+    @Test
+    @DisplayName("SU27 — a supplier referenced by no part is still deletable")
+    void su27_deleteNotReferencedByPart_removes() {
+        when(repository.findById(7L)).thenReturn(Optional.of(supplier(7L, "Bharat Auto")));
+        when(purchaseRepository.existsBySupplierId(7L)).thenReturn(false);
+        when(partRepository.existsBySupplierId(7L)).thenReturn(false);
+
+        service.delete(7L);
+
+        verify(repository).delete(any(Supplier.class));
     }
 
     // ── SU14 ─────────────────────────────────────────────────────────────

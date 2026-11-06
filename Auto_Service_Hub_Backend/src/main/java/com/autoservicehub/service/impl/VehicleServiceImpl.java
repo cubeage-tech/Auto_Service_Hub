@@ -162,7 +162,16 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     @Transactional(readOnly = true)
     public Page<VehicleResponseDTO> list(Pageable pageable) {
-        return repository.findAll(pageable).map(this::toResponse);
+        return list(pageable, null, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VehicleResponseDTO> list(Pageable pageable, String fuelType, String status) {
+        String normalizedFuelType = normalizeFilter(fuelType);
+        String normalizedStatus = normalizeFilter(status);
+        return repository.findFiltered(normalizedFuelType, normalizedStatus, pageable)
+                .map(this::toResponse);
     }
 
     @Override
@@ -180,6 +189,12 @@ public class VehicleServiceImpl implements VehicleService {
         e.setRegistrationNo(r.getRegistrationNo());
         e.setMake(r.getMake());
         e.setModel(r.getModel());
+        if (r.getFuelType() != null) {
+            e.setFuelType(r.getFuelType().trim().toUpperCase(java.util.Locale.ROOT));
+        }
+        if (r.getStatus() != null) {
+            e.setStatus(r.getStatus().trim().toUpperCase(java.util.Locale.ROOT));
+        }
         e.setVariant(r.getVariant());
         e.setYear(r.getYear());
         e.setEngineNo(r.getEngineNo());
@@ -187,6 +202,19 @@ public class VehicleServiceImpl implements VehicleService {
         e.setMileage(r.getMileage());
         e.setInsuranceExpiry(r.getInsuranceExpiry());
         e.setWarrantyExpiry(r.getWarrantyExpiry());
+        // Notes are optional. Leaving the field out of a request (or sending
+        // only whitespace) clears it, matching how customer notes behave, so an
+        // update that does not mention notes never wipes what is already stored.
+        if (r.getNotes() != null) {
+            String notes = r.getNotes().trim();
+            e.setNotes(notes.isEmpty() ? null : notes);
+        }
+    }
+
+    private String normalizeFilter(String value) {
+        return value == null || value.isBlank()
+                ? null
+                : value.trim().toUpperCase(java.util.Locale.ROOT);
     }
 
     private VehicleResponseDTO toResponse(Vehicle e) {
@@ -195,6 +223,8 @@ public class VehicleServiceImpl implements VehicleService {
         dto.setRegistrationNo(e.getRegistrationNo());
         dto.setMake(e.getMake());
         dto.setModel(e.getModel());
+        dto.setFuelType(e.getFuelType());
+        dto.setStatus(e.getStatus());
         dto.setVariant(e.getVariant());
         dto.setYear(e.getYear());
         dto.setEngineNo(e.getEngineNo());
@@ -206,6 +236,7 @@ public class VehicleServiceImpl implements VehicleService {
             dto.setCustomerId(e.getCustomer().getId());
             dto.setCustomerName(e.getCustomer().getName());
         }
+        dto.setNotes(e.getNotes());
         dto.setCreatedAt(e.getCreatedAt());
         dto.setUpdatedAt(e.getUpdatedAt());
         return dto;

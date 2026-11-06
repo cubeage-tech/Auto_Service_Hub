@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap");
+
 /* =========================================================
    GARAGE OWNER DASHBOARD
    Figma-style dashboard
@@ -5,11 +7,15 @@
 
 .garage-dashboard-page {
     width: 100%;
+    max-width: 100rem;
+    margin-inline: auto;
     min-height: calc(100vh - 59px);
     background: #080909;
     color: #f4f4f4;
-    padding: 26px 24px 35px;
-    font-family: Arial, Helvetica, sans-serif;
+    padding: 0 0 1.25rem;
+    font-family: "Inter", Arial, Helvetica, sans-serif;
+    container-name: garage-dashboard;
+    container-type: inline-size;
 }
 
 
@@ -18,25 +24,26 @@
 ========================================================= */
 
 .garage-dashboard-heading {
-    margin-bottom: 25px;
+    margin-bottom: 1.125rem;
 }
 
 .garage-dashboard-date {
-    color: #b9ff00;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-    margin-bottom: 8px;
+    color: #c9ff20;
+    font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+    font-size: .8125rem;
+    font-weight: 600;
+    letter-spacing: .8px;
+    margin-bottom: .3125rem;
 }
 
 .garage-dashboard-heading h1 {
     margin: 0;
     color: #f4f4f4;
-    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-    font-size: 36px;
-    line-height: 1;
-    font-weight: 900;
-    letter-spacing: -0.4px;
+    font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+    font-size: 2.125rem;
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: .2px;
 }
 
 
@@ -48,41 +55,44 @@
     width: 100%;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: .625rem;
+    margin-bottom: 1rem;
 }
 
 .garage-dashboard-stat-card {
-    min-height: 114px;
+    min-width: 0;
+    min-height: 5.875rem;
     background: #151616;
     border: 1px solid #292b2c;
     border-radius: 6px;
-    padding: 17px;
+    padding: .8125rem .9375rem;
 }
 
 .garage-dashboard-stat-label {
-    color: #777c7e;
-    font-size: 10px;
+    color: #858b86;
+    font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+    font-size: .8125rem;
+    font-weight: 600;
     line-height: 1;
-    letter-spacing: 1.4px;
-    margin-bottom: 11px;
+    letter-spacing: .9px;
+    margin-bottom: .5625rem;
 }
 
 .garage-dashboard-stat-value {
     color: #f3f3f3;
-    font-size: 30px;
+    font-size: 1.625rem;
     line-height: 1;
-    font-weight: 800;
-    margin-bottom: 8px;
+    font-weight: 600;
+    margin-bottom: .375rem;
 }
 
 .garage-dashboard-stat-value.lime {
-    color: #b9ff00;
+    color: #c9ff20;
 }
 
 .garage-dashboard-stat-description {
     color: #6d7274;
-    font-size: 12px;
+    font-size: .75rem;
     line-height: 1.2;
 }
 
@@ -94,9 +104,9 @@
 .garage-dashboard-middle {
     width: 100%;
     display: grid;
-    grid-template-columns: minmax(0, 2.8fr) minmax(300px, 1.25fr);
-    gap: 24px;
-    margin-bottom: 24px;
+    grid-template-columns: minmax(0, 3fr) minmax(20rem, 2fr);
+    gap: .9375rem;
+    margin-bottom: 1rem;
 }
 
 
@@ -112,14 +122,15 @@
 }
 
 .garage-dashboard-panel-title {
-    height: 46px;
+    min-height: 2.4375rem;
     display: flex;
     align-items: center;
-    padding: 0 16px;
+    padding: 0 .8125rem;
     color: #777c7e;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.6px;
+    font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+    font-size: .8125rem;
+    font-weight: 600;
+    letter-spacing: .8px;
     border-bottom: 1px solid #292b2c;
 }
 
@@ -134,34 +145,58 @@
 
 .garage-dashboard-table-wrapper {
     width: 100%;
+    min-width: 0;
     overflow-x: auto;
+    overscroll-behavior-inline: contain;
 }
 
 .garage-dashboard-table {
     width: 100%;
+    min-width: 55rem;
     border-collapse: collapse;
     table-layout: fixed;
 }
 
+.garage-dashboard-table th:nth-child(1),
+.garage-dashboard-table td:nth-child(1) { width: 11%; }
+.garage-dashboard-table th:nth-child(2),
+.garage-dashboard-table td:nth-child(2) { width: 15%; }
+.garage-dashboard-table th:nth-child(3),
+.garage-dashboard-table td:nth-child(3) { width: 18%; }
+.garage-dashboard-table th:nth-child(4),
+.garage-dashboard-table td:nth-child(4) { width: 14%; }
+.garage-dashboard-table th:nth-child(5),
+.garage-dashboard-table td:nth-child(5) { width: 14%; }
+.garage-dashboard-table th:nth-child(6),
+.garage-dashboard-table td:nth-child(6) { width: 15%; }
+.garage-dashboard-table th:nth-child(7),
+.garage-dashboard-table td:nth-child(7) { width: 13%; }
+
 .garage-dashboard-table th {
-    height: 38px;
-    padding: 0 16px;
+    height: 2.125rem;
+    padding: 0 .4375rem;
     text-align: left;
     vertical-align: middle;
     color: #74797b;
-    font-size: 10px;
+    font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+    font-size: .75rem;
     font-weight: 500;
-    letter-spacing: 1px;
+    letter-spacing: .5px;
+    white-space: nowrap;
     border-bottom: 1px solid #292b2c;
 }
 
 .garage-dashboard-table td {
-    height: 62px;
-    padding: 10px 16px;
+    height: 3.4375rem;
+    padding: .5rem .4375rem;
     color: #85898b;
-    font-size: 12px;
+    font-size: .75rem;
     vertical-align: middle;
     border-bottom: 1px solid #292b2c;
+}
+
+.garage-dashboard-table th:nth-child(7) {
+    text-align: right;
 }
 
 .garage-dashboard-table tbody tr:last-child td {
@@ -174,85 +209,88 @@
 
 
 /* =========================================================
-   TABLE COLUMN WIDTHS
-========================================================= */
-
-.garage-dashboard-table th:nth-child(1),
-.garage-dashboard-table td:nth-child(1) {
-    width: 10%;
-}
-
-.garage-dashboard-table th:nth-child(2),
-.garage-dashboard-table td:nth-child(2) {
-    width: 18%;
-}
-
-.garage-dashboard-table th:nth-child(3),
-.garage-dashboard-table td:nth-child(3) {
-    width: 24%;
-}
-
-.garage-dashboard-table th:nth-child(4),
-.garage-dashboard-table td:nth-child(4) {
-    width: 17%;
-}
-
-.garage-dashboard-table th:nth-child(5),
-.garage-dashboard-table td:nth-child(5) {
-    width: 15%;
-}
-
-.garage-dashboard-table th:nth-child(6),
-.garage-dashboard-table td:nth-child(6) {
-    width: 14%;
-}
-
-.garage-dashboard-table th:nth-child(7),
-.garage-dashboard-table td:nth-child(7) {
-    width: 12%;
-}
-
-
-/* =========================================================
    TABLE CONTENT
 ========================================================= */
 
 .garage-dashboard-job-id {
-    color: #b9ff00 !important;
-    font-size: 11px !important;
-    font-weight: 700;
+    color: #c9ff20 !important;
+    font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+    font-size: .875rem !important;
+    font-weight: 600;
     line-height: 1.1;
 }
 
 .garage-dashboard-customer {
     color: #f1f1f1 !important;
-    font-size: 14px !important;
-    font-weight: 700;
+    font-size: .8125rem !important;
+    font-weight: 600;
+    overflow-wrap: anywhere;
 }
 
 .garage-dashboard-vehicle {
     color: #707577 !important;
-    font-size: 12px !important;
+    font-size: .75rem !important;
     line-height: 1.25;
+    overflow-wrap: anywhere;
 }
 
 .garage-dashboard-mechanic {
     color: #e7e7e7 !important;
-    font-size: 13px !important;
-    font-weight: 600;
+    font-size: .75rem !important;
+    font-weight: 500;
+    overflow-wrap: anywhere;
 }
 
 .garage-dashboard-eta {
     color: #707577 !important;
-    font-size: 12px !important;
+    font-size: .6875rem !important;
     line-height: 1.25;
+    overflow-wrap: anywhere;
 }
 
 .garage-dashboard-amount {
     color: #eeeeee !important;
-    font-size: 13px !important;
-    font-weight: 800;
+    font-size: .75rem !important;
+    font-weight: 600;
     white-space: nowrap;
+    text-align: right;
+}
+
+.garage-dashboard-job-id button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+}
+
+.garage-dashboard-job-id button:hover {
+    text-decoration: underline;
+}
+
+.garage-dashboard-retry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 12px;
+    padding: 8px 11px;
+    border: 1px solid #553434;
+    border-radius: 5px;
+    background: #211515;
+    color: #e9b4b4;
+    font-size: .6875rem;
+}
+
+.garage-dashboard-retry button {
+    padding: 4px 9px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background: #191b1a;
+    color: #e5e8e5;
+    cursor: pointer;
+    font: inherit;
 }
 
 
@@ -267,8 +305,9 @@
     min-height: 23px;
     padding: 4px 9px;
     border-radius: 4px;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: .6875rem;
+    font-weight: 600;
+    white-space: nowrap;
     line-height: 1.1;
 }
 
@@ -294,7 +333,7 @@
 /* DELIVERED */
 
 .garage-dashboard-status.delivered {
-    color: #b9ff00;
+    color: #c9ff20;
     background: #1d290c;
     border: 1px solid #506d14;
 }
@@ -334,15 +373,15 @@
 ========================================================= */
 
 .garage-dashboard-workload {
-    min-height: 230px;
+    min-height: 0;
 }
 
 .garage-dashboard-mechanics {
-    padding: 8px 16px;
+    padding: 6px 13px;
 }
 
 .garage-dashboard-mechanic-row {
-    height: 34px;
+    min-height: 30px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -353,8 +392,8 @@
     align-items: center;
     gap: 9px;
     color: #eeeeee;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: .75rem;
+    font-weight: 500;
 }
 
 .garage-dashboard-mechanic-dot {
@@ -374,7 +413,8 @@
 
 .garage-dashboard-active-count {
     color: #6d7274;
-    font-size: 11px;
+    font-size: .75rem;
+    white-space: nowrap;
 }
 
 
@@ -383,15 +423,15 @@
 ========================================================= */
 
 .garage-dashboard-ai {
-    min-height: 190px;
+    min-height: 0;
 }
 
 .garage-dashboard-alert-list {
-    padding: 5px 16px;
+    padding: 4px 13px;
 }
 
 .garage-dashboard-alert {
-    min-height: 53px;
+    min-height: 45px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -417,13 +457,13 @@
 
 .garage-dashboard-alert strong {
     color: #ededed;
-    font-size: 12px;
-    font-weight: 700;
+    font-size: .75rem;
+    font-weight: 600;
 }
 
 .garage-dashboard-alert span {
     color: #777c7e;
-    font-size: 11px;
+    font-size: .6875rem;
 }
 
 
@@ -434,8 +474,8 @@
 .garage-dashboard-bottom {
     width: 100%;
     display: grid;
-    grid-template-columns: minmax(0, 1.6fr) minmax(360px, 1.1fr);
-    gap: 24px;
+    grid-template-columns: minmax(0, 3fr) minmax(20rem, 2fr);
+    gap: .9375rem;
 }
 
 
@@ -444,15 +484,15 @@
 ========================================================= */
 
 .garage-dashboard-revenue {
-    min-height: 204px;
+    min-height: 175px;
 }
 
 .garage-dashboard-chart {
-    padding: 18px 17px 12px;
+    padding: .75rem .8125rem .625rem;
 }
 
 .garage-dashboard-chart-area {
-    height: 105px;
+    height: 5.625rem;
     position: relative;
     border-bottom: 1px solid #303232;
 }
@@ -491,7 +531,7 @@
 .garage-dashboard-chart-days span {
     color: #73787a;
     text-align: center;
-    font-size: 11px;
+    font-size: .6875rem;
 }
 
 
@@ -500,11 +540,11 @@
 ========================================================= */
 
 .garage-dashboard-service {
-    min-height: 204px;
+    min-height: 175px;
 }
 
 .garage-dashboard-service-list {
-    padding: 10px 16px 12px;
+    padding: .5625rem .8125rem .625rem;
 }
 
 .garage-dashboard-service-row {
@@ -524,13 +564,13 @@
 
 .garage-dashboard-service-info strong {
     color: #eeeeee;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: .6875rem;
+    font-weight: 500;
 }
 
 .garage-dashboard-service-info span {
     color: #73787a;
-    font-size: 11px;
+    font-size: .6875rem;
 }
 
 .garage-dashboard-service-bar {
@@ -546,7 +586,7 @@
 }
 
 .garage-dashboard-service-fill.full {
-    background: #b9ff00;
+    background: #c9ff20;
 }
 
 .garage-dashboard-service-fill.mechanical {
@@ -566,48 +606,39 @@
    RESPONSIVE
 ========================================================= */
 
-@media (max-width: 1250px) {
-    .garage-dashboard-stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
+@container garage-dashboard (max-width: 58rem) {
     .garage-dashboard-middle {
         grid-template-columns: 1fr;
     }
     .garage-dashboard-right {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
-@media (max-width: 900px) {
-    .garage-dashboard-page {
-        padding: 22px 16px 30px;
+@container garage-dashboard (max-width: 50rem) {
+    .garage-dashboard-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@container garage-dashboard (max-width: 42rem) {
+    .garage-dashboard-right {
+        grid-template-columns: minmax(0, 1fr);
     }
     .garage-dashboard-bottom {
-        grid-template-columns: 1fr;
-    }
-    .garage-dashboard-right {
-        grid-template-columns: 1fr;
-    }
-    .garage-dashboard-table {
-        min-width: 900px;
+        grid-template-columns: minmax(0, 1fr);
     }
     .garage-dashboard-heading h1 {
-        font-size: 32px;
+        font-size: 1.875rem;
     }
 }
 
-@media (max-width: 600px) {
+@container garage-dashboard (max-width: 32rem) {
     .garage-dashboard-stats {
         grid-template-columns: 1fr;
     }
-    .garage-dashboard-stat-card {
-        min-height: 100px;
-    }
     .garage-dashboard-heading h1 {
-        font-size: 28px;
-    }
-    .garage-dashboard-date {
-        font-size: 9px;
+        font-size: 1.75rem;
     }
 }

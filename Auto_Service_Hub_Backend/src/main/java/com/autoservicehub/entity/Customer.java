@@ -24,4 +24,8 @@ public class Customer extends BaseEntity {
     private String address;
     @Column(name = "status")
     private String status;
+    @Column(name = "loyalty_tier", length = 20)
+    private String loyaltyTier;
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
 }

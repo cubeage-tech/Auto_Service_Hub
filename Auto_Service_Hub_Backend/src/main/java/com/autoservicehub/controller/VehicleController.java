@@ -37,21 +37,21 @@ public class VehicleController {
     private final VehicleHistoryDocumentService vehicleHistoryDocumentService;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<VehicleResponseDTO> create(@Valid @RequestBody VehicleRequestDTO request) {
         return ApiResponse.ok("Created", service.create(request));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     public ApiResponse<VehicleResponseDTO> update(@PathVariable Long id,
                                                     @Valid @RequestBody VehicleRequestDTO request) {
         return ApiResponse.ok("Updated", service.update(id, request));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<VehicleResponseDTO> getById(@PathVariable Long id) {
         return ApiResponse.ok(service.getById(id));
     }
@@ -64,7 +64,7 @@ public class VehicleController {
      * exists, it has simply never been serviced. Only an unknown id is a 404.
      */
     @GetMapping("/{id}/service-history")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'BILLING_USER')")
     public ApiResponse<VehicleServiceHistoryDTO> serviceHistory(@PathVariable Long id) {
         return ApiResponse.ok(service.getServiceHistory(id));
     }
@@ -78,7 +78,7 @@ public class VehicleController {
      * more permissive than reading.
      */
     @GetMapping("/{id}/service-history.pdf")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'BILLING_USER')")
     public ResponseEntity<byte[]> serviceHistoryPdf(@PathVariable Long id) {
         ExportFileDTO file = vehicleHistoryDocumentService.toPdf(service.getServiceHistory(id));
 
@@ -93,13 +93,16 @@ public class VehicleController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
-    public ApiResponse<Page<VehicleResponseDTO>> list(Pageable pageable) {
-        return ApiResponse.ok(service.list(pageable));
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    public ApiResponse<Page<VehicleResponseDTO>> list(
+            Pageable pageable,
+            @RequestParam(required = false) String fuelType,
+            @RequestParam(required = false) String status) {
+        return ApiResponse.ok(service.list(pageable, fuelType, status));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);

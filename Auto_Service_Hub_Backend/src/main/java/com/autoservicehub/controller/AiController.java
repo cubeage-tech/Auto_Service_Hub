@@ -79,7 +79,7 @@ public class AiController {
      * confirm before any repair action is taken (SRS BR-09, FR-AI-04).
      */
     @PostMapping("/diagnosis")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER')")
     @Operation(
         summary = "AI Vehicle Diagnosis",
         description = "Provides an AI-assisted diagnosis recommendation based on symptoms, " +
@@ -120,7 +120,7 @@ public class AiController {
      * before any work is authorised (SRS BR-09, FR-AI-08).
      */
     @PostMapping("/repair-cost-estimation")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
     @Operation(
         summary = "AI Repair Cost Estimation",
         description = "Estimates the cost of a repair using AI, grounded in vehicle, job card and parts " +
@@ -160,7 +160,7 @@ public class AiController {
      * anything is recommended to a customer (SRS BR-09, FR-AI-12).
      */
     @PostMapping("/maintenance-prediction")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     @Operation(
         summary = "AI Maintenance Prediction",
         description = "Predicts upcoming maintenance items for a vehicle using its recorded service " +
@@ -201,7 +201,7 @@ public class AiController {
      * (SRS BR-09, FR-AI-20).
      */
     @PostMapping("/mechanic-assignment")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     @Operation(
         summary = "AI Mechanic Assignment (recommendation only)",
         description = "Recommends a mechanic for a job card using employment status, experience and real " +
@@ -243,7 +243,7 @@ public class AiController {
      * confirm the requirement before ordering (SRS BR-09, FR-AI-24).
      */
     @PostMapping("/spare-parts-prediction")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'INVENTORY_MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'INVENTORY_MANAGER', 'SERVICE_ADVISOR')")
     @Operation(
         summary = "AI Spare Parts Prediction (prediction only)",
         description = "Predicts the spare parts a repair may require, using the real parts catalogue and " +
@@ -287,7 +287,7 @@ public class AiController {
      * vehicle safe or unsafe (SRS BR-09, FR-AI-16).
      */
     @PostMapping("/damage-detection")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     @Operation(
         summary = "AI Damage Assessment (text-based, NOT image analysis)",
         description = "Assesses reported damage from a WRITTEN description together with the vehicle record " +

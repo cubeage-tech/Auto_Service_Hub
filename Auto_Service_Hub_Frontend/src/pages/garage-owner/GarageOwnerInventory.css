@@ -655,6 +655,78 @@
 
 
 /* =========================================================
+   FIELD HINT
+   ========================================================= */
+
+.inventory-form-group .inventory-field-hint {
+    display: block;
+    margin-top: 6px;
+    color: #555555;
+    font-size: 9px;
+    letter-spacing: 0.4px;
+}
+
+
+/* =========================================================
+   FEEDBACK BANNERS
+   ========================================================= */
+
+.inventory-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 16px;
+    padding: 11px 14px;
+    border: 1px solid #292929;
+    border-radius: 7px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.inventory-feedback-success {
+    border-color: rgba(201, 255, 32, 0.35);
+    background: rgba(201, 255, 32, 0.08);
+    color: #c9ff20;
+}
+
+.inventory-feedback-error {
+    border-color: rgba(255, 59, 75, 0.4);
+    background: rgba(255, 59, 75, 0.08);
+    color: #ff818b;
+}
+
+.inventory-feedback button {
+    flex-shrink: 0;
+    border: 0;
+    background: transparent;
+    color: #c9ff20;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.inventory-feedback button:hover {
+    text-decoration: underline;
+}
+
+
+.inventory-modal-add-button:disabled,
+.inventory-modal-cancel-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.inventory-modal-add-button:disabled:hover,
+.inventory-modal-cancel-button:disabled:hover {
+    background: #c9ff20;
+    color: #050505;
+    border-color: #303030;
+}
+
+
+/* =========================================================
    MODAL ACTIONS
 ========================================================= */
 

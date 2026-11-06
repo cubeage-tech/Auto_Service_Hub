@@ -9,12 +9,12 @@ export function useApiLogin(redirectPath, roleRedirectOverrides = {}, expectedRo
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const submit = async (event, username, password) => {
+  const submit = async (event, username, password, rememberMe) => {
     event.preventDefault();
     setError("");
     setLoading(true);
     try {
-      const user = await login(username.trim(), password);
+      const user = await login(username.trim(), password, rememberMe);
       if (expectedRole && user.role !== expectedRole) {
         logout();
         setError(
@@ -44,7 +44,8 @@ export function useApiLogin(redirectPath, roleRedirectOverrides = {}, expectedRo
     const formData = new FormData(event.currentTarget);
     const username = formData.get("username") || formData.get("email");
     const password = formData.get("password");
-    void submit(event, String(username || ""), String(password || ""));
+    const rememberMe = formData.get("rememberMe") === "on";
+    void submit(event, String(username || ""), String(password || ""), rememberMe);
   };
 
   return { submit, submitForm, error, loading };

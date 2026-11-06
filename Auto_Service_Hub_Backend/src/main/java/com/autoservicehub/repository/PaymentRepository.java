@@ -25,6 +25,17 @@ public interface PaymentRepository extends JpaRepository<Payment, Long>, JpaSpec
     /** Payments recorded against one invoice, oldest first. */
     List<Payment> findByInvoiceIdOrderByIdAsc(Long invoiceId);
 
+    /**
+     * Whether any payment at all is recorded against an invoice.
+     *
+     * <p>Deliberately status-agnostic: a payment that was voided or is pending
+     * is still a financial record that exists, and {@code payments.invoice_id}
+     * is a restrictive foreign key, so an invoice with any payment row cannot be
+     * deleted. Checked before the delete so the caller gets a business-rule
+     * answer instead of a constraint violation.
+     */
+    boolean existsByInvoiceId(Long invoiceId);
+
     /** Paged variant of the above, keeping the same deterministic order. */
     Page<Payment> findByInvoiceIdOrderByIdAsc(Long invoiceId, Pageable pageable);
 

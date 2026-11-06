@@ -31,28 +31,28 @@ public class SupplierController {
     private final SupplierService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'INVENTORY_MANAGER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'INVENTORY_MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<SupplierResponseDTO> create(@Valid @RequestBody SupplierRequestDTO request) {
         return ApiResponse.ok("Created", service.create(request));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'INVENTORY_MANAGER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'INVENTORY_MANAGER')")
     public ApiResponse<SupplierResponseDTO> update(@PathVariable Long id,
                                                     @Valid @RequestBody SupplierRequestDTO request) {
         return ApiResponse.ok("Updated", service.update(id, request));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<SupplierResponseDTO> getById(@PathVariable Long id) {
         return ApiResponse.ok(service.getById(id));
     }
 
     /** GET /api/v1/suppliers?page=0&size=20 */
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<Page<SupplierResponseDTO>> list(Pageable pageable) {
         return ApiResponse.ok(service.list(pageable));
     }
@@ -67,7 +67,7 @@ public class SupplierController {
      * error.
      */
     @GetMapping("/search")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<Page<SupplierResponseDTO>> search(
             @RequestParam(required = false) String q, Pageable pageable) {
         return ApiResponse.ok(service.search(q, pageable));
@@ -82,7 +82,7 @@ public class SupplierController {
      * resources so a caller can start from whichever one it is already holding.
      */
     @GetMapping("/{id}/purchases")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<Page<PurchaseResponseDTO>> purchaseHistory(
             @PathVariable Long id, Pageable pageable) {
         return ApiResponse.ok(service.purchaseHistory(id, pageable));
@@ -96,7 +96,7 @@ public class SupplierController {
      * referenced by those purchases and cannot simply be removed.
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);

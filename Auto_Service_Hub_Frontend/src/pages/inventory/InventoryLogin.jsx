@@ -209,8 +209,8 @@ function InventoryLogin() {
 
               <input
                 id="inventory-password"
-                type={showPassword ? "text" : "password"}
                 name="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 autoComplete="current-password"
                 required
@@ -241,6 +241,7 @@ function InventoryLogin() {
 
                 <input
                   type="checkbox"
+                  name="rememberMe"
                   checked={rememberMe}
                   onChange={(e) =>
                     setRememberMe(e.target.checked)

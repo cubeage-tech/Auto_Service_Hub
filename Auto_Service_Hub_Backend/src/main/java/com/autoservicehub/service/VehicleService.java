@@ -28,5 +28,7 @@ public interface VehicleService {
 
     Page<VehicleResponseDTO> list(Pageable pageable);
 
+    Page<VehicleResponseDTO> list(Pageable pageable, String fuelType, String status);
+
     void delete(Long id);
 }

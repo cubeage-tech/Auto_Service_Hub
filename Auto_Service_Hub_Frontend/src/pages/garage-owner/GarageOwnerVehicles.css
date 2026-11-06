@@ -10,10 +10,10 @@
 
 .garage-vehicles-page {
     width: 100%;
-    min-height: calc(100vh - 59px);
+    min-height: 0;
     background: #080909;
     color: #f4f4f4;
-    padding: 27px 24px 40px;
+    padding: 0;
     box-sizing: border-box;
 }
 
@@ -34,10 +34,20 @@
     margin: 0;
     color: #f4f4f4;
     font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-    font-size: 27px;
+    font-size: 23px;
     line-height: 1;
     font-weight: 900;
     letter-spacing: -0.4px;
+}
+
+.vehicle-success-notice {
+    margin: -7px 0 14px;
+    padding: 10px 12px;
+    border: 1px solid rgba(185, 255, 0, 0.25);
+    border-radius: 5px;
+    background: rgba(185, 255, 0, 0.06);
+    color: #b9ff00;
+    font-size: 13px;
 }
 
 
@@ -77,30 +87,30 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 19px;
 }
 
 .vehicle-stat-card {
-    min-height: 113px;
+    min-height: 110px;
     background: #151616;
     border: 1px solid #292b2c;
     border-radius: 6px;
-    padding: 17px;
+    padding: 16px;
     box-sizing: border-box;
 }
 
 .vehicle-stat-label {
-    margin-bottom: 10px;
+    margin-bottom: 11px;
     color: #777c7e;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Arial Narrow", "Roboto Condensed", Arial, Helvetica, sans-serif;
     font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 1.3px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
 }
 
 .vehicle-stat-value {
     color: #f2f2f2;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
     font-size: 29px;
     line-height: 1;
     font-weight: 800;
@@ -117,6 +127,18 @@
     font-size: 12px;
 }
 
+.vehicle-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 
 /* =========================================================
    FILTER AREA
@@ -124,15 +146,18 @@
 
 .vehicle-filter-area {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 11px;
     margin-bottom: 16px;
 }
 
 .vehicle-search {
-    display: block;
-    width: 331px;
-    height: 43px;
-    margin-bottom: 10px;
-    padding: 0 13px;
+    width: min(321px, 100%);
+    min-width: 0;
+    height: 42px;
+    padding: 0 12px;
     box-sizing: border-box;
     background: #151616;
     border: 1px solid #292b2c;
@@ -158,10 +183,9 @@
 ========================================================= */
 
 .vehicle-filter {
-    display: block;
     width: 100%;
-    height: 42px;
-    margin-bottom: 10px;
+    height: 40px;
+    min-width: 0;
     padding: 0 16px;
     box-sizing: border-box;
     background: #151616;
@@ -170,7 +194,7 @@
     color: #eeeeee;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     outline: none;
     cursor: pointer;
 }
@@ -186,6 +210,18 @@
 .vehicle-filter option {
     background: #151616;
     color: #eeeeee;
+}
+
+.vehicle-filter:disabled {
+    color: #eeeeee;
+    cursor: not-allowed;
+}
+
+.vehicle-dropdown-filters {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
 }
 
 
@@ -209,7 +245,7 @@
 
 .vehicles-table {
     width: 100%;
-    min-width: 1150px;
+    min-width: 0;
     border-collapse: collapse;
     table-layout: fixed;
 }
@@ -221,7 +257,7 @@
 
 .vehicles-table th {
     height: 41px;
-    padding: 0 16px;
+    padding: 0 10px;
     text-align: left;
     color: #777d7f;
     font-family: Arial, Helvetica, sans-serif;
@@ -244,42 +280,42 @@
 
 .vehicles-table th:nth-child(2),
 .vehicles-table td:nth-child(2) {
-    width: 16%;
+    width: 13%;
 }
 
 .vehicles-table th:nth-child(3),
 .vehicles-table td:nth-child(3) {
-    width: 6%;
+    width: 7%;
 }
 
 .vehicles-table th:nth-child(4),
 .vehicles-table td:nth-child(4) {
-    width: 13%;
+    width: 12%;
 }
 
 .vehicles-table th:nth-child(5),
 .vehicles-table td:nth-child(5) {
-    width: 10%;
+    width: 9%;
 }
 
 .vehicles-table th:nth-child(6),
 .vehicles-table td:nth-child(6) {
-    width: 14%;
+    width: 16%;
 }
 
 .vehicles-table th:nth-child(7),
 .vehicles-table td:nth-child(7) {
-    width: 13%;
+    width: 12%;
 }
 
 .vehicles-table th:nth-child(8),
 .vehicles-table td:nth-child(8) {
-    width: 9%;
+    width: 11%;
 }
 
 .vehicles-table th:nth-child(9),
 .vehicles-table td:nth-child(9) {
-    width: 7%;
+    width: 8%;
 }
 
 
@@ -288,8 +324,8 @@
 ========================================================= */
 
 .vehicles-table td {
-    height: 64px;
-    padding: 9px 16px;
+    height: 60px;
+    padding: 8px 10px;
     border-bottom: 1px solid #292b2c;
     vertical-align: middle;
     box-sizing: border-box;
@@ -314,6 +350,7 @@
     font-size: 11px;
     font-weight: 700;
     white-space: nowrap;
+    text-transform: uppercase;
 }
 
 
@@ -322,19 +359,34 @@
 ========================================================= */
 
 .vehicle-model {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.vehicle-model-content {
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 3px;
+    overflow: hidden;
 }
 
-.vehicle-model strong {
+.vehicle-model-content strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     color: #eeeeee;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 14px;
     font-weight: 700;
 }
 
-.vehicle-model span {
+.vehicle-model-content span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     color: #6f7476;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 12px;
@@ -362,6 +414,8 @@
     font-size: 14px;
     font-weight: 700;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
@@ -420,12 +474,24 @@
     align-items: center;
     justify-content: center;
     min-height: 24px;
-    padding: 3px 9px;
+    max-width: 100%;
+    padding: 3px 7px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     border-radius: 5px;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 11px;
     font-weight: 700;
     white-space: nowrap;
+}
+
+.vehicle-data-note {
+    margin: 0;
+    padding: 9px 12px;
+    border-top: 1px solid #292b2c;
+    color: #707577;
+    font-size: 11px;
+    line-height: 1.4;
 }
 
 
@@ -529,11 +595,6 @@
     scrollbar-color: #454747 transparent;
 }
 
-
-/* =========================================================
-   MODAL SCROLLBAR
-========================================================= */
-
 .vehicle-modal::-webkit-scrollbar {
     width: 5px;
 }
@@ -547,6 +608,12 @@
     border-radius: 10px;
 }
 
+.vehicle-registration-modal {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
 
 /* =========================================================
    MODAL HEADER
@@ -554,6 +621,7 @@
 
 .vehicle-modal-header {
     height: 62px;
+    flex: 0 0 62px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -611,6 +679,41 @@
     box-sizing: border-box;
 }
 
+.vehicle-registration-modal .vehicle-modal-form {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
+.vehicle-modal-form-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 20px 24px 0;
+    scrollbar-width: thin;
+    scrollbar-color: #454747 transparent;
+}
+
+.vehicle-modal-form-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.vehicle-modal-form-scroll::-webkit-scrollbar-thumb {
+    background: #454747;
+    border-radius: 10px;
+}
+
+.vehicle-form-error {
+    margin: 0 0 16px;
+    color: #ffa900;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
 
 /* =========================================================
    FORM GRID
@@ -618,7 +721,7 @@
 
 .vehicle-form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
     margin-bottom: 16px;
 }
@@ -741,6 +844,31 @@
     color-scheme: dark;
 }
 
+.vehicle-form-group select:disabled {
+    color: #777d7e;
+    cursor: not-allowed;
+}
+
+.vehicle-engine-chassis-inputs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.vehicle-engine-chassis-inputs input {
+    min-width: 0;
+    padding: 0 9px;
+    font-size: 12px;
+}
+
+.vehicle-form-api-note {
+    margin: 0 0 16px;
+    color: #858b8d;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
 
 /* =========================================================
    MODAL FOOTER
@@ -753,6 +881,11 @@
     padding-top: 16px;
     margin-top: 2px;
     border-top: 1px solid #292b2c;
+}
+
+.vehicle-registration-modal .vehicle-modal-footer {
+    flex: 0 0 auto;
+    margin: 0 24px 24px;
 }
 
 
@@ -812,16 +945,16 @@
 
 @media (max-width: 1100px) {
     .vehicle-stats {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 800px) {
-    .garage-vehicles-page {
-        padding: 20px 16px 35px;
-    }
     .vehicle-search {
         width: 100%;
+    }
+    .vehicle-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .vehicle-modal {
         width: min(530px, 100%);
@@ -829,9 +962,6 @@
 }
 
 @media (max-width: 600px) {
-    .garage-vehicles-page {
-        padding: 18px 12px 30px;
-    }
     .vehicles-heading-row {
         align-items: flex-start;
         gap: 12px;
@@ -845,7 +975,18 @@
         font-size: 9px;
     }
     .vehicle-stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+    .vehicle-stat-card {
+        min-height: 98px;
+        padding: 13px;
+    }
+    .vehicle-stat-value {
+        font-size: 25px;
+    }
+    .vehicles-table {
+        min-width: 940px;
     }
     .vehicle-form-grid {
         grid-template-columns: 1fr;
@@ -864,7 +1005,28 @@
     .vehicle-modal-form {
         padding: 18px;
     }
+    .vehicle-registration-modal .vehicle-modal-form {
+        padding: 0;
+    }
+    .vehicle-registration-modal .vehicle-modal-form-scroll {
+        padding: 18px 18px 0;
+    }
     .vehicle-modal-footer {
+        grid-template-columns: 1fr;
+    }
+    .vehicle-registration-modal .vehicle-modal-footer {
+        grid-template-columns: 1fr 82px;
+        margin: 0 18px 18px;
+        gap: 9px;
+    }
+    .vehicle-engine-chassis-inputs {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+}
+
+@media (max-width: 380px) {
+    .vehicle-stats {
         grid-template-columns: 1fr;
     }
 }

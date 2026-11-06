@@ -210,6 +210,193 @@
     font-weight: 800;
 }
 
+/* GST cell carries the amount plus the rate THIS document was billed at. The
+   rate is muted so the money stays the primary read, and it keeps the column
+   honest when documents are billed at different rates. */
+.billing-gst {
+    white-space: nowrap;
+}
+
+.billing-gst-rate {
+    margin-left: 5px;
+    color: #737373;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+/* Payment mode: secondary information, so it stays muted like the other
+   non-primary cells rather than competing with the money columns. */
+.billing-mode {
+    color: #a0a0a0;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.billing-outstanding {
+    color: #e6b800 !important;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   TABLE STATE ROW (LOADING / EMPTY)
+   ========================================================= */
+
+.billing-table-state {
+    padding: 26px 16px !important;
+    color: #777777;
+    text-align: center;
+    white-space: normal;
+}
+
+
+/* =========================================================
+   FEEDBACK BANNERS
+   ========================================================= */
+
+.billing-feedback {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 14px;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1px solid #292929;
+    border-radius: 6px;
+    background: #141414;
+    color: #d0d0d0;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.billing-feedback span {
+    flex: 1;
+}
+
+.billing-feedback button {
+    flex: 0 0 auto;
+    padding: 5px 10px;
+    border: 1px solid #303030;
+    border-radius: 4px;
+    background: transparent;
+    color: #858585;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+}
+
+.billing-feedback button:hover {
+    border-color: #505050;
+    color: #ffffff;
+}
+
+.billing-feedback-success {
+    border-color: #0c6335;
+    background: rgba(0, 100, 50, 0.12);
+    color: #7ce8b0;
+}
+
+.billing-feedback-warning {
+    border-color: #8a6500;
+    background: rgba(160, 120, 0, 0.10);
+    color: #ecd07a;
+}
+
+.billing-feedback-error {
+    border-color: #8d1d2c;
+    background: rgba(150, 20, 35, 0.10);
+    color: #ff8a95;
+}
+
+.billing-feedback button:hover {
+    border-color: #505050;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   TABS
+   ========================================================= */
+
+.billing-tabs {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    margin-bottom: 13px;
+}
+
+.billing-tab {
+    height: 33px;
+    padding: 0 15px;
+    border: 1px solid #292929;
+    border-radius: 5px;
+    background: #111111;
+    color: #777777;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.billing-tab:hover {
+    border-color: #444444;
+    color: #ffffff;
+}
+
+.billing-tab.active {
+    border-color: #c9ff20;
+    background: rgba(201, 255, 32, 0.10);
+    color: #c9ff20;
+}
+
+
+/* =========================================================
+   ROW ACTION BUTTONS
+   ========================================================= */
+
+.billing-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.billing-action {
+    height: 29px;
+    padding: 0 10px;
+    border: 1px solid #303030;
+    border-radius: 5px;
+    background: #111111;
+    color: #858585;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.billing-action:hover:not(:disabled) {
+    border-color: #505050;
+    color: #ffffff;
+    background: #171717;
+}
+
+.billing-action:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.billing-action-primary {
+    border-color: #3d5a05;
+    color: #c9ff20;
+}
+
+.billing-action-danger:hover:not(:disabled) {
+    border-color: #8d1d2c;
+    color: #ff8a95;
+}
+
 
 /* =========================================================
    STATUS BADGES
@@ -240,10 +427,34 @@
     color: #e6b800;
 }
 
+.billing-status.partial {
+    border: 1px solid #1d4d8a;
+    background: rgba(30, 80, 150, 0.14);
+    color: #5aa9ff;
+}
+
 .billing-status.overdue {
     border: 1px solid #8d1d2c;
     background: rgba(150, 20, 35, 0.10);
     color: #ff4050;
+}
+
+.billing-status.cancelled {
+    border: 1px solid #3a3a3a;
+    background: #1a1a1a;
+    color: #858585;
+}
+
+.billing-status.converted {
+    border: 1px solid #5b3a8a;
+    background: rgba(90, 60, 140, 0.16);
+    color: #c39bff;
+}
+
+.billing-status.draft {
+    border: 1px solid #3a3a3a;
+    background: #1a1a1a;
+    color: #a0a0a0;
 }
 
 
@@ -294,17 +505,26 @@
 
 .billing-estimate-modal {
     position: relative;
-    width: 530px;
-    max-width: calc(100vw - 40px);
-    max-height: calc(100vh - 40px);
+    /* Target width from the Figma reference. The line-item grid below is sized
+       to fit this exactly without overflowing. */
+    width: 414px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 32px);
     box-sizing: border-box;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     border: 1px solid #292929;
-    border-radius: 10px;
+    border-radius: 8px;
     background: #101010;
     color: #ffffff;
-    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.015);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.015);
+    /* The header stays put and the form scrolls underneath it, so the save and
+       cancel buttons are never scrolled out of reach. */
+    display: flex;
+    flex-direction: column;
+}
+
+.billing-estimate-modal .billing-modal-header {
+    flex: 0 0 auto;
 }
 
 
@@ -336,9 +556,9 @@
 
 .billing-modal-header {
     width: 100%;
-    min-height: 62px;
+    min-height: 46px;
     box-sizing: border-box;
-    padding: 0 24px;
+    padding: 0 18px;
     display: flex;
     align-items: center;
     border-bottom: 1px solid #292929;
@@ -346,7 +566,7 @@
 
 .billing-modal-eyebrow {
     color: #ffffff;
-    font-size: 11px;
+    font-size: 10px;
     line-height: 1;
     font-weight: 900;
     letter-spacing: -0.1px;
@@ -380,11 +600,32 @@
 
 .billing-estimate-form {
     width: 100%;
+    min-height: 0;
     box-sizing: border-box;
-    padding: 21px 25px 20px;
+    padding: 16px 18px 14px;
     display: flex;
     flex-direction: column;
-    gap: 17px;
+    gap: 12px;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.billing-estimate-form::-webkit-scrollbar {
+    width: 5px;
+}
+
+.billing-estimate-form::-webkit-scrollbar-track {
+    background: #101010;
+}
+
+.billing-estimate-form::-webkit-scrollbar-thumb {
+    background: #3b3b3b;
+    border-radius: 10px;
+}
+
+.billing-estimate-form::-webkit-scrollbar-thumb:hover {
+    background: #555555;
 }
 
 
@@ -400,17 +641,17 @@
 }
 
 .billing-type-option {
-    height: 40px;
+    height: 34px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 9px;
+    gap: 7px;
     border: 1px solid #292929;
-    border-radius: 6px;
+    border-radius: 5px;
     background: #101010;
     color: #707070;
-    font-size: 13px;
+    font-size: 12px;
     cursor: pointer;
     transition: border-color 0.15s ease, color 0.15s ease;
 }
@@ -462,15 +703,15 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 5px;
 }
 
 .billing-form-field label {
     color: #777777;
-    font-size: 9px;
+    font-size: 8px;
     line-height: 1;
     font-weight: 700;
-    letter-spacing: 1.25px;
+    letter-spacing: 1px;
 }
 
 
@@ -481,16 +722,16 @@
 .billing-form-field input,
 .billing-form-field select {
     width: 100%;
-    height: 42px;
+    height: 34px;
     box-sizing: border-box;
-    padding: 0 13px;
+    padding: 0 10px;
     border: 1px solid #292929;
-    border-radius: 6px;
+    border-radius: 5px;
     outline: none;
     background: #151515;
     color: #ffffff;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .billing-form-field input::placeholder {
@@ -538,46 +779,387 @@
 .billing-section-label {
     margin-bottom: 1px;
     color: #777777;
-    font-size: 9px;
+    font-size: 8px;
     line-height: 1;
     font-weight: 700;
-    letter-spacing: 1.25px;
+    letter-spacing: 1px;
 }
 
 .billing-line-item {
     width: 100%;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 72px 112px 70px;
-    gap: 8px;
+    /* description | qty | price | category | line total | remove
+       Fixed tracks total 228px + 5 x 4px gaps = 248px. Against a 414px modal
+       with 18px padding (376px of content) the description keeps ~128px and
+       the row cannot overflow. The category track is sized to fit "Labour"
+       plus the native select arrow. */
+    grid-template-columns: minmax(0, 1fr) 40px 60px 58px 54px 16px;
+    gap: 4px;
     align-items: center;
 }
 
 .billing-line-item input {
     width: 100%;
-    height: 43px;
+    height: 34px;
+    min-width: 0;
     box-sizing: border-box;
-    padding: 0 12px;
+    padding: 0 8px;
     border: 1px solid #292929;
-    border-radius: 6px;
+    border-radius: 5px;
     outline: none;
     background: #151515;
     color: #ffffff;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px;
+    font-size: 11px;
 }
 
 .billing-line-item input::placeholder {
     color: #707070;
+    font-size: 10px;
+}
+
+/* Number spinners eat roughly 13px of a 40-60px column and clip the
+   placeholder, so they are hidden on the compact line-item inputs only. */
+.billing-line-item input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.billing-line-item input[type="number"]::-webkit-outer-spin-button,
+.billing-line-item input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
 }
 
 .billing-line-item input:focus {
     border-color: #484848;
 }
 
+.billing-line-item select {
+    width: 100%;
+    height: 34px;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 0 3px;
+    border: 1px solid #292929;
+    border-radius: 5px;
+    outline: none;
+    background: #151515;
+    color: #a0a0a0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 9px;
+    cursor: pointer;
+}
+
+.billing-line-item select:focus {
+    border-color: #484848;
+}
+
+.billing-line-item select option {
+    background: #151515;
+    color: #ffffff;
+}
+
 .billing-line-total {
     color: #777777;
-    font-size: 12px;
+    font-size: 10px;
+    text-align: right;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.billing-line-remove {
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #555555;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.billing-line-remove:hover:not(:disabled) {
+    color: #ff8a95;
+}
+
+.billing-line-remove:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   FORM HINT
+   ========================================================= */
+
+.billing-hint {
+    color: #5f5f5f;
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   TOTALS PREVIEW
+   ========================================================= */
+
+.billing-preview {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    border: 1px solid #292929;
+    border-radius: 6px;
+    background: #141414;
+}
+
+.billing-preview-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    color: #777777;
+    font-size: 12px;
+}
+
+.billing-preview-row strong {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.billing-preview-total {
+    padding-top: 7px;
+    border-top: 1px solid #292929;
+}
+
+.billing-preview-total strong {
+    color: #c9ff20;
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   DETAIL MODAL
+   ========================================================= */
+
+.billing-detail-modal {
+    position: relative;
+    width: 680px;
+    max-width: calc(100vw - 40px);
+    max-height: calc(100vh - 40px);
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid #292929;
+    border-radius: 10px;
+    background: #101010;
+    color: #ffffff;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.015);
+}
+
+.billing-detail-modal::-webkit-scrollbar {
+    width: 5px;
+}
+
+.billing-detail-modal::-webkit-scrollbar-track {
+    background: #101010;
+}
+
+.billing-detail-modal::-webkit-scrollbar-thumb {
+    background: #3b3b3b;
+    border-radius: 10px;
+}
+
+.billing-detail-body {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 21px 25px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+}
+
+.billing-detail-meta {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 13px;
+}
+
+.billing-detail-meta > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.billing-detail-meta span {
+    color: #737373;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.billing-detail-meta strong {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.billing-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.billing-detail-table th {
+    height: 36px;
+    padding: 0 12px;
+    border-bottom: 1px solid #292929;
+    color: #777777;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.25px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.billing-detail-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #252525;
+    color: #a0a0a0;
+    font-size: 12px;
+    vertical-align: top;
+}
+
+.billing-detail-table th:not(:first-child),
+.billing-detail-table td:not(:first-child) {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.billing-detail-tag {
+    display: inline-block;
+    margin-left: 7px;
+    padding: 2px 6px;
+    border: 1px solid #3d5a05;
+    border-radius: 3px;
+    color: #c9ff20;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.billing-detail-totals {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    border: 1px solid #292929;
+    border-radius: 6px;
+    background: #141414;
+}
+
+.billing-detail-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 12px;
+    border: 1px solid #252525;
+    border-radius: 5px;
+    background: #141414;
+    color: #a0a0a0;
+    font-size: 12px;
+}
+
+/* Document exports inside the detail modal. Right-aligned so they read as a
+   secondary action group rather than competing with the document metadata. */
+.billing-detail-exports {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.billing-labour {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 15px;
+    box-sizing: border-box;
+    border: 1px solid #292929;
+    border-radius: 6px;
+    background: #141414;
+}
+
+.billing-labour label {
+    color: #777777;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.25px;
+}
+
+.billing-labour-controls {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.billing-labour-controls select {
+    flex: 1;
+    min-width: 0;
+    height: 38px;
+    box-sizing: border-box;
+    padding: 0 11px;
+    border: 1px solid #292929;
+    border-radius: 6px;
+    outline: none;
+    background: #151515;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.billing-labour-controls select option {
+    background: #151515;
+    color: #ffffff;
+}
+
+.billing-labour-controls .billing-action {
+    height: 38px;
+    flex: 0 0 auto;
+    padding: 0 14px;
+}
+
+
+/* =========================================================
+   TASK-SOURCED LABOUR (READ ONLY IN THE EDIT FORM)
+   ========================================================= */
+
+.billing-fixed-labour {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 13px 14px;
+    box-sizing: border-box;
+    border: 1px dashed #3a3a3a;
+    border-radius: 6px;
+    background: #131313;
 }
 
 
@@ -594,7 +1176,7 @@
     background: transparent;
     color: #c9ff20;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     cursor: pointer;
 }
@@ -610,17 +1192,17 @@
 
 .billing-notes {
     width: 100%;
-    min-height: 64px;
+    min-height: 46px;
     box-sizing: border-box;
-    padding: 11px 12px;
+    padding: 8px 10px;
     resize: vertical;
     border: 1px solid #292929;
-    border-radius: 6px;
+    border-radius: 5px;
     outline: none;
     background: #151515;
     color: #ffffff;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px;
+    font-size: 11px;
     line-height: 1.4;
 }
 
@@ -632,57 +1214,66 @@
     border-color: #484848;
 }
 
-
-/* =========================================================
-   MODAL ACTIONS
-   ========================================================= */
-
-.billing-modal-actions {
+/* Read-only rendering of notes in the document detail modal. Kept visually
+   distinct from the editable textarea: no border that could be mistaken for an
+   input, and it preserves line breaks from the saved text. */
+.billing-notes-view {
     width: 100%;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 92px;
-    gap: 12px;
-    padding-top: 16px;
-    margin-top: 1px;
-    border-top: 1px solid #292929;
-}
-
-.billing-modal-create {
-    width: 100%;
-    height: 44px;
-    border: none;
-    border-radius: 6px;
-    background: #c9ff20;
-    color: #050505;
+    box-sizing: border-box;
+    padding: 9px 10px;
+    border: 1px solid #242424;
+    border-radius: 5px;
+    background: #141414;
+    color: #d0d0d0;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 11px;
-    font-weight: 900;
-    cursor: pointer;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
-.billing-modal-create:hover {
-    background: #d8ff4b;
-}
 
-.billing-modal-create:active {
-    transform: translateY(1px);
-}
+/* =========================================================
+   RECORD PAYMENT ON SAVE
+   ========================================================= */
 
-.billing-modal-cancel {
+.billing-payment-inline {
     width: 100%;
-    height: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 11px;
+    box-sizing: border-box;
     border: 1px solid #292929;
-    border-radius: 6px;
-    background: #111111;
-    color: #777777;
+    border-radius: 5px;
+    background: #141414;
+}
+
+/* Payment amount and mode stack as full-width rows, never side by side. */
+.billing-payment-fields {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.billing-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #a0a0a0;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px;
+    font-size: 11px;
+    line-height: 1.35;
     cursor: pointer;
 }
 
-.billing-modal-cancel:hover {
-    border-color: #444444;
-    color: #ffffff;
+.billing-checkbox input {
+    width: 13px;
+    height: 13px;
+    flex: 0 0 13px;
+    accent-color: #c9ff20;
+    cursor: pointer;
 }
 
 
@@ -738,17 +1329,39 @@
         padding: 18px;
     }
     .billing-line-item {
-        grid-template-columns: minmax(0, 1fr) 70px;
+        grid-template-columns: minmax(0, 1fr) 60px;
     }
     .billing-line-item input:nth-child(3) {
         grid-column: 1;
     }
-    .billing-line-total {
+    .billing-line-item select {
         grid-column: 2;
-        grid-row: 2;
+    }
+    .billing-line-total {
+        grid-column: 1;
+        grid-row: 3;
+    }
+    .billing-line-remove {
+        grid-column: 2;
+        grid-row: 3;
     }
     .billing-modal-actions {
         grid-template-columns: 1fr;
+    }
+    .billing-detail-meta {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .billing-detail-modal {
+        width: calc(100vw - 24px);
+        max-width: none;
+        max-height: calc(100vh - 24px);
+        border-radius: 8px;
+    }
+    .billing-detail-body {
+        padding: 18px;
+    }
+    .billing-tabs {
+        flex-wrap: wrap;
     }
 }
 
@@ -767,4 +1380,73 @@
     .billing-estimate-form {
         padding: 16px;
     }
+}
+
+/* =========================================================
+   MODAL ACTIONS (COMPACT)
+   ========================================================= */
+
+.billing-modal-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 84px;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid #292929;
+    /* Pinned to the bottom of the scrolling form so the save and cancel
+       buttons stay reachable however long the line-item list grows. */
+    position: sticky;
+    bottom: -14px;
+    margin-bottom: -14px;
+    padding-bottom: 14px;
+    background: #101010;
+}
+
+.billing-modal-create {
+    width: 100%;
+    height: 38px;
+    border: none;
+    border-radius: 5px;
+    background: #c9ff20;
+    color: #050505;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+}
+
+.billing-modal-create:hover:not(:disabled) {
+    background: #d8ff4b;
+}
+
+.billing-modal-create:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.billing-modal-create:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.billing-modal-cancel {
+    width: 100%;
+    height: 38px;
+    border: 1px solid #292929;
+    border-radius: 5px;
+    background: transparent;
+    color: #777777;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.billing-modal-cancel:hover:not(:disabled) {
+    border-color: #444444;
+    color: #ffffff;
+}
+
+.billing-modal-cancel:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
 }

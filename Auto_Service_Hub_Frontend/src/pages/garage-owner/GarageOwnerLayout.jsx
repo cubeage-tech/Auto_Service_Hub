@@ -6,6 +6,8 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import { useAuth } from "../../hooks/useAuth";
+
 import "./GarageOwnerLayout.css";
 
 function GarageOwnerLayout() {
@@ -21,6 +23,17 @@ function GarageOwnerLayout() {
   const basePath = isDeveloper
     ? "/developer"
     : "/garage-owner";
+
+  /*
+   * Users and Roles is Owner-only (SRS 13): every other role — MANAGER
+   * included — must not reach it, which is the rule UserController already
+   * enforces with hasAnyRole('OWNER') on its endpoints. GARAGE_OWNER is
+   * accepted beside OWNER for the same reason the billing page accepts it: the
+   * token can carry the raw stored role name.
+   */
+  const { user } = useAuth();
+  const role = String(user?.role || "").replace(/^ROLE_/, "").toUpperCase();
+  const isOwner = ["OWNER", "GARAGE_OWNER"].includes(role);
 
   const menuItems = [
     {
@@ -83,7 +96,19 @@ function GarageOwnerLayout() {
       path: `${basePath}/reports`,
       icon: "▥",
     },
+    {
+      // Owner-only: dropped from visibleMenuItems for every other role, so the
+      // sidebar never offers a screen the route guard would refuse.
+      label: "User Management",
+      path: `${basePath}/users`,
+      icon: "⚷",
+      ownerOnly: true,
+    },
   ];
+
+  const visibleMenuItems = menuItems.filter(
+    (item) => !item.ownerOnly || isOwner
+  );
 
   const getPageName = () => {
     const pathname = location.pathname;
@@ -112,7 +137,7 @@ function GarageOwnerLayout() {
     }
 
     if (pathname.includes("/jobcards")) {
-      return "Job Cards";
+      return "Jobcards";
     }
 
     if (pathname.includes("/mechanics")) {
@@ -141,6 +166,10 @@ function GarageOwnerLayout() {
 
     if (pathname.includes("/reports")) {
       return "Reports";
+    }
+
+    if (pathname.includes("/users")) {
+      return "User Management";
     }
 
     return "Dashboard";
@@ -178,7 +207,7 @@ function GarageOwnerLayout() {
 
         <nav className="garage-owner-nav">
 
-          {menuItems.map((item) => (
+          {visibleMenuItems.map((item) => (
             <NavLink
               key={item.label}
               to={item.path}

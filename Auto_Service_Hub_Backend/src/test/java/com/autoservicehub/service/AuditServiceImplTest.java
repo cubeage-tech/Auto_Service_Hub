@@ -149,7 +149,7 @@ request.setRemoteAddr("203.0.113.42");
         // only public way to attach details to an Authentication.
         SecurityContextHolder.getContext().setAuthentication(
 new UsernamePasswordAuthenticationToken(
-"admin", "n/a", AuthorityUtils.createAuthorityList("ROLE_ADMIN")));
+"admin", "n/a", AuthorityUtils.createAuthorityList("ROLE_OWNER")));
 // Re-create with details via the AbstractAuthenticationToken setter on the concrete type.
 ((org.springframework.security.authentication.UsernamePasswordAuthenticationToken)
 SecurityContextHolder.getContext().getAuthentication())

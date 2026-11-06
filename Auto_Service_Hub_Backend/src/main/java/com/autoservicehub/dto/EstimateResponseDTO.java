@@ -19,8 +19,17 @@ public class EstimateResponseDTO {
     private BigDecimal subtotal;
     private BigDecimal discount;
     private BigDecimal tax;
+
+    /**
+     * The GST percentage actually applied to this document. Null means the
+     * configured workshop default was used.
+     */
+    private BigDecimal gstRate;
     private BigDecimal total;
     private String status;
+
+    /** Free-text remarks saved with this estimate, or null when none were given. */
+    private String notes;
     private List<EstimateItemResponseDTO> items;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

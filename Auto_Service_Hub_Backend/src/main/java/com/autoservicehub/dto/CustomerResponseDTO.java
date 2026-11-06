@@ -13,6 +13,8 @@ public class CustomerResponseDTO {
     private String email;
     private String address;
     private String status;
+    private String loyaltyTier;
+    private String notes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

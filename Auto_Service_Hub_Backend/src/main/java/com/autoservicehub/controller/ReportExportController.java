@@ -43,7 +43,7 @@ public class ReportExportController {
 
     /** FR-REP-1: daily workshop, as PDF. */
     @GetMapping("/daily-workshop.pdf")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     public ResponseEntity<byte[]> dailyWorkshopPdf(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
@@ -57,7 +57,7 @@ public class ReportExportController {
 
     /** FR-REP-1: daily workshop, as Excel. */
     @GetMapping("/daily-workshop.xlsx")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     public ResponseEntity<byte[]> dailyWorkshopExcel(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
@@ -71,7 +71,7 @@ public class ReportExportController {
 
     /** FR-REP-4: revenue and payments, as PDF. */
     @GetMapping("/revenue-payment.pdf")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
     public ResponseEntity<byte[]> revenuePdf(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
@@ -84,7 +84,7 @@ public class ReportExportController {
 
     /** FR-REP-4: revenue and payments, as Excel. */
     @GetMapping("/revenue-payment.xlsx")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
     public ResponseEntity<byte[]> revenueExcel(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
@@ -97,7 +97,7 @@ public class ReportExportController {
 
     /** FR-REP-2: mechanic performance, as PDF. */
     @GetMapping("/mechanic-performance.pdf")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     public ResponseEntity<byte[]> mechanicPerformancePdf(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
@@ -108,7 +108,7 @@ public class ReportExportController {
 
     /** FR-REP-2: mechanic performance, as Excel. */
     @GetMapping("/mechanic-performance.xlsx")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     public ResponseEntity<byte[]> mechanicPerformanceExcel(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
@@ -119,7 +119,7 @@ public class ReportExportController {
 
     /** FR-REP-3: parts usage, as PDF. */
     @GetMapping("/parts-usage.pdf")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'INVENTORY_MANAGER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'INVENTORY_MANAGER')")
     public ResponseEntity<byte[]> partsUsagePdf(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
@@ -131,7 +131,7 @@ public class ReportExportController {
 
     /** FR-REP-3: parts usage, as Excel. */
     @GetMapping("/parts-usage.xlsx")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'INVENTORY_MANAGER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'INVENTORY_MANAGER')")
     public ResponseEntity<byte[]> partsUsageExcel(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
@@ -143,7 +143,7 @@ public class ReportExportController {
 
     /** FR-REP-5: customer growth, as PDF. */
     @GetMapping("/customer-growth.pdf")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
     public ResponseEntity<byte[]> customerGrowthPdf(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
@@ -153,7 +153,7 @@ public class ReportExportController {
 
     /** FR-REP-5: customer growth, as Excel. */
     @GetMapping("/customer-growth.xlsx")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
     public ResponseEntity<byte[]> customerGrowthExcel(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
@@ -163,7 +163,7 @@ public class ReportExportController {
 
     /** FR-REP-4: profit analysis, as PDF. */
     @GetMapping("/profit-analysis.pdf")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'BILLING_USER')")
     public ResponseEntity<byte[]> profitAnalysisPdf(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
@@ -173,7 +173,7 @@ public class ReportExportController {
 
     /** FR-REP-4: profit analysis, as Excel. */
     @GetMapping("/profit-analysis.xlsx")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'BILLING_USER')")
     public ResponseEntity<byte[]> profitAnalysisExcel(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {

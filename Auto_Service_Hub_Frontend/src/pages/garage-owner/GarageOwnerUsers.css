@@ -1,0 +1,1046 @@
+/* =========================================================
+   USER MANAGEMENT PAGE
+   Garage Owner module — matches the existing
+   garage-customers / inventory page styling.
+
+   Tokens reused from the module:
+   page bg        #050505
+   card           #111111 / #151515
+   border         #292929
+   accent         #c9ff20  (hover #d5ff4b)
+   muted text     #777777
+========================================================= */
+
+.garage-users-page {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #050505;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.garage-users-page-top {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 20px;
+    margin: 0 0 20px 0 !important;
+    padding: 0 !important;
+}
+
+.garage-users-page-title {
+    display: block !important;
+    width: auto !important;
+    max-width: 600px !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+}
+
+.garage-users-eyebrow {
+    display: block !important;
+    margin: 0 0 7px 0 !important;
+    color: #747474;
+    font-family: "Arial Narrow", "Roboto Condensed", Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+}
+
+.garage-users-page-top h1 {
+    display: block !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #ffffff;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: 30px !important;
+    line-height: 1.05 !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.garage-users-page-top p {
+    display: block !important;
+    margin: 9px 0 0 0 !important;
+    padding: 0 !important;
+    color: #737373;
+    font-size: 13px;
+    line-height: 1.45;
+    max-width: 420px;
+}
+
+
+/* =========================================================
+   CREATE USER BUTTON
+========================================================= */
+
+.garage-users-create-button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    height: 36px !important;
+    margin: 0 !important;
+    padding: 0 15px !important;
+    border: none !important;
+    border-radius: 5px !important;
+    background: #c9ff20 !important;
+    color: #050505 !important;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.6px;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.garage-users-create-button:hover {
+    background: #d5ff4b !important;
+}
+
+.garage-users-create-button:active {
+    transform: translateY(1px);
+}
+
+
+/* =========================================================
+   FEEDBACK BANNERS
+
+   Success and placeholder notes keep the lime accent; the load
+   error banner carries the dialog's red instead, so a failed
+   read of the user list reads as a failure rather than a note.
+========================================================= */
+
+.garage-users-feedback {
+    width: 100% !important;
+    box-sizing: border-box;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px;
+    margin: 0 0 14px 0 !important;
+    padding: 9px 13px !important;
+    background: rgba(201, 255, 32, 0.07) !important;
+    border: 1px solid rgba(201, 255, 32, 0.35) !important;
+    border-radius: 7px !important;
+    color: #c9ff20;
+    font-size: 12px;
+}
+
+.garage-users-feedback button {
+    flex: 0 0 auto;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: #c9ff20;
+    font-family: "Arial Narrow", "Roboto Condensed", Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.garage-users-feedback button:hover {
+    color: #ffffff;
+}
+
+.garage-users-feedback.error {
+    background: rgba(255, 77, 77, 0.08) !important;
+    border: 1px solid rgba(255, 77, 77, 0.45) !important;
+    color: #ff8080;
+}
+
+.garage-users-feedback.error button {
+    color: #ff8080;
+}
+
+.garage-users-feedback.error button:hover {
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   SUMMARY CARDS
+========================================================= */
+
+.garage-users-stats {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    margin: 0 0 20px 0 !important;
+    padding: 0 !important;
+}
+
+.garage-users-stat-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 92px !important;
+    min-height: 92px !important;
+    display: block !important;
+    box-sizing: border-box;
+    margin: 0 !important;
+    padding: 16px 16px 14px !important;
+    background: #151515 !important;
+    border: 1px solid #292929 !important;
+    border-radius: 7px !important;
+}
+
+.garage-users-stat-card span {
+    display: block !important;
+    margin: 0 0 8px 0 !important;
+    color: #707070;
+    font-size: 9px;
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+
+.garage-users-stat-card strong {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #ffffff;
+    font-size: 27px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.garage-users-stat-card strong.lime {
+    color: #c9ff20 !important;
+}
+
+.garage-users-stat-card small {
+    display: block !important;
+    margin: 7px 0 0 0 !important;
+    color: #666666;
+    font-size: 10px;
+    line-height: 1.2;
+}
+
+
+/* =========================================================
+   FILTER AREA
+========================================================= */
+
+.garage-users-filters {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: minmax(260px, 1.5fr) minmax(170px, 1fr) minmax(170px, 1fr) !important;
+    gap: 10px !important;
+    margin: 0 0 16px 0 !important;
+    padding: 0 !important;
+}
+
+.garage-users-search {
+    width: 100% !important;
+    height: 44px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px;
+    margin: 0 !important;
+    padding: 0 13px !important;
+    box-sizing: border-box;
+    min-width: 0 !important;
+    background: #151515 !important;
+    border: 1px solid #292929 !important;
+    border-radius: 6px !important;
+}
+
+.garage-users-search span {
+    display: block !important;
+    flex: 0 0 auto;
+    color: #777777;
+    font-size: 17px;
+    line-height: 1;
+}
+
+.garage-users-search input {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    color: #ffffff !important;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+}
+
+.garage-users-search input::placeholder {
+    color: #666666;
+    opacity: 1;
+}
+
+
+/* =========================================================
+   ROLE + STATUS SELECTS
+========================================================= */
+
+.garage-users-filters select {
+    width: 100% !important;
+    height: 44px !important;
+    display: block !important;
+    box-sizing: border-box;
+    margin: 0 !important;
+    padding: 0 13px !important;
+    background: #151515 !important;
+    border: 1px solid #292929 !important;
+    border-radius: 6px !important;
+    color: #ffffff !important;
+    outline: none !important;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.garage-users-filters select:focus {
+    border-color: #3d3d3d !important;
+}
+
+.garage-users-filters select option {
+    background: #151515;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   TABLE CARD
+========================================================= */
+
+.garage-users-table-card {
+    width: 100% !important;
+    max-width: none !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #111111 !important;
+    border: 1px solid #292929 !important;
+    border-radius: 7px !important;
+    overflow: hidden !important;
+}
+
+.garage-users-table-heading {
+    width: 100% !important;
+    height: 48px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin: 0 !important;
+    padding: 0 17px !important;
+    box-sizing: border-box;
+    border-bottom: 1px solid #292929 !important;
+}
+
+.garage-users-table-heading strong {
+    color: #ffffff;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: 13px;
+    line-height: 1;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+}
+
+.garage-users-table-heading span {
+    color: #666666;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.garage-users-table-wrapper {
+    width: 100% !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.garage-users-table {
+    width: 100% !important;
+    min-width: 900px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    table-layout: fixed !important;
+    background: #111111 !important;
+}
+
+.garage-users-table thead {
+    display: table-header-group !important;
+}
+
+.garage-users-table thead tr {
+    height: 42px !important;
+}
+
+.garage-users-table th {
+    height: 42px !important;
+    box-sizing: border-box;
+    margin: 0 !important;
+    padding: 0 16px !important;
+    border-bottom: 1px solid #292929 !important;
+    color: #707070 !important;
+    font-family: "Arial Narrow", "Roboto Condensed", Arial, Helvetica, sans-serif;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    line-height: 1;
+    letter-spacing: 1px;
+    text-align: left !important;
+    text-transform: uppercase;
+    white-space: nowrap !important;
+}
+
+.garage-users-table th:nth-child(1) {
+    width: 20% !important;
+}
+
+.garage-users-table th:nth-child(2) {
+    width: 30% !important;
+}
+
+.garage-users-table th:nth-child(3) {
+    width: 17% !important;
+}
+
+.garage-users-table th:nth-child(4) {
+    width: 13% !important;
+}
+
+.garage-users-table th:nth-child(5) {
+    width: 20% !important;
+}
+
+.garage-users-table tbody {
+    display: table-row-group !important;
+}
+
+.garage-users-table tbody tr {
+    height: 56px !important;
+    border-bottom: 1px solid #252525 !important;
+}
+
+.garage-users-table tbody tr:last-child {
+    border-bottom: none !important;
+}
+
+.garage-users-table tbody tr:hover {
+    background: #181818 !important;
+}
+
+.garage-users-table td {
+    height: 56px !important;
+    box-sizing: border-box;
+    margin: 0 !important;
+    padding: 0 16px !important;
+    border: none !important;
+    color: #777777;
+    font-size: 12px;
+    vertical-align: middle !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   NAME + IDENTITY CELLS
+========================================================= */
+
+.garage-users-name {
+    display: block;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.garage-users-identity {
+    display: block;
+    min-width: 0;
+}
+
+.garage-users-username {
+    display: block;
+    color: #eeeeee;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.garage-users-email {
+    display: block;
+    color: #777777;
+    font-size: 11px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.garage-users-phone {
+    display: block;
+    color: #666666;
+    font-size: 11px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   ROLE BADGE
+========================================================= */
+
+.garage-users-role {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 23px !important;
+    max-width: 100%;
+    padding: 0 9px !important;
+    box-sizing: border-box;
+    border: 1px solid #303030 !important;
+    border-radius: 4px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #cfcfcf !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   STATUS BADGE
+========================================================= */
+
+.garage-users-status {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 23px !important;
+    padding: 0 9px !important;
+    box-sizing: border-box;
+    border-radius: 4px !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    white-space: nowrap;
+}
+
+.garage-users-status.active {
+    color: #c4ff18 !important;
+    background: rgba(196, 255, 24, 0.1) !important;
+    border: 1px solid rgba(196, 255, 24, 0.35) !important;
+}
+
+.garage-users-status.inactive {
+    color: #aaaaaa !important;
+    background: rgba(170, 170, 170, 0.1) !important;
+    border: 1px solid #555555 !important;
+}
+
+
+/* =========================================================
+   ROW ACTIONS
+========================================================= */
+
+.garage-users-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px;
+}
+
+.garage-users-action-button {
+    height: 28px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    background: transparent !important;
+    border: 1px solid #303030 !important;
+    border-radius: 4px !important;
+    color: #707070 !important;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px !important;
+    cursor: pointer;
+}
+
+.garage-users-action-button:hover {
+    color: #ffffff !important;
+    border-color: #555555 !important;
+    background: #1a1a1a !important;
+}
+
+.garage-users-action-button:active {
+    transform: translateY(1px);
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.garage-users-empty {
+    height: 200px !important;
+    text-align: center !important;
+}
+
+.garage-users-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 26px 18px;
+    text-align: center;
+}
+
+.garage-users-empty-state strong {
+    color: #ffffff;
+    font-family: "Arial Narrow", "Roboto Condensed", Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.garage-users-empty-state p {
+    margin: 0;
+    color: #777777;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.garage-users-empty-reset {
+    height: 30px;
+    margin-top: 8px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 5px;
+    background: #c9ff20;
+    color: #050505;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    cursor: pointer;
+}
+
+.garage-users-empty-reset:hover {
+    background: #d5ff4b;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .garage-users-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .garage-users-filters {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+}
+
+@media (max-width: 620px) {
+
+    .garage-users-page-top {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .garage-users-stats {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+}
+
+
+/* =========================================================
+   CREATE USER MODAL   (Part 5.2 shell, Part 5.3 fields)
+   Dialog for the Create User form: header, the account fields
+   (two columns on wider screens) and the footer actions.
+
+   Tokens reused from the page:
+   card #111111 / #151515, input #101010, border #292929,
+   accent #c9ff20 (hover #d5ff4b), muted text #777777
+========================================================= */
+
+.garage-users-modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    background: rgba(0, 0, 0, 0.78) !important;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}
+
+.garage-users-modal {
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 520px !important;
+    max-width: 100% !important;
+    max-height: calc(100vh - 32px) !important;
+    margin: auto !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: #111111 !important;
+    border: 1px solid #292929 !important;
+    border-radius: 7px !important;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.65);
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
+}
+
+.garage-users-modal-header {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px;
+    flex: 0 0 auto !important;
+    min-height: 52px !important;
+    padding: 0 16px !important;
+    background: #151515 !important;
+    border-bottom: 1px solid #292929 !important;
+}
+
+.garage-users-modal-header h2 {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #ffffff;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0.8px;
+}
+
+.garage-users-modal-close {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    width: 30px !important;
+    height: 30px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 1px solid #292929 !important;
+    border-radius: 5px !important;
+    color: #8a8a8a;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.garage-users-modal-close:hover {
+    background: #1c1c1c !important;
+    border-color: #3d3d3d !important;
+    color: #ffffff;
+}
+
+.garage-users-modal-form {
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    overflow-y: auto !important;
+}
+
+.garage-users-modal-fields {
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px;
+    margin: 0 !important;
+    padding: 14px !important;
+    background: #151515 !important;
+    border: 1px solid #292929 !important;
+    border-radius: 6px !important;
+}
+
+.garage-users-modal-row {
+    box-sizing: border-box !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px 14px !important;
+    width: 100% !important;
+}
+
+.garage-users-modal-field {
+    box-sizing: border-box !important;
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+.garage-users-modal-field label {
+    display: block !important;
+    margin: 0 0 7px 0 !important;
+    padding: 0 !important;
+    color: #777777;
+    font-family: "Arial Narrow", "Roboto Condensed", Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+}
+
+.garage-users-modal-required {
+    margin-left: 3px;
+    color: #c9ff20;
+}
+
+.garage-users-modal-optional {
+    margin-left: 6px;
+    color: #5f5f5f;
+    font-size: 9px;
+    letter-spacing: 0.6px;
+}
+
+.garage-users-modal-field input,
+.garage-users-modal-field select {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    height: 40px !important;
+    margin: 0 !important;
+    padding: 0 12px !important;
+    background: #101010 !important;
+    border: 1px solid #292929 !important;
+    border-radius: 5px !important;
+    outline: none;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    line-height: normal;
+}
+
+.garage-users-modal-field select {
+    cursor: pointer;
+}
+
+.garage-users-modal-field select option {
+    background: #101010;
+    color: #ffffff;
+}
+
+.garage-users-modal-field input::placeholder {
+    color: #666666;
+    opacity: 1;
+}
+
+.garage-users-modal-field input:focus,
+.garage-users-modal-field select:focus {
+    border-color: #8db800 !important;
+}
+
+.garage-users-modal-field input.error,
+.garage-users-modal-field select.error {
+    border-color: #ff4d4d !important;
+    outline: none;
+}
+
+.garage-users-modal-error {
+    display: block;
+    color: #ff4d4d;
+    font-size: 10px;
+    margin-top: 4px;
+    margin-bottom: 6px;
+    padding-left: 2px;
+    line-height: 1.2;
+}
+
+.garage-users-modal-field.error label {
+    color: #ff4d4d !important;
+}
+
+.garage-users-modal-field.error .garage-users-modal-required {
+    color: #ff4d4d !important;
+}
+
+
+/* =========================================================
+   API ERROR BANNER
+   The message the create request was refused with. The same red
+   as the field errors, boxed so it reads as one statement about
+   the request rather than another note about a single field.
+========================================================= */
+
+.garage-users-modal-api-error {
+    display: block;
+    flex: 0 0 auto !important;
+    margin: 16px 0 0 0;
+    padding: 9px 12px;
+    background: rgba(255, 77, 77, 0.08);
+    border: 1px solid rgba(255, 77, 77, 0.45);
+    border-radius: 5px;
+    color: #ff8080;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.garage-users-modal-footer {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 10px;
+    flex: 0 0 auto !important;
+    margin: 16px 0 0 0 !important;
+    padding: 16px 0 0 0 !important;
+    border-top: 1px solid #292929 !important;
+}
+
+.garage-users-modal-cancel {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 36px !important;
+    margin: 0 !important;
+    padding: 0 16px !important;
+    background: #151515 !important;
+    border: 1px solid #292929 !important;
+    border-radius: 5px !important;
+    color: #b0b0b0 !important;
+    font-family: "Arial Narrow", "Roboto Condensed", Arial, Helvetica, sans-serif;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.8px;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.garage-users-modal-cancel:hover {
+    background: #1c1c1c !important;
+    border-color: #3d3d3d !important;
+    color: #ffffff !important;
+}
+
+.garage-users-modal-submit {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 36px !important;
+    margin: 0 !important;
+    padding: 0 18px !important;
+    background: #c9ff20 !important;
+    border: none !important;
+    border-radius: 5px !important;
+    color: #050505 !important;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.6px;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.garage-users-modal-submit:hover {
+    background: #d5ff4b !important;
+}
+
+.garage-users-modal-submit:active {
+    transform: translateY(1px);
+}
+
+.garage-users-modal-close:focus-visible,
+.garage-users-modal-cancel:focus-visible,
+.garage-users-modal-submit:focus-visible {
+    outline: 2px solid #c9ff20;
+    outline-offset: 2px;
+}
+
+@media (max-width: 620px) {
+
+    .garage-users-modal-overlay {
+        align-items: flex-start !important;
+        padding: 10px !important;
+    }
+
+    .garage-users-modal {
+        width: 100% !important;
+        max-height: calc(100vh - 20px) !important;
+    }
+
+    .garage-users-modal-fields {
+        padding: 12px !important;
+    }
+
+    .garage-users-modal-row {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 12px !important;
+    }
+
+    .garage-users-modal-footer {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .garage-users-modal-cancel,
+    .garage-users-modal-submit {
+        width: 100% !important;
+    }
+}

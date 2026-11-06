@@ -6,7 +6,7 @@
     width: 100%;
     min-height: 100%;
     box-sizing: border-box;
-    padding: 30px 24px 50px;
+    padding: 0;
     background: #050505;
     color: #ffffff;
 }
@@ -21,17 +21,18 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    min-height: 35px;
+    margin-bottom: 17px;
 }
 
 .garage-customers-title {
     margin: 0;
     color: #ffffff;
-    font-family: "Arial Narrow", "Roboto Condensed", Arial, Helvetica, sans-serif;
-    font-size: 24px;
-    line-height: 1.1;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: 22px;
+    line-height: 1;
     font-weight: 900;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.25px;
 }
 
 
@@ -40,22 +41,23 @@
 ========================================================= */
 
 .garage-customers-new-button {
-    height: 36px;
-    padding: 0 17px;
+    height: 33px;
+    padding: 0 13px;
     border: none;
-    border-radius: 4px;
-    background: #c4ff18;
+    border-radius: 5px;
+    background: #c9ff20;
     color: #050505;
-    font-family: "Arial Narrow", Arial, Helvetica, sans-serif;
-    font-size: 11px;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: 10px;
     font-weight: 900;
-    letter-spacing: 0.2px;
+    letter-spacing: 0;
     cursor: pointer;
     transition: background 0.15s ease, transform 0.15s ease;
+    white-space: nowrap;
 }
 
 .garage-customers-new-button:hover {
-    background: #d0ff3d;
+    background: #d5ff4b;
 }
 
 .garage-customers-new-button:active {
@@ -71,12 +73,13 @@
     width: 100%;
     display: flex;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 15px;
 }
 
 .garage-customers-search-box {
-    width: 395px;
-    height: 44px;
+    width: 385px;
+    max-width: 100%;
+    height: 42px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -87,18 +90,14 @@
 }
 
 .garage-customers-search-icon {
-    width: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #777777;
-    font-size: 18px;
+    display: none;
 }
 
 .garage-customers-search-box input {
     flex: 1;
     height: 100%;
-    padding: 0 12px 0 0;
+    min-width: 0;
+    padding: 0 12px;
     border: none;
     outline: none;
     background: transparent;
@@ -114,6 +113,47 @@
 
 .garage-customers-search-box:focus-within {
     border-color: #444444;
+}
+
+.customers-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 16px;
+    padding: 11px 14px;
+    border: 1px solid #292929;
+    border-radius: 7px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.customers-feedback-success {
+    border-color: rgba(196, 255, 24, 0.35);
+    background: rgba(196, 255, 24, 0.08);
+    color: #c4ff18;
+}
+
+.customers-feedback-error {
+    border-color: rgba(255, 59, 75, 0.4);
+    background: rgba(255, 59, 75, 0.08);
+    color: #ff818b;
+}
+
+.customers-feedback button {
+    flex-shrink: 0;
+    border: 0;
+    background: transparent;
+    color: #c4ff18;
+    font: inherit;
+    cursor: pointer;
+}
+
+.customer-table-state {
+    height: 96px !important;
+    color: #777777 !important;
+    text-align: center;
+    white-space: normal !important;
 }
 
 
@@ -137,7 +177,7 @@
 
 .garage-customers-table {
     width: 100%;
-    min-width: 1080px;
+    min-width: 0;
     border-collapse: collapse;
     border-spacing: 0;
     table-layout: fixed;
@@ -222,7 +262,7 @@
 ========================================================= */
 
 .garage-customers-table tbody tr {
-    height: 48px;
+    height: 46px;
     background: #151515;
     transition: background 0.15s ease;
 }
@@ -236,7 +276,7 @@
 }
 
 .garage-customers-table td {
-    height: 48px;
+    height: 46px;
     padding: 0 14px;
     box-sizing: border-box;
     border-bottom: 1px solid #292929;
@@ -267,6 +307,27 @@
     color: #ffffff;
     font-size: 14px;
     font-weight: 700;
+}
+
+.customer-name-cell {
+    display: block;
+    min-width: 0;
+}
+
+.customer-notes {
+    display: block;
+    max-width: 150px;
+    overflow: hidden;
+    color: #929292;
+    font-size: 10px;
+    font-weight: 400;
+    text-overflow: ellipsis;
+}
+
+.customer-loyalty {
+    color: #c7f36b;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .customer-phone {
@@ -357,6 +418,18 @@
     border: 1px solid #9a4700;
 }
 
+.loyalty-badge.active {
+    color: #c4ff18;
+    background: rgba(196, 255, 24, 0.1);
+    border: 1px solid rgba(196, 255, 24, 0.35);
+}
+
+.loyalty-badge.inactive {
+    color: #aaaaaa;
+    background: rgba(170, 170, 170, 0.1);
+    border: 1px solid #555555;
+}
+
 
 /* =========================================================
    NO CUSTOMERS
@@ -399,12 +472,14 @@
     width: 530px;
     max-width: calc(100vw - 48px);
     max-height: calc(100vh - 48px);
+    display: flex;
+    flex-direction: column;
     box-sizing: border-box;
     background: #101010;
     border: 1px solid #292929;
     border-radius: 12px;
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.75);
-    overflow-y: auto;
+    overflow: hidden;
     color: #ffffff;
 }
 
@@ -437,6 +512,7 @@
 
 .garage-customer-modal-header {
     height: 62px;
+    min-height: 62px;
     box-sizing: border-box;
     padding: 0 24px;
     display: flex;
@@ -489,8 +565,35 @@
 ========================================================= */
 
 .garage-customer-modal-form {
-    padding: 24px;
+    min-height: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     box-sizing: border-box;
+}
+
+.garage-customer-form-scroll {
+    min-height: 0;
+    flex: 1;
+    padding: 22px 24px 2px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #3a3a3a #101010;
+}
+
+.garage-customer-form-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.garage-customer-form-scroll::-webkit-scrollbar-track {
+    background: #101010;
+}
+
+.garage-customer-form-scroll::-webkit-scrollbar-thumb {
+    background: #3a3a3a;
+    border-radius: 10px;
 }
 
 
@@ -512,7 +615,7 @@
 
 .garage-customer-form-group {
     width: 100%;
-    margin-bottom: 17px;
+    margin-bottom: 15px;
 }
 
 .garage-customer-form-group label {
@@ -548,7 +651,7 @@
 /* INPUT */
 
 .garage-customer-form-group input {
-    height: 44px;
+    height: 42px;
     padding: 0 13px;
 }
 
@@ -557,7 +660,7 @@
 
 .garage-customer-form-group textarea {
     min-height: 64px;
-    padding: 11px 13px;
+    padding: 10px 13px;
     resize: vertical;
     line-height: 1.45;
 }
@@ -566,7 +669,7 @@
 /* SELECT */
 
 .garage-customer-form-group select {
-    height: 44px;
+    height: 42px;
     padding: 0 13px;
     cursor: pointer;
     appearance: auto;
@@ -596,9 +699,10 @@
 ========================================================= */
 
 .garage-customer-modal-divider {
-    width: 100%;
+    width: calc(100% - 48px);
     height: 1px;
-    margin: 2px 0 16px;
+    flex: 0 0 1px;
+    margin: 0 24px 16px;
     background: #292929;
 }
 
@@ -612,6 +716,15 @@
     display: grid;
     grid-template-columns: 1fr 92px;
     gap: 12px;
+    padding: 0 24px 22px;
+    box-sizing: border-box;
+}
+
+.customer-form-api-note {
+    margin: -2px 0 15px;
+    color: #858585;
+    font-size: 11px;
+    line-height: 1.45;
 }
 
 
@@ -634,6 +747,12 @@
 
 .garage-customer-create-button:hover {
     background: #d1ff43;
+}
+
+.garage-customer-create-button:disabled,
+.garage-customer-cancel-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
 }
 
 .garage-customer-create-button:active {
@@ -669,28 +788,27 @@
 ========================================================= */
 
 @media (max-width: 900px) {
-    .garage-customers-page {
-        padding: 24px 18px 40px;
-    }
     .garage-customers-search-box {
         width: 100%;
-        max-width: 395px;
+        max-width: 385px;
+    }
+    .garage-customers-table {
+        min-width: 920px;
     }
 }
 
 @media (max-width: 600px) {
-    .garage-customers-page {
-        padding: 20px 14px 35px;
-    }
     .garage-customers-heading-row {
-        align-items: flex-start;
-        gap: 15px;
+        align-items: center;
+        gap: 10px;
     }
     .garage-customers-title {
-        font-size: 22px;
+        font-size: 20px;
     }
     .garage-customers-new-button {
         flex-shrink: 0;
+        padding: 0 10px;
+        font-size: 9px;
     }
     .garage-customer-modal-overlay {
         padding: 12px;
@@ -699,6 +817,17 @@
         width: 100%;
         max-width: 100%;
         max-height: calc(100vh - 24px);
+    }
+    .garage-customer-form-scroll {
+        padding: 18px 18px 2px;
+    }
+    .garage-customer-modal-divider {
+        width: calc(100% - 36px);
+        margin-right: 18px;
+        margin-left: 18px;
+    }
+    .garage-customer-modal-actions {
+        padding: 0 18px 18px;
     }
     .garage-customer-form-row {
         grid-template-columns: 1fr;

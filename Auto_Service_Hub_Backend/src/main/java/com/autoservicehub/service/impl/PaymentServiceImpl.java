@@ -5,6 +5,7 @@ import com.autoservicehub.dto.PaymentResponseDTO;
 import com.autoservicehub.entity.AuditAction;
 import com.autoservicehub.entity.Invoice;
 import com.autoservicehub.entity.Payment;
+import com.autoservicehub.entity.PaymentMode;
 import com.autoservicehub.exception.BusinessRuleException;
 import com.autoservicehub.exception.ResourceNotFoundException;
 import com.autoservicehub.repository.InvoiceRepository;
@@ -44,6 +45,13 @@ import java.time.LocalDateTime;
  *
  * <p>Payments are recorded by staff — there is no gateway integration or
  * callback verification here, by design.
+ *
+ * <p>The {@code mode} is validated against {@link PaymentMode} before anything
+ * is written. That includes refusing {@code PAY_LATER}: "Pay Later" is a choice
+ * about an invoice, not a payment, and because a payment row reduces the
+ * outstanding balance, accepting one would let an unpaid invoice be marked PAID
+ * with no money received. Selecting Pay Later is therefore represented by
+ * recording no payment at all and leaving the invoice PENDING.
  */
 @Service
 @RequiredArgsConstructor
@@ -87,10 +95,16 @@ public class PaymentServiceImpl implements PaymentService {
             }
         }
 
+        // Validated before anything is written: an unrecognised mode would
+        // otherwise be stored verbatim and only show up later as a stray bucket
+        // in the "Payments by mode" revenue report. PAY_LATER is refused here,
+        // so it can never become a payment that drives the invoice to PAID.
+        String mode = resolveMode(request.getMode());
+
         Payment entity = new Payment();
         entity.setInvoice(invoice);
         entity.setAmount(amount);
-        entity.setMode(request.getMode());
+        entity.setMode(mode);
         entity.setTransactionRef(request.getTransactionRef());
         entity.setStatus(status);
         entity.setPaidAt(request.getPaidAt() != null ? request.getPaidAt() : LocalDateTime.now());
@@ -130,7 +144,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         existing.setInvoice(invoice);
         existing.setAmount(amount);
-        existing.setMode(request.getMode());
+        existing.setMode(resolveMode(request.getMode()));
         existing.setTransactionRef(request.getTransactionRef());
         existing.setStatus(status);
         existing.setPaidAt(request.getPaidAt() != null ? request.getPaidAt() : existing.getPaidAt());
@@ -229,6 +243,22 @@ public class PaymentServiceImpl implements PaymentService {
             throw new BusinessRuleException("amount must be greater than 0, got: " + requested);
         }
         return BillingCalculator.money(requested);
+    }
+
+    /**
+     * Validates the payment mode and returns the value to store.
+     *
+     * <p>Mode is optional: a blank or absent value stays null, which is what
+     * every client sent before the mode vocabulary existed. Anything else must be
+     * one of {@link PaymentMode} — see that type for why PAY_LATER is refused
+     * rather than accepted as a payment.
+     *
+     * @return the normalised stored value, or null if none was supplied
+     * @throws BusinessRuleException if the mode is not a real payment mode
+     */
+    private String resolveMode(String requested) {
+        PaymentMode mode = PaymentMode.resolve(requested);
+        return mode == null ? null : mode.storedValue();
     }
 
     /** Payments default to SUCCESS: recording one means the money was received. */

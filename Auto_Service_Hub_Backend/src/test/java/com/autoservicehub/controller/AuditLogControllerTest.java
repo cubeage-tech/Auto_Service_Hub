@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * Test cases
  * ----------
- * AC1  ADMIN reads the trail        -> 200
+ * AC1  OWNER reads the trail        -> 200
  * AC2  MANAGER reads the trail      -> 200
  * AC3  Filters are passed through   -> 200 with the filter built
  * AC4  MECHANIC                     -> 403
@@ -119,9 +119,9 @@ class AuditLogControllerTest {
     // ── AC1..AC3: reading, as an authorised role ────────────────────────
 
 @Test
-@WithMockUser(roles = "ADMIN")
-@DisplayName("AC1 - ADMIN reads the trail -> 200")
-void ac1_admin_returns200() throws Exception {
+@WithMockUser(roles = "OWNER")
+@DisplayName("AC1 - OWNER reads the trail -> 200")
+void ac1_owner_returns200() throws Exception {
 when(auditService.search(any(), any()))
 .thenReturn(new org.springframework.data.domain.PageImpl<>(List.of(entry())));
 
@@ -216,7 +216,7 @@ mockMvc.perform(get(AUDIT)).andExpect(status().isUnauthorized());
  * the service, which is asserted directly.
  */
 @Test
-@WithMockUser(roles = "ADMIN")
+@WithMockUser(roles = "OWNER")
 @DisplayName("AC9 - no write verb reaches the audit service")
 void ac9_noWriteVerbMapped() throws Exception {
 mockMvc.perform(post(AUDIT)

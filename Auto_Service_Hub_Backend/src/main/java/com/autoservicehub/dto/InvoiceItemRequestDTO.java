@@ -1,6 +1,8 @@
 package com.autoservicehub.dto;
 
 import com.autoservicehub.entity.BillingItemCategory;
+import com.autoservicehub.serialization.WholeNumberDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -33,6 +35,7 @@ public class InvoiceItemRequestDTO {
 
     @NotNull(message = "quantity is required")
     @Positive(message = "quantity must be greater than 0")
+    @JsonDeserialize(using = WholeNumberDeserializer.class)
     private Integer quantity;
 
     @NotNull(message = "unitPrice is required")

@@ -37,28 +37,28 @@ public class PurchaseController {
      * from the lines; any total in the request body is ignored.
      */
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'INVENTORY_MANAGER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'INVENTORY_MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<PurchaseResponseDTO> create(@Valid @RequestBody PurchaseRequestDTO request) {
         return ApiResponse.ok("Created", service.create(request));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<PurchaseResponseDTO> getById(@PathVariable Long id) {
         return ApiResponse.ok(service.getById(id));
     }
 
     /** GET /api/v1/purchases?page=0&size=20 */
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<Page<PurchaseResponseDTO>> list(Pageable pageable) {
         return ApiResponse.ok(service.list(pageable));
     }
 
     /** Purchase history for one supplier, newest first. */
     @GetMapping("/supplier/{supplierId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<Page<PurchaseResponseDTO>> listBySupplier(@PathVariable Long supplierId,
                                                                   Pageable pageable) {
         return ApiResponse.ok(service.listBySupplier(supplierId, pageable));
@@ -74,7 +74,7 @@ public class PurchaseController {
      * stock moves, no movement is recorded and the purchase stays PENDING.
      */
     @PostMapping("/{id}/receive")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'INVENTORY_MANAGER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'INVENTORY_MANAGER')")
     public ApiResponse<PurchaseResponseDTO> receive(@PathVariable Long id) {
         return ApiResponse.ok("Received", service.receive(id));
     }

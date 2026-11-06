@@ -23,6 +23,8 @@ public class Customer360DTO {
     private String email;
     private String address;
     private String status;
+    private String loyaltyTier;
+    private String notes;
     private LocalDateTime createdAt;
 
     // ── Vehicles (FR-CRM-2) ───────────────────────────────────

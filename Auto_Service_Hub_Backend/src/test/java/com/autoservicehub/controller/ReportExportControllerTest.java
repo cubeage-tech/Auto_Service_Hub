@@ -162,7 +162,7 @@ class ReportExportControllerTest {
     // ── Coverage of every report in both formats ──────────────────────────
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "OWNER")
     @DisplayName("EXC4 every exportable report has a PDF and an Excel endpoint")
     void everyReportHasBothFormats() throws Exception {
         when(exportService.exportPdf(any(), any())).thenReturn(pdfFile());

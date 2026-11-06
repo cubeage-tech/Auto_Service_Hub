@@ -57,6 +57,53 @@ public class BillingCalculator {
     }
 
     /**
+     * Resolves the rate a single document should be taxed at.
+     *
+     * <p>A rate supplied on the request wins, so a caller can bill one job card
+     * at 5% (exempt goods) while the workshop default stays 18%. A request with
+     * no rate falls back to {@code app.billing.tax-rate-percent}, which is what
+     * every client sent before the field existed.
+     *
+     * <p>Three bounds are enforced, not two:
+     * <ul>
+     *   <li>not negative — a negative rate is not a discount, it is a refund</li>
+     *   <li>not above 100 — GST cannot exceed the value of the supply</li>
+     *   <li>no finer than {@link #MONEY_SCALE} decimal places</li>
+     * </ul>
+     *
+     * <p>The scale bound is not a new tax rule, it is a faithfulness one.
+     * {@code invoices.gst_rate} and {@code estimates.gst_rate} are
+     * {@code DECIMAL(...,2)}, so {@code 18.999} would be rounded to {@code 19.00}
+     * by the database while the in-memory value used to compute GST stayed
+     * {@code 18.999}. The API would answer with one number and the stored
+     * document would show another. Rejecting the value keeps the calculated GST
+     * and the persisted rate describing the same tax.
+     *
+     * @param requestedRate the rate from the request, or null to use the default
+     * @return the rate to apply, normalised to a plain percentage
+     * @throws BusinessRuleException if the rate is negative, above 100, or finer
+     *         than money precision
+     */
+    public BigDecimal resolveRate(BigDecimal requestedRate) {
+        BigDecimal rate = requestedRate == null ? taxRatePercent : requestedRate;
+
+        if (rate.signum() < 0) {
+            throw new BusinessRuleException(
+                    "gstRate must not be negative, got: " + rate.toPlainString());
+        }
+        if (rate.compareTo(ONE_HUNDRED) > 0) {
+            throw new BusinessRuleException(
+                    "gstRate must not exceed 100, got: " + rate.toPlainString());
+        }
+        if (rate.stripTrailingZeros().scale() > MONEY_SCALE) {
+            throw new BusinessRuleException(
+                    "gstRate must not have more than " + MONEY_SCALE + " decimal places, got: "
+                            + rate.toPlainString());
+        }
+        return rate.stripTrailingZeros();
+    }
+
+    /**
      * Validates and normalises a client-supplied line item.
      *
      * @throws BusinessRuleException if quantity or unit price is missing, zero,
@@ -115,12 +162,24 @@ public class BillingCalculator {
         return money(subtotal.subtract(discount == null ? BigDecimal.ZERO : discount));
     }
 
-    /** tax = taxable × rate ÷ 100, rounded to money scale. */
+    /** tax = taxable × rate ÷ 100, rounded to money scale, at the configured rate. */
     public BigDecimal tax(BigDecimal taxableAmount) {
+        return tax(taxableAmount, taxRatePercent);
+    }
+
+    /**
+     * tax = taxable × rate ÷ 100, rounded to money scale, at an explicit rate.
+     *
+     * <p>This is the per-document form used once {@link #resolveRate(BigDecimal)}
+     * has decided which rate applies. A null rate falls back to the configured
+     * default rather than silently taxing at zero.
+     */
+    public BigDecimal tax(BigDecimal taxableAmount, BigDecimal ratePercent) {
         if (taxableAmount == null || taxableAmount.signum() == 0) {
             return BigDecimal.ZERO.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
         }
-        return money(taxableAmount.multiply(taxRatePercent).divide(ONE_HUNDRED, 10, RoundingMode.HALF_UP));
+        BigDecimal rate = ratePercent == null ? taxRatePercent : ratePercent;
+        return money(taxableAmount.multiply(rate).divide(ONE_HUNDRED, 10, RoundingMode.HALF_UP));
     }
 
     /** total = taxable + tax. */

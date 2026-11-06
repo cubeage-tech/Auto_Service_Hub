@@ -299,7 +299,7 @@ class AiControllerMechanicAssignmentTest {
     // ── CT11: No sensitive information leakage ────────────────────────────
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "OWNER")
     @DisplayName("CT11 — response body leaks no API key or provider internals")
     void ct11_noSensitiveInformationLeakage() throws Exception {
         when(mechanicAssignmentService.recommend(any()))

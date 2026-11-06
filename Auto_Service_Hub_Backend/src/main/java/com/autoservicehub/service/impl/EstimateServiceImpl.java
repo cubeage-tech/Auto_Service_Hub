@@ -12,6 +12,7 @@ import com.autoservicehub.exception.BusinessRuleException;
 import com.autoservicehub.exception.ResourceNotFoundException;
 import com.autoservicehub.repository.EstimateItemRepository;
 import com.autoservicehub.repository.EstimateRepository;
+import com.autoservicehub.repository.InvoiceRepository;
 import com.autoservicehub.repository.JobCardRepository;
 import com.autoservicehub.service.AuditService;
 import com.autoservicehub.service.EstimateService;
@@ -56,6 +57,7 @@ public class EstimateServiceImpl implements EstimateService {
     private final EstimateRepository     repository;
     private final EstimateItemRepository itemRepository;
     private final JobCardRepository      jobCardRepository;
+    private final InvoiceRepository      invoiceRepository;
     private final InvoiceService         invoiceService;
     private final BillingCalculator      calculator;
     private final AuditService          auditService;
@@ -127,6 +129,16 @@ public class EstimateServiceImpl implements EstimateService {
                 .orElseThrow(() -> new ResourceNotFoundException("Estimate not found: " + id));
         assertNotConverted(existing);
 
+        // Belt and braces alongside assertNotConverted: invoices.estimate_id is
+        // a unique restrictive foreign key, so an estimate that has already
+        // been invoiced must not be deleted even if its status somehow does not
+        // say CONVERTED. Checked first so the caller gets the reason rather
+        // than an opaque constraint violation.
+        if (invoiceRepository.existsByEstimateId(id)) {
+            throw new BusinessRuleException(
+                    "Estimate " + id + " has already been converted to an invoice and cannot be deleted.");
+        }
+
         // Lines are owned by the estimate, so they are removed with it.
         itemRepository.deleteAll(itemRepository.findByEstimateIdOrderByIdAsc(id));
         BigDecimal total = existing.getTotal();
@@ -171,9 +183,35 @@ public class EstimateServiceImpl implements EstimateService {
         // not a computation, so it is carried onto the entity here and validated
         // against the calculated subtotal in recalculate().
         e.setDiscount(r.getDiscount());
+        // The GST rate is a client decision, validated to 0-100 before anything
+        // is written. Omitted means "use the configured default".
+        if (r.getGstRate() != null) {
+            e.setGstRate(calculator.resolveRate(r.getGstRate()));
+        }
         if (r.getStatus() != null) {
             e.setStatus(r.getStatus());
         }
+        // Notes are a free-text remark, not a computed value, so unlike the
+        // money columns they are taken straight from the client. Blank is
+        // normalised to null: clearing the textarea is a real edit, and storing
+        // "" instead of null would make "no notes" and "cleared notes" two
+        // different stored states for the same meaning.
+        e.setNotes(normalizeNotes(r.getNotes()));
+    }
+
+    /**
+     * Collapses a client-supplied note to null when it carries no content.
+     *
+     * <p>Null, empty and whitespace-only all mean "no notes". The result is
+     * trimmed so a stored note never carries the trailing newline a textarea
+     * adds on blur.
+     */
+    private String normalizeNotes(String notes) {
+        if (notes == null) {
+            return null;
+        }
+        String trimmed = notes.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     /**
@@ -224,11 +262,15 @@ public class EstimateServiceImpl implements EstimateService {
         BigDecimal subtotal = calculator.subtotal(lineSum);
         BigDecimal discount = calculator.discount(estimate.getDiscount(), subtotal);
         BigDecimal taxable  = calculator.taxableAmount(subtotal, discount);
-        BigDecimal tax      = calculator.tax(taxable);
+        // The quoted rate is stored, so the document keeps showing what it was
+        // priced at even after the configured default changes.
+        BigDecimal gstRate  = calculator.resolveRate(estimate.getGstRate());
+        BigDecimal tax      = calculator.tax(taxable, gstRate);
         BigDecimal total    = calculator.total(taxable, tax);
 
         estimate.setSubtotal(subtotal);
         estimate.setDiscount(discount);
+        estimate.setGstRate(gstRate);
         estimate.setTax(tax);
         estimate.setTotal(total);
     }
@@ -254,8 +296,10 @@ public class EstimateServiceImpl implements EstimateService {
         dto.setSubtotal(e.getSubtotal());
         dto.setDiscount(e.getDiscount());
         dto.setTax(e.getTax());
+        dto.setGstRate(e.getGstRate());
         dto.setTotal(e.getTotal());
         dto.setStatus(e.getStatus());
+        dto.setNotes(e.getNotes());
         dto.setCreatedAt(e.getCreatedAt());
         dto.setUpdatedAt(e.getUpdatedAt());
 

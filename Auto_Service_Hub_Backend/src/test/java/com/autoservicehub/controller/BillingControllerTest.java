@@ -19,6 +19,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,8 +39,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.mockito.ArgumentCaptor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -67,6 +71,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * CT10 outstanding amount          → 200
  * CT11 MECHANIC may not write billing → 403
  * CT12 anonymous                    → 401
+ * CT16 an out-of-range gstRate       → 409, on both document types
+ * CT18 all four offered rates (18/5/12/28) bind and reach the service intact
  */
 @WebMvcTest(controllers = {EstimateController.class, InvoiceController.class})
 @Import({BillingControllerTest.TestSecurityConfig.class, GlobalExceptionHandler.class})
@@ -308,5 +314,121 @@ class BillingControllerTest {
     @DisplayName("CT12 — anonymous request → 401")
     void ct12_anonymous_returns401() throws Exception {
         mockMvc.perform(get(INVOICES)).andExpect(status().isUnauthorized());
+    }
+
+
+    /* ================================================================
+       Per-document GST rate at the API boundary
+       ================================================================ */
+
+    @Test
+    @WithMockUser(roles = "BILLING_USER")
+    @DisplayName("CT13 — a gstRate on the request is accepted and reaches the service")
+    void ct13_gstRateAccepted_returns201() throws Exception {
+        when(invoiceService.create(any())).thenReturn(invoiceResponse());
+
+        mockMvc.perform(post(INVOICES)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"jobCardId\": 55, \"gstRate\": 5, \"items\": [{ \"description\": \"Brake pads\", \"quantity\": 2, \"unitPrice\": 500.00 }] }"))
+                .andExpect(status().isCreated());
+
+        ArgumentCaptor<InvoiceRequestDTO> captor = ArgumentCaptor.forClass(InvoiceRequestDTO.class);
+        verify(invoiceService).create(captor.capture());
+        org.assertj.core.api.Assertions.assertThat(captor.getValue().getGstRate())
+                .isEqualByComparingTo("5");
+    }
+
+    @Test
+    @WithMockUser(roles = "BILLING_USER")
+    @DisplayName("CT14 — an invoice without gstRate still binds, and defaults server-side")
+    void ct14_gstRateOptional() throws Exception {
+        when(invoiceService.create(any())).thenReturn(invoiceResponse());
+
+        mockMvc.perform(post(INVOICES)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(validEstimateJson()))
+                .andExpect(status().isCreated());
+
+        ArgumentCaptor<InvoiceRequestDTO> captor = ArgumentCaptor.forClass(InvoiceRequestDTO.class);
+        verify(invoiceService).create(captor.capture());
+        org.assertj.core.api.Assertions.assertThat(captor.getValue().getGstRate()).isNull();
+    }
+
+    @Test
+    @WithMockUser(roles = "MECHANIC")
+    @DisplayName("CT15 — a mechanic still cannot raise billing data with a gstRate")
+    void ct15_mechanicWithGstRate_still403() throws Exception {
+        mockMvc.perform(post(INVOICES)
+                        .contentType(MediaType.APPLICATION_JSON)
+.content("{ \"jobCardId\": 55, \"gstRate\": 5, \"items\": [{ \"description\": \"Brake pads\", \"quantity\": 2, \"unitPrice\": 500.00 }] }"))
+                .andExpect(status().isForbidden());
+    }
+
+    /**
+     * The rate is the one tax decision a client may make, so an out-of-range
+     * one has to come back as a business-rule 409 rather than being stored or
+     * silently clamped. Asserted here at the HTTP boundary; the arithmetic
+     * behind it is covered against the real calculator in BillingCalculatorTest.
+     */
+    @ParameterizedTest(name = "invoice gstRate {0} → 409")
+    @ValueSource(strings = {"-1", "101", "1000"})
+    @WithMockUser(roles = "BILLING_USER")
+    @DisplayName("CT16 — an out-of-range gstRate is a 409 on the invoice endpoint")
+    void ct16_invalidGstRate_returns409(String rate) throws Exception {
+        when(invoiceService.create(any())).thenThrow(new BusinessRuleException(
+                "gstRate must not exceed 100, got: " + rate));
+
+        mockMvc.perform(post(INVOICES)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"jobCardId\": 55, \"gstRate\": " + rate
+                                + ", \"items\": [{ \"description\": \"Brake pads\", \"quantity\": 2, \"unitPrice\": 500.00 }] }"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("gstRate")));
+    }
+
+    @ParameterizedTest(name = "estimate gstRate {0} → 409")
+    @ValueSource(strings = {"-1", "101"})
+    @WithMockUser(roles = "BILLING_USER")
+    @DisplayName("CT17 — an out-of-range gstRate is a 409 on the estimate endpoint too")
+    void ct17_invalidGstRateOnEstimate_returns409(String rate) throws Exception {
+        when(estimateService.create(any())).thenThrow(new BusinessRuleException(
+                "gstRate must not exceed 100, got: " + rate));
+
+        mockMvc.perform(post(ESTIMATES)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"jobCardId\": 55, \"gstRate\": " + rate
+                                + ", \"items\": [{ \"description\": \"Brake pads\", \"quantity\": 2, \"unitPrice\": 500.00 }] }"))
+                .andExpect(status().isConflict());
+    }
+
+    /**
+     * A rate is a decision, not a number to be range-checked by bean validation,
+     * so every offered value binds and reaches the service unchanged.
+     */
+    @ParameterizedTest(name = "gstRate {0} reaches the service intact")
+    @ValueSource(strings = {"18", "5", "12", "28"})
+    @WithMockUser(roles = "BILLING_USER")
+    @DisplayName("CT18 — all four offered rates bind on both document types")
+    void ct18_allOfferedRates_bind(String rate) throws Exception {
+        when(invoiceService.create(any())).thenReturn(invoiceResponse());
+        when(estimateService.create(any())).thenThrow(new BusinessRuleException("unused"));
+        String items = "\"items\": [{ \"description\": \"Brake pads\", \"quantity\": 2, \"unitPrice\": 500.00 }]";
+
+        mockMvc.perform(post(INVOICES).contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"jobCardId\": 55, \"gstRate\": " + rate + ", " + items + " }"))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post(ESTIMATES).contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"jobCardId\": 55, \"gstRate\": " + rate + ", " + items + " }"))
+                .andExpect(status().isConflict());
+
+        ArgumentCaptor<InvoiceRequestDTO> invoiceCaptor = ArgumentCaptor.forClass(InvoiceRequestDTO.class);
+        verify(invoiceService).create(invoiceCaptor.capture());
+        org.assertj.core.api.Assertions.assertThat(invoiceCaptor.getValue().getGstRate())
+                .isEqualByComparingTo(rate);
+
+        ArgumentCaptor<EstimateRequestDTO> estimateCaptor = ArgumentCaptor.forClass(EstimateRequestDTO.class);
+        verify(estimateService).create(estimateCaptor.capture());
+        org.assertj.core.api.Assertions.assertThat(estimateCaptor.getValue().getGstRate())
+                .isEqualByComparingTo(rate);
     }
 }

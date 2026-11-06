@@ -124,7 +124,7 @@ export default function DeveloperLogin() {
           ================================================= */}
           <form
             className="developer-login-form"
-            onSubmit={(event) => submit(event, email, password)}
+            onSubmit={(event) => submit(event, email, password, rememberMe)}
           >
             {error && <p role="alert" className="login-error">{error}</p>}
 

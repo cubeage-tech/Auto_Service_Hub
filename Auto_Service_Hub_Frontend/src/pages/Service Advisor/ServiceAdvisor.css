@@ -1,4 +1,346 @@
 :root{--sa-bg:#080909;--sa-panel:#151616;--sa-panel2:#111212;--sa-line:#292a2a;--sa-text:#f2f2ef;--sa-muted:#777b80;--sa-lime:#d5ff32;--sa-blue:#69b5ed;--sa-purple:#b37ae8;--sa-green:#78d37e;--sa-orange:#e8a631}
-.sa-shell{min-height:100vh;background:var(--sa-bg);color:var(--sa-text);display:flex;font-family:Arial,Helvetica,sans-serif}.sa-sidebar{width:218px;background:#0d0f0f;border-right:1px solid #292a2a;display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:10}.sa-logo-row{height:58px;border-bottom:1px solid #292a2a;display:flex;align-items:center;padding:0 14px;gap:12px}.sa-logo-icon{width:25px;height:25px;border-radius:5px;background:var(--sa-lime);color:#0c0d0d;display:grid;place-items:center;font-size:11px;font-weight:900}.sa-logo{font-size:11px;font-weight:900;letter-spacing:.2px}.sa-nav{padding-top:12px}.sa-nav-item{height:40px;display:flex;align-items:center;gap:12px;padding:0 15px;color:#73787d;text-decoration:none;font-size:13px;border-left:2px solid transparent}.sa-nav-item:hover{color:#ddd}.sa-nav-item.active{color:var(--sa-lime);background:#181b13;border-left-color:var(--sa-lime)}.sa-nav-icon{width:14px;text-align:center;font-size:15px}.sa-sidebar-bottom{margin-top:auto;height:48px;border-top:1px solid #292a2a;display:flex;align-items:center}.sa-collapse{border:0;background:none;color:#777;font-size:24px;width:45px;cursor:pointer}.sa-main{margin-left:218px;width:calc(100% - 218px);min-height:100vh}.sa-topbar{height:49px;border-bottom:1px solid #292a2a;display:flex;align-items:center;justify-content:space-between;padding:0 20px}.sa-breadcrumb{font-size:12px;color:#70757a;display:flex;gap:10px}.sa-breadcrumb strong{color:#ddd}.sa-top-actions{display:flex;align-items:center;gap:10px}.sa-role{font-size:9px;font-weight:800;color:var(--sa-lime);border:1px solid #3b4d18;background:#151a0f;padding:5px 8px;border-radius:3px}.sa-alert-count{font-size:10px;color:#777;border:1px solid #292a2a;padding:5px 8px;border-radius:7px}.sa-alert-count i{display:inline-block;width:5px;height:5px;border-radius:50%;background:#73d483;margin-right:6px}.sa-avatar{width:29px;height:29px;border-radius:50%;border:0;background:var(--sa-lime);color:#111;cursor:pointer}.sa-page{padding:24px 21px 36px}.sa-page-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}.sa-kicker,.sa-stat-label,.sa-card-head,.sa-job-label,.sa-package-tag{font-size:9px;text-transform:uppercase;letter-spacing:1.4px;color:#777c80}.sa-title{font-size:25px;line-height:1;margin:7px 0 0;font-weight:900;letter-spacing:-.4px}.sa-primary{background:var(--sa-lime);color:#0c0d0d;border:0;border-radius:3px;padding:9px 13px;font-size:9px;font-weight:900;cursor:pointer}.sa-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}.sa-stat{background:#151616;border:1px solid #292a2a;border-radius:6px;min-height:77px;padding:13px 15px}.sa-stat-value{font-size:23px;font-weight:800;margin-top:7px}.sa-stat-note{font-size:10px;color:#777;margin-top:5px}.sa-grid-main{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(300px,.85fr);gap:18px}.sa-card{background:#151616;border:1px solid #292a2a;border-radius:6px;overflow:hidden}.sa-card-head{padding:14px;border-bottom:1px solid #292a2a;color:#8a8e91}.sa-table{width:100%;border-collapse:collapse;font-size:10px}.sa-table th{text-align:left;color:#777c80;text-transform:uppercase;letter-spacing:.8px;font-size:8px;font-weight:500;padding:10px 14px;border-bottom:1px solid #292a2a;white-space:nowrap}.sa-table td{padding:11px 14px;border-bottom:1px solid #292a2a;color:#747a7f;white-space:nowrap}.sa-table tbody tr:last-child td{border-bottom:0}.sa-table strong{color:#e9e9e6;font-weight:700}.sa-table small{font-size:9px;color:#70757a}.sa-id{color:var(--sa-lime)!important;font-weight:800}.sa-status{display:inline-block;padding:4px 7px;border:1px solid;border-radius:3px;font-size:9px;font-weight:700}.status-repair{color:#62c972;background:#102012;border-color:#285e31}.status-qc{color:#bd78ec;background:#24152e;border-color:#683c87}.status-delivered{color:#bde832;background:#242e12;border-color:#52651e}.status-inspection{color:#e5a72d;background:#2a210f;border-color:#6b4b18}.status-received{color:#68b5ee;background:#12212a;border-color:#28516b}.status-confirmed{color:#c7ec3c;background:#253010;border-color:#52651d}.status-progress{color:#73d07a;background:#102214;border-color:#285d31}.status-pending{color:#e8a62c;background:#2a210f;border-color:#6b4b18}.sa-side-stack{display:grid;gap:18px}.sa-list{padding:8px 14px}.sa-list-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #292a2a;font-size:11px}.sa-list-row:last-child{border-bottom:0}.sa-list-left{display:flex;align-items:center;gap:8px}.sa-dot{width:5px;height:5px;border-radius:50%;background:#d9ed38}.sa-dot.green{background:#74d17a}.sa-list-count{font-size:9px;color:#777}.sa-alert{padding:10px 14px;border-bottom:1px solid #292a2a}.sa-alert:last-child{border-bottom:0}.sa-alert-top{font-size:10px;font-weight:700;color:#ddd}.sa-alert-icon{margin-right:8px}.sa-alert small{display:block;color:#777;margin:3px 0 0 24px;font-size:9px}.sa-bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}.sa-chart{height:125px;padding:15px}.sa-chart-grid{height:78px;display:flex;align-items:flex-end;gap:12px;border-bottom:1px solid #292a2a}.sa-chart-bar{width:13%;height:var(--h);background:#202222;border-top:2px solid var(--sa-lime)}.sa-days{display:grid;grid-template-columns:repeat(7,1fr);font-size:9px;color:#70757a;text-align:center;padding-top:9px}.sa-bars{padding:11px 14px 15px}.sa-bar-row{margin:8px 0}.sa-bar-label{display:flex;justify-content:space-between;color:#ddd;font-size:10px;margin-bottom:5px}.sa-progress{height:4px;background:#1e2020;border-radius:4px}.sa-progress i{display:block;height:100%;width:var(--w);background:var(--sa-lime);border-radius:4px}.sa-progress.blue i{background:var(--sa-blue)}.sa-progress.purple i{background:var(--sa-purple)}.sa-progress.green i{background:var(--sa-green)}.sa-toolbar{display:flex;gap:10px;margin-bottom:12px}.sa-search,.sa-filter{background:#151616;border:1px solid #292a2a;color:#bbb;border-radius:5px;height:36px;padding:0 11px;font-size:11px;outline:none}.sa-search{width:335px}.sa-filter{flex:1}.sa-wide-table{background:#151616;border:1px solid #292a2a;border-radius:6px;overflow:auto}.sa-date-tabs{display:flex;gap:8px;margin-bottom:12px}.sa-tab{background:#171919;border:1px solid #292a2a;color:#70757a;border-radius:4px;padding:8px 14px;font-size:8px;font-weight:800;cursor:pointer}.sa-tab.active{background:var(--sa-lime);color:#111;border-color:var(--sa-lime)}.sa-details,.sa-edit{background:#151616;border:1px solid #292a2a;color:#777;border-radius:4px;padding:6px 9px;font-size:9px;cursor:pointer}.sa-job-list{display:grid;gap:10px}.sa-job{background:#151616;border:1px solid #292a2a;border-radius:6px;padding:14px}.sa-job-top{display:grid;grid-template-columns:1.1fr 1.2fr .7fr .8fr .5fr;gap:20px;align-items:center}.sa-job-value{font-size:11px;color:#ddd;font-weight:700}.sa-job-sub{font-size:9px;color:#70757a;margin-top:4px}.sa-job-amount{font-size:14px;font-weight:800;color:#ddd;margin-bottom:7px}.sa-stepper{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:15px}.sa-step{border-top:3px solid #1e2020;padding-top:5px;color:#666;font-size:9px}.sa-step.done{border-color:var(--sa-lime);color:#777}.sa-package-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.sa-package{background:#151616;border:1px solid #292a2a;border-radius:6px;min-height:540px;display:flex;flex-direction:column;overflow:hidden}.sa-package.popular{border-color:#a9c933}.sa-popular{position:absolute;right:0;top:0;background:var(--sa-lime);color:#111;padding:6px 9px;font-size:8px;font-weight:900}.sa-package-head{padding:17px 17px 15px;border-bottom:1px solid #292a2a}.sa-package-icon{width:34px;height:34px;border:1px solid #555;border-radius:7px;display:grid;place-items:center;margin-bottom:12px}.sa-package-tag{color:#72b9ef}.sa-package-name{font-size:13px;font-weight:900;margin-top:9px}.sa-package-duration{font-size:9px;color:#777;margin-top:7px}.sa-package-price{font-size:22px;font-weight:900;padding:17px 17px 0}.sa-package-gst{font-size:9px;color:#777;padding:3px 17px 12px}.sa-package-body{padding:0 17px;flex:1}.sa-feature{font-size:9px;color:#74797c;margin:9px 0}.sa-feature:before{content:'✓';color:var(--sa-lime);margin-right:7px}.sa-includes{text-transform:uppercase;color:#777;font-size:9px;letter-spacing:1px;border-top:1px solid #292a2a;margin-top:14px;padding-top:12px}.sa-chip{display:inline-block;background:#1b1d1d;border:1px solid #292a2a;color:#777;border-radius:3px;font-size:8px;padding:4px 6px;margin:7px 5px 0 0}.sa-package-footer{border-top:1px solid #292a2a;padding:12px;display:flex;gap:7px}.sa-apply{flex:1;border:0;border-radius:3px;background:var(--sa-lime);color:#111;font-size:8px;font-weight:900}.sa-edit{width:42px}
+.sa-shell{min-height:100vh;background:var(--sa-bg);color:var(--sa-text);display:flex;font-family:Arial,Helvetica,sans-serif}.sa-sidebar{width:203px;background:#0d0f0f;border-right:1px solid #292a2a;display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:10}.sa-logo-row{height:58px;border-bottom:1px solid #292a2a;display:flex;align-items:center;padding:0 14px;gap:12px}.sa-logo-icon{width:25px;height:25px;border-radius:5px;background:var(--sa-lime);color:#0c0d0d;display:grid;place-items:center;font-size:11px;font-weight:900}.sa-logo{font-size:11px;font-weight:900;letter-spacing:.2px}.sa-nav{padding-top:12px}.sa-nav-item{height:40px;display:flex;align-items:center;gap:12px;padding:0 15px;color:#73787d;text-decoration:none;font-size:13px;border-left:2px solid transparent}.sa-nav-item:hover{color:#ddd}.sa-nav-item.active{color:var(--sa-lime);background:#181b13;border-left-color:var(--sa-lime)}.sa-nav-icon{width:14px;text-align:center;font-size:15px}.sa-sidebar-bottom{margin-top:auto;height:48px;border-top:1px solid #292a2a;display:flex;align-items:center}.sa-collapse{border:0;background:none;color:#777;font-size:24px;width:45px;cursor:pointer}.sa-main{margin-left:203px;width:calc(100% - 203px);min-height:100vh}.sa-topbar{height:49px;border-bottom:1px solid #292a2a;display:flex;align-items:center;justify-content:space-between;padding:0 20px}.sa-breadcrumb{font-size:12px;color:#70757a;display:flex;gap:10px}.sa-breadcrumb strong{color:#ddd}.sa-top-actions{display:flex;align-items:center;gap:10px}.sa-role{font-size:9px;font-weight:800;color:var(--sa-lime);border:1px solid #3b4d18;background:#151a0f;padding:5px 8px;border-radius:3px}.sa-alert-count{font-size:10px;color:#777;border:1px solid #292a2a;padding:5px 8px;border-radius:7px}.sa-alert-count i{display:inline-block;width:5px;height:5px;border-radius:50%;background:#73d483;margin-right:6px}.sa-avatar{width:29px;height:29px;border-radius:50%;border:0;background:var(--sa-lime);color:#111;cursor:pointer}.sa-page{padding:24px 21px 36px}.sa-page-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}.sa-kicker,.sa-stat-label,.sa-card-head,.sa-job-label,.sa-package-tag{font-size:9px;text-transform:uppercase;letter-spacing:1.4px;color:#777c80}.sa-title{font-size:25px;line-height:1;margin:7px 0 0;font-weight:900;letter-spacing:-.4px}.sa-primary{background:var(--sa-lime);color:#0c0d0d;border:0;border-radius:3px;padding:9px 13px;font-size:9px;font-weight:900;cursor:pointer}.sa-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}.sa-stat{background:#151616;border:1px solid #292a2a;border-radius:6px;min-height:77px;padding:13px 15px}.sa-stat-value{font-size:23px;font-weight:800;margin-top:7px}.sa-stat-note{font-size:10px;color:#777;margin-top:5px}.sa-grid-main{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(300px,.85fr);gap:18px}.sa-card{background:#151616;border:1px solid #292a2a;border-radius:6px;overflow:hidden}.sa-card-head{padding:14px;border-bottom:1px solid #292a2a;color:#8a8e91}.sa-table{width:100%;border-collapse:collapse;font-size:10px}.sa-table th{text-align:left;color:#777c80;text-transform:uppercase;letter-spacing:.8px;font-size:8px;font-weight:500;padding:10px 14px;border-bottom:1px solid #292a2a;white-space:nowrap}.sa-table td{padding:11px 14px;border-bottom:1px solid #292a2a;color:#747a7f;white-space:nowrap}.sa-table tbody tr:last-child td{border-bottom:0}.sa-table strong{color:#e9e9e6;font-weight:700}.sa-table small{font-size:9px;color:#70757a}.sa-id{color:var(--sa-lime)!important;font-weight:800}.sa-status{display:inline-block;padding:4px 7px;border:1px solid;border-radius:3px;font-size:9px;font-weight:700}.status-repair{color:#62c972;background:#102012;border-color:#285e31}.status-qc{color:#bd78ec;background:#24152e;border-color:#683c87}.status-delivered{color:#bde832;background:#242e12;border-color:#52651e}.status-inspection{color:#e5a72d;background:#2a210f;border-color:#6b4b18}.status-received{color:#68b5ee;background:#12212a;border-color:#28516b}.status-confirmed{color:#c7ec3c;background:#253010;border-color:#52651d}.status-progress{color:#73d07a;background:#102214;border-color:#285d31}.status-pending{color:#e8a62c;background:#2a210f;border-color:#6b4b18}.sa-side-stack{display:grid;gap:18px}.sa-list{padding:8px 14px}.sa-list-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #292a2a;font-size:11px}.sa-list-row:last-child{border-bottom:0}.sa-list-left{display:flex;align-items:center;gap:8px}.sa-dot{width:5px;height:5px;border-radius:50%;background:#d9ed38}.sa-dot.green{background:#74d17a}.sa-list-count{font-size:9px;color:#777}.sa-alert{padding:10px 14px;border-bottom:1px solid #292a2a}.sa-alert:last-child{border-bottom:0}.sa-alert-top{font-size:10px;font-weight:700;color:#ddd}.sa-alert-icon{margin-right:8px}.sa-alert small{display:block;color:#777;margin:3px 0 0 24px;font-size:9px}.sa-bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}.sa-chart{height:125px;padding:15px}.sa-chart-grid{height:78px;display:flex;align-items:flex-end;gap:12px;border-bottom:1px solid #292a2a}.sa-chart-bar{width:13%;height:var(--h);background:#202222;border-top:2px solid var(--sa-lime)}.sa-days{display:grid;grid-template-columns:repeat(7,1fr);font-size:9px;color:#70757a;text-align:center;padding-top:9px}.sa-bars{padding:11px 14px 15px}.sa-bar-row{margin:8px 0}.sa-bar-label{display:flex;justify-content:space-between;color:#ddd;font-size:10px;margin-bottom:5px}.sa-progress{height:4px;background:#1e2020;border-radius:4px}.sa-progress i{display:block;height:100%;width:var(--w);background:var(--sa-lime);border-radius:4px}.sa-progress.blue i{background:var(--sa-blue)}.sa-progress.purple i{background:var(--sa-purple)}.sa-progress.green i{background:var(--sa-green)}.sa-toolbar{display:flex;gap:10px;margin-bottom:12px}.sa-search,.sa-filter{background:#151616;border:1px solid #292a2a;color:#bbb;border-radius:5px;height:36px;padding:0 11px;font-size:11px;outline:none}.sa-search{width:335px}.sa-filter{flex:1}.sa-wide-table{background:#151616;border:1px solid #292a2a;border-radius:6px;overflow:auto}.sa-date-tabs{display:flex;gap:8px;margin-bottom:12px}.sa-tab{background:#171919;border:1px solid #292a2a;color:#70757a;border-radius:4px;padding:8px 14px;font-size:8px;font-weight:800;cursor:pointer}.sa-tab.active{background:var(--sa-lime);color:#111;border-color:var(--sa-lime)}.sa-details,.sa-edit{background:#151616;border:1px solid #292a2a;color:#777;border-radius:4px;padding:6px 9px;font-size:9px;cursor:pointer}.sa-job-list{display:grid;gap:10px}.sa-job{background:#151616;border:1px solid #292a2a;border-radius:6px;padding:14px}.sa-job-top{display:grid;grid-template-columns:1.1fr 1.2fr .7fr .8fr .5fr;gap:20px;align-items:center}.sa-job-value{font-size:11px;color:#ddd;font-weight:700}.sa-job-sub{font-size:9px;color:#70757a;margin-top:4px}.sa-job-amount{font-size:14px;font-weight:800;color:#ddd;margin-bottom:7px}.sa-stepper{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:15px}.sa-step{border-top:3px solid #1e2020;padding-top:5px;color:#666;font-size:9px}.sa-step.done{border-color:var(--sa-lime);color:#777}.sa-package-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.sa-package{background:#151616;border:1px solid #292a2a;border-radius:6px;min-height:540px;display:flex;flex-direction:column;overflow:hidden}.sa-package.popular{border-color:#a9c933}.sa-popular{position:absolute;right:0;top:0;background:var(--sa-lime);color:#111;padding:6px 9px;font-size:8px;font-weight:900}.sa-package-head{padding:17px 17px 15px;border-bottom:1px solid #292a2a}.sa-package-icon{width:34px;height:34px;border:1px solid #555;border-radius:7px;display:grid;place-items:center;margin-bottom:12px}.sa-package-tag{color:#72b9ef}.sa-package-name{font-size:13px;font-weight:900;margin-top:9px}.sa-package-duration{font-size:9px;color:#777;margin-top:7px}.sa-package-price{font-size:22px;font-weight:900;padding:17px 17px 0}.sa-package-gst{font-size:9px;color:#777;padding:3px 17px 12px}.sa-package-body{padding:0 17px;flex:1}.sa-feature{font-size:9px;color:#74797c;margin:9px 0}.sa-feature:before{content:'✓';color:var(--sa-lime);margin-right:7px}.sa-includes{text-transform:uppercase;color:#777;font-size:9px;letter-spacing:1px;border-top:1px solid #292a2a;margin-top:14px;padding-top:12px}.sa-chip{display:inline-block;background:#1b1d1d;border:1px solid #292a2a;color:#777;border-radius:3px;font-size:8px;padding:4px 6px;margin:7px 5px 0 0}.sa-package-footer{border-top:1px solid #292a2a;padding:12px;display:flex;gap:7px}.sa-apply{flex:1;border:0;border-radius:3px;background:var(--sa-lime);color:#111;font-size:8px;font-weight:900}.sa-edit{width:42px}
 @media(max-width:1100px){.sa-sidebar{width:190px}.sa-main{margin-left:190px;width:calc(100% - 190px)}.sa-stats{grid-template-columns:repeat(2,1fr)}.sa-package-grid{grid-template-columns:repeat(2,1fr)}.sa-grid-main,.sa-bottom-grid{grid-template-columns:1fr}.sa-job-top{grid-template-columns:1fr 1fr 1fr}}
 @media(max-width:700px){.sa-sidebar{width:60px}.sa-logo{display:none}.sa-nav-item span:last-child{display:none}.sa-main{margin-left:60px;width:calc(100% - 60px)}.sa-top-actions .sa-alert-count,.sa-role{display:none}.sa-page{padding:16px 10px}.sa-stats,.sa-package-grid{grid-template-columns:1fr}.sa-job-top{grid-template-columns:1fr 1fr}.sa-search{width:100%}.sa-toolbar{flex-wrap:wrap}.sa-filter{min-width:140px}}
+
+/* =========================================================
+   DASHBOARD STATE STYLES
+   Appended for the API-connected dashboard. Uses the existing
+   --sa-* tokens so the dark design is unchanged.
+   ========================================================= */
+
+.sa-state{padding:16px 14px;color:#777c80;font-size:10px;line-height:1.5}
+.sa-state[role=alert]{color:#e0785f}
+.sa-banner{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:9px 13px;background:#1d1412;border:1px solid #5c2f27;border-radius:5px;color:#e5a294;font-size:10px}
+.sa-retry{background:#2a1a17;border:1px solid #6b3a30;color:#e5a294;border-radius:3px;padding:5px 11px;font-size:9px;font-weight:800;letter-spacing:.5px;cursor:pointer}
+.sa-retry:hover{background:#35201c;border-color:#8a4a3d}
+.sa-chart-total{margin-top:9px;color:#70757a;font-size:9px;text-align:right}
+
+/* Keeps all seven Active Job Cards columns reachable: .sa-card clips overflow
+   and .sa-table cells are nowrap, so the table scrolls instead of truncating. */
+.sa-table-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.sa-table-scroll .sa-table{min-width:640px}
+
+/* =========================================================
+   NEW CUSTOMER MODAL
+   Dark panel using the existing --sa-* tokens.
+   ========================================================= */
+
+.sa-success{margin-bottom:13px;padding:9px 13px;background:#131c0e;border:1px solid #3d5a20;border-radius:5px;color:#c3e87f;font-size:10px}
+
+/* Centred dialog. margin:auto keeps it centred when the viewport has room
+   and lets the overlay scroll instead of clipping when the form is taller
+   than a short screen. */
+.sa-modal-overlay{position:fixed;inset:0;z-index:60;background:rgba(3,4,4,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;padding:40px 16px;overflow-y:auto}
+.sa-modal{width:100%;max-width:560px;margin:auto;background:#151616;border:1px solid #292a2a;border-radius:8px;box-shadow:0 18px 50px rgba(0,0,0,.6)}
+.sa-modal-header{display:flex;align-items:center;justify-content:space-between;padding:15px 17px;border-bottom:1px solid #292a2a}
+.sa-modal-title{margin:0;font-size:12px;font-weight:900;letter-spacing:1.4px;color:var(--sa-text)}
+.sa-modal-close{background:none;border:0;color:#777b80;font-size:20px;line-height:1;cursor:pointer;padding:0 2px}
+.sa-modal-close:hover:not(:disabled){color:#fff}
+.sa-modal-close:disabled{opacity:.4;cursor:not-allowed}
+
+.sa-modal-form{padding:17px;display:flex;flex-direction:column;gap:13px}
+.sa-modal-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.sa-modal-field{display:flex;flex-direction:column;gap:6px}
+.sa-modal-field>span{font-size:9px;text-transform:uppercase;letter-spacing:1.4px;color:#777c80}
+.sa-modal-input{width:100%;box-sizing:border-box;background:#111212;border:1px solid #292a2a;border-radius:5px;color:var(--sa-text);font-family:Arial,Helvetica,sans-serif;font-size:11px;padding:9px 11px;outline:none}
+.sa-modal-input:focus{border-color:var(--sa-lime)}
+.sa-modal-input:disabled{opacity:.6;cursor:not-allowed}
+.sa-modal-textarea{resize:vertical;line-height:1.5}
+.sa-modal-error{margin:0;padding:9px 11px;background:#1d1412;border:1px solid #5c2f27;border-radius:5px;color:#e5a294;font-size:10px;line-height:1.5}
+/* Footer: the lime CREATE CUSTOMER button takes the full remaining width;
+   Cancel stays a compact secondary action. */
+.sa-modal-footer{display:flex;align-items:center;gap:12px;padding-top:3px}
+.sa-modal-cancel,.sa-modal-submit{border-radius:4px;padding:11px 16px;font-size:9px;font-weight:900;letter-spacing:.6px;cursor:pointer}
+.sa-modal-cancel{flex:0 0 auto;background:#181a1a;border:1px solid #292a2a;color:#9a9ea2}
+.sa-modal-cancel:hover:not(:disabled){border-color:#3a3d3d;color:#ddd}
+.sa-modal-submit{flex:1 1 auto;background:var(--sa-lime);border:1px solid var(--sa-lime);color:#0c0d0d}
+.sa-modal-submit:hover:not(:disabled){background:#e2ff5c}
+.sa-modal-cancel:disabled,.sa-modal-submit:disabled{opacity:.55;cursor:not-allowed}
+
+@media(max-width:600px){.sa-modal-row{grid-template-columns:1fr}.sa-modal-overlay{padding:20px 10px}}
+
+/* Inline error + retry shown in place of the customer table rows. */
+.sa-list-error{display:flex;align-items:center;gap:11px;color:#e5a294;font-size:10px}
+
+/* Non-blocking advisory inside the vehicle modal (e.g. customer picker failed). */
+.sa-modal-note{margin:0;padding:9px 11px;background:#1a1610;border:1px solid #564526;border-radius:5px;color:#d9b27a;font-size:10px;line-height:1.5}
+/* Date inputs render a light native picker glyph against the dark panel. */
+.sa-modal-input[type=date],.sa-modal-input[type=time]{color-scheme:dark}
+.sa-details:disabled{opacity:.45;cursor:not-allowed}
+
+/* =========================================================
+   REGISTER VEHICLE MODAL
+   Scoped with .sa-modal--scroll so the New Customer modal keeps its
+   original sizing and behaviour.
+   Compact width, and the form body scrolls while the header and
+   the lime footer stay pinned and reachable on short screens.
+   ========================================================= */
+
+.sa-modal--scroll{width:100%;max-width:480px;max-height:calc(100vh - 56px);display:flex;flex-direction:column}
+.sa-modal--scroll .sa-modal-header{flex:0 0 auto}
+.sa-modal--scroll .sa-modal-form{flex:1 1 auto;min-height:0;overflow-y:auto;padding:16px 17px 0}
+.sa-modal--scroll .sa-modal-footer{position:sticky;bottom:0;margin:3px -17px 0;padding:13px 17px;background:#151616;border-top:1px solid #292a2a}
+
+/* Engine and chassis share one labelled column, per the reference layout. */
+.sa-modal-pair{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+
+/* =========================================================
+   MODAL SELECT CONTROLS
+   The dropdown popup is drawn by the OS, not the page, so it cannot be
+   styled with CSS. `color-scheme: dark` is the only reliable lever for a
+   dark popup in Chromium-based browsers; the rules below keep the closed
+   control consistent with the text inputs and keep the text readable.
+   ========================================================= */
+
+select.sa-modal-input{color-scheme:dark;-webkit-appearance:menulist;appearance:auto;cursor:pointer;padding-right:26px}
+select.sa-modal-input:disabled{cursor:not-allowed;opacity:.6}
+select.sa-modal-input option{background:#151616;color:#f2f2ef;font-family:Arial,Helvetica,sans-serif;font-size:11px}
+
+/* =========================================================
+   VIEW VEHICLE MODAL
+   Read-only counterpart to the register modal: same panel, header
+   and footer, but the body scrolls on its own so a long notes
+   field never pushes the Close button off screen.
+   ========================================================= */
+
+.sa-modal--details{width:100%;max-width:520px;max-height:calc(100vh - 56px);display:flex;flex-direction:column}
+.sa-modal--details .sa-modal-header{flex:0 0 auto}
+.sa-modal-body{padding:16px 17px;overflow-y:auto;flex:1 1 auto;min-height:0}
+.sa-detail-status{margin:6px 0;text-align:center;color:#777;font-size:10px}
+.sa-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+.sa-detail-field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.sa-detail-field>span{font-size:9px;text-transform:uppercase;letter-spacing:1.4px;color:#777c80}
+.sa-detail-value{font-size:12px;font-weight:700;color:var(--sa-text);word-break:break-word}
+.sa-detail-reg{color:var(--sa-lime);font-size:15px;letter-spacing:.4px}
+.sa-detail-notes{font-weight:400;font-size:11px;line-height:1.55;color:#c3c6c3;white-space:pre-wrap}
+.sa-detail-wide{grid-column:1/-1}
+.sa-modal-footer--plain{border-top:1px solid #292a2a;padding:13px 17px}
+.sa-modal-footer--plain .sa-modal-cancel{width:100%}
+
+@media(max-width:600px){.sa-detail-grid{grid-template-columns:1fr}}
+
+/* =========================================================
+   NEW APPOINTMENT MODAL
+   Recreated from the Garage Figma reference: a near-black
+   blurred scrim over a dark charcoal panel, compact uppercase
+   labels, and a lime primary action pinned to a scrolling body.
+
+   Scoped with .sa-modal--appointment so the register-vehicle and
+   details dialogs on this page keep their existing sizing.
+   ========================================================= */
+
+/* Stronger scrim than the shared overlay, per the reference. */
+.sa-modal-overlay--strong{background:rgba(2,3,3,.82);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
+
+.sa-modal--appointment{width:100%;max-width:520px;max-height:calc(100vh - 56px);display:flex;flex-direction:column}
+.sa-modal--appointment .sa-modal-header{flex:0 0 auto;padding:14px 18px}
+.sa-modal--appointment .sa-modal-form{flex:1 1 auto;min-height:0;overflow-y:auto;padding:15px 18px 0;gap:12px}
+.sa-modal--appointment .sa-modal-footer{position:sticky;bottom:0;margin:3px -18px 0;padding:13px 18px;background:#151616;border-top:1px solid #292a2a}
+
+/* Grouped controls (radio row) share the field label styling. */
+.sa-modal-group{border:0;margin:0;padding:0;min-width:0}
+.sa-modal-legend{padding:0;margin:0 0 7px;font-size:9px;text-transform:uppercase;letter-spacing:1.4px;color:#777c80}
+
+/* Radio chips. The native input stays in the accessibility tree and keeps
+   arrow-key navigation inside the group; only its colour is themed. */
+.sa-choice-row{display:flex;gap:7px;flex-wrap:wrap}
+.sa-choice{display:inline-flex;align-items:center;gap:7px;background:#111212;border:1px solid #292a2a;border-radius:5px;padding:8px 12px;font-size:10px;color:#9a9ea2;cursor:pointer;min-height:33px;user-select:none}
+.sa-choice:hover{border-color:#3a3d3d}
+.sa-choice.active{border-color:var(--sa-lime);background:#141a0d;color:#e8ffa6}
+.sa-choice input{width:13px;height:13px;margin:0;accent-color:var(--sa-lime);cursor:pointer;flex:0 0 auto}
+.sa-choice input:disabled{cursor:not-allowed}
+.sa-choice:has(input:focus-visible){outline:2px solid var(--sa-lime);outline-offset:2px}
+.sa-choice:has(input:disabled){opacity:.6;cursor:not-allowed}
+
+/* Pickup / drop keeps the existing checkbox treatment with the longer
+   explanatory copy the reference uses. */
+.sa-modal-check{display:flex;align-items:flex-start;gap:9px;background:#111212;border:1px solid #292a2a;border-radius:5px;padding:10px 11px;cursor:pointer}
+.sa-modal-check:hover{border-color:#3a3d3d}
+.sa-modal-check input{width:14px;height:14px;margin-top:1px;accent-color:var(--sa-lime);cursor:pointer;flex:0 0 auto}
+.sa-modal-check input:disabled{cursor:not-allowed}
+.sa-modal-check>span{font-size:10px;line-height:1.5;color:#9a9ea2;letter-spacing:0}
+
+@media(max-width:600px){.sa-modal--appointment{max-height:calc(100vh - 24px)}.sa-choice{font-size:9px;padding:7px 10px}}
+
+/* =========================================================
+   NEW JOB CARD MODAL
+   Narrower and tighter than the shared dialog, per the reference:
+   a 460px panel with 11px gaps between fields. The lime primary
+   button and dark secondary Cancel come from the shared footer
+   rules; only the width and rhythm are overridden here.
+   ========================================================= */
+
+.sa-modal--jobcard{width:100%;max-width:460px}
+.sa-modal--jobcard .sa-modal-form{gap:11px}
+.sa-modal--jobcard .sa-modal-field{gap:5px}
+
+@media(max-width:600px){.sa-modal--jobcard{max-width:100%}}
+
+/* =========================================================
+   PACKAGES PAGE
+   The accent a package is drawn in comes from the API's own
+   `color` token (lime|blue|purple|orange|green|red). Each
+   modifier sets one local custom property on the card, and the
+   rules below read it — so the shared .sa-package rules above
+   stay untouched and the existing four-column / two-column /
+   one-column breakpoints keep working unchanged.
+
+   Red has no --sa-* token in this theme yet, so it is defined
+   here at the same weight as the others.
+   ========================================================= */
+
+.sa-pkg--lime{--sa-pkg-accent:var(--sa-lime)}
+.sa-pkg--blue{--sa-pkg-accent:var(--sa-blue)}
+.sa-pkg--purple{--sa-pkg-accent:var(--sa-purple)}
+.sa-pkg--orange{--sa-pkg-accent:var(--sa-orange)}
+.sa-pkg--green{--sa-pkg-accent:var(--sa-green)}
+.sa-pkg--red{--sa-pkg-accent:#e8735f}
+
+/* Re-pointed at the card's own accent. Same specificity as the base
+   rules they follow in this file, so the later declaration wins. */
+.sa-package-icon{border-color:var(--sa-pkg-accent,var(--sa-lime));color:var(--sa-pkg-accent,var(--sa-lime))}
+.sa-package-tag{color:var(--sa-pkg-accent,var(--sa-blue))}
+.sa-feature:before{color:var(--sa-pkg-accent,var(--sa-lime))}
+.sa-popular{background:var(--sa-pkg-accent,var(--sa-lime))}
+.sa-apply{background:var(--sa-pkg-accent,var(--sa-lime))}
+.sa-chip{border-color:var(--sa-pkg-accent,var(--sa-line))}
+
+.sa-apply:disabled{opacity:.4;cursor:not-allowed}
+
+/* A deactivated package is still listed but must not read as sellable. */
+.sa-package-inactive{opacity:.62}
+.sa-inactive-badge{position:absolute;left:0;top:0;background:#3a2f0e;border:1px solid #6b5a22;color:#e0c072;padding:6px 9px;font-size:8px;font-weight:900;letter-spacing:1px;border-radius:0 0 4px 0}
+
+/* Advertised discount sits between the price and the GST line. */
+.sa-package-discount{font-size:9px;color:#c3e87f;padding:4px 17px 0}
+
+/* Loading / error / empty rows span the whole grid so they read as a
+   page-level state rather than as a single card in the first column. */
+.sa-packages-state{grid-column:1/-1;padding:34px 17px;text-align:center;color:#777c80;font-size:10px;line-height:1.6}
+.sa-packages-state .sa-list-error{justify-content:center}
+
+/* =========================================================
+   PACKAGE MODAL & CARD ACTIONS
+   Dialog chrome comes from the shared .sa-modal-* rules; only
+   the package-specific controls below are new.
+   ========================================================= */
+
+/* Footer: the lime Apply button keeps flex:1 from the base .sa-apply
+   rule; Edit and the activation toggle split what is left evenly. */
+.sa-pkg-action{flex:1 1 0;min-width:0;border:1px solid var(--sa-line);background:#181a1a;color:#9a9ea2;border-radius:3px;padding:6px 7px;font-size:8px;font-weight:900;letter-spacing:.4px;cursor:pointer;white-space:nowrap}
+.sa-pkg-action:hover:not(:disabled){border-color:#3a3d3d;color:#ddd}
+.sa-pkg-action:disabled{opacity:.45;cursor:not-allowed}
+
+/* The header's NEW PACKAGE button is disabled while the list is still
+   loading, so it cannot open a modal with nothing to edit against. */
+.sa-primary:disabled{opacity:.5;cursor:not-allowed}
+
+/* Package colour swatches — the six tokens the backend accepts. */
+.sa-color-row{display:flex;gap:8px;flex-wrap:wrap}
+.sa-color-swatch{width:26px;height:26px;border-radius:5px;border:1px solid var(--sa-line);cursor:pointer;padding:0}
+.sa-color-swatch:hover:not(:disabled){border-color:#4a4d4d}
+.sa-color-swatch.selected{border-color:#fff;box-shadow:0 0 0 2px #0d0f0f,0 0 0 3px #fff}
+.sa-color-swatch:disabled{opacity:.5;cursor:not-allowed}
+.sa-color-swatch--lime{background:var(--sa-lime)}
+.sa-color-swatch--blue{background:var(--sa-blue)}
+.sa-color-swatch--purple{background:var(--sa-purple)}
+.sa-color-swatch--orange{background:var(--sa-orange)}
+.sa-color-swatch--green{background:var(--sa-green)}
+.sa-color-swatch--red{background:#e8735f}
+
+/* One PackageItemRequestDTO per row: name, type, remove. */
+.sa-item-list{display:flex;flex-direction:column;gap:7px}
+.sa-item-row{display:grid;grid-template-columns:1fr 92px 28px;gap:7px;align-items:center}
+.sa-item-type{padding:9px 8px;font-size:10px}
+.sa-item-remove{width:28px;height:100%;min-height:33px;background:#181a1a;border:1px solid var(--sa-line);color:#9a9ea2;border-radius:5px;font-size:16px;line-height:1;cursor:pointer;padding:0}
+.sa-item-remove:hover:not(:disabled){border-color:#5c2f27;color:#e5a294}
+.sa-item-remove:disabled{opacity:.45;cursor:not-allowed}
+
+.sa-item-add{align-self:flex-start;background:#181a1a;border:1px dashed #3a3d3d;color:#9a9ea2;border-radius:5px;padding:8px 12px;font-size:9px;font-weight:900;letter-spacing:.6px;cursor:pointer}
+.sa-item-add:hover:not(:disabled){border-color:var(--sa-lime);color:var(--sa-lime)}
+.sa-item-add:disabled{opacity:.45;cursor:not-allowed}
+
+@media(max-width:600px){.sa-item-row{grid-template-columns:1fr 28px}.sa-item-type{grid-column:1;grid-row:2}}
+
+/* =========================================================
+   APPLY PACKAGE DIALOG
+   Real count of vehicles already holding a package, read from
+   the applications endpoint.
+   ========================================================= */
+
+.sa-applied-count{margin-top:7px;font-size:9px;font-weight:700;letter-spacing:.3px;color:var(--sa-pkg-accent,var(--sa-lime))}
+
+/* Terms that will be snapshotted onto the application row, shown
+   before applying so the advisor can see what gets recorded. The
+   package's own accent tints the left edge. */
+.sa-apply-summary{background:#111212;border:1px solid var(--sa-line);border-left:3px solid var(--sa-pkg-accent,var(--sa-lime));border-radius:5px;padding:11px 13px}
+.sa-apply-summary-name{font-size:12px;font-weight:800;color:var(--sa-text)}
+.sa-apply-summary-terms{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;font-size:10px;color:#9a9ea2}
+.sa-apply-summary-terms span:first-child{color:var(--sa-pkg-accent,var(--sa-lime));font-weight:800}
+
+/* The apply dialog body scrolls on its own so the APPLY PACKAGE button stays
+   reachable when the customer list is long. Header and footer stay pinned. */
+.sa-modal--apply{width:100%;max-width:520px;max-height:calc(100vh - 56px);display:flex;flex-direction:column}
+.sa-modal--apply .sa-modal-header{flex:0 0 auto}
+.sa-modal--apply .sa-modal-form{flex:1 1 auto;min-height:0;overflow-y:auto}
+
+@media(max-width:600px){.sa-modal--apply{max-height:calc(100vh - 24px)}}
+
+/* =========================================================
+   PACKAGES PAGE — FIGMA ALIGNMENT
+   Scoped with .sa-page--packages so the catalogue sits directly
+   under the breadcrumb and its four cards line up in one row at
+   the reference desktop width, without touching the other pages
+   that share these tokens.
+   ========================================================= */
+
+.sa-page--packages{padding:16px 20px 24px}
+
+/* Statistics, immediately below the breadcrumb, at the reference's
+   compact rhythm. */
+.sa-page--packages .sa-stats{gap:10px;margin-bottom:14px}
+.sa-page--packages .sa-stat{min-height:84px;padding:12px 14px}
+.sa-page--packages .sa-stat-label{font-size:9px;letter-spacing:1.3px}
+.sa-page--packages .sa-stat-value{font-size:22px;margin-top:6px}
+.sa-page--packages .sa-stat-note{font-size:9px;margin-top:4px}
+
+/* The compact create action that replaced the removed header
+   button. Same handler and modal; only the weight changed. */
+.sa-packages-toolbar{display:flex;justify-content:flex-end;margin-bottom:12px}
+.sa-packages-new{height:28px;padding:0 12px;background:var(--sa-lime);color:#0c0d0d;border:0;border-radius:4px;font-size:9px;font-weight:900;letter-spacing:.6px;cursor:pointer}
+.sa-packages-new:hover:not(:disabled){background:#e2ff5c}
+.sa-packages-new:disabled{opacity:.5;cursor:not-allowed}
+
+/* Four cards in one row with equal heights. The cap keeps the whole
+   grid inside a 900px-tall viewport; the tallest card's feature list
+   scrolls inside its own card rather than pushing every card down. */
+.sa-page--packages .sa-package-grid{gap:12px}
+.sa-page--packages .sa-package{min-height:0;max-height:calc(100vh - 236px);border-radius:8px}
+
+/* Accent, applied to the icon's tint, the type label, the checkmarks,
+   the discount line, the popular outline and the Apply button. */
+.sa-package-icon{background:color-mix(in srgb,var(--sa-pkg-accent,var(--sa-lime)) 14%,transparent)}
+.sa-package-discount{color:var(--sa-pkg-accent,var(--sa-lime));font-weight:700}
+.sa-package.popular{border-color:var(--sa-pkg-accent,var(--sa-lime))}
+
+/* Tighter vertical rhythm inside the card, with the type held at a
+   readable size. */
+.sa-package-head{padding:14px 15px 12px}
+.sa-package-icon{width:34px;height:34px;font-size:15px;margin-bottom:10px}
+.sa-package-name{font-size:14px;margin-top:7px}
+.sa-package-duration{font-size:10px;margin-top:5px}
+.sa-package-price{font-size:24px;padding:13px 15px 0}
+.sa-package-discount{padding:5px 15px 0;font-size:10px}
+.sa-package-gst{font-size:10px;padding:3px 15px 11px}
+.sa-package-body{padding:0 15px 4px;flex:1 1 auto;min-height:0;overflow-y:auto}
+.sa-feature{font-size:10px;line-height:1.35;margin:7px 0}
+.sa-includes{margin-top:12px;padding-top:10px;font-size:9px}
+.sa-chip{margin:6px 4px 0 0}
+
+/* One flex column per card: the body takes the slack and the actions
+   stay pinned to the bottom edge of every card. */
+.sa-package-footer{flex:0 0 auto;padding:10px 12px;gap:6px}
+.sa-package-body::-webkit-scrollbar{width:5px}
+.sa-package-body::-webkit-scrollbar-thumb{background:#2b2d2d;border-radius:3px}
+.sa-package-body::-webkit-scrollbar-track{background:transparent}

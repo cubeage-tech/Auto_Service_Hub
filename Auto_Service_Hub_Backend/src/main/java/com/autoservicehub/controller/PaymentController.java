@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.*;
  * Billing - Payments (SRS 4.9)
  * Base path: /api/v1/payments
  * All endpoints require a valid JWT and are further restricted by role (SRS 13).
+ *
+ * <p>SRS 13 gives the Manager view-only access to billing, so MANAGER appears on
+ * every read guard below and on none of the write guards: create, update and
+ * delete stay with OWNER and BILLING_USER.
  */
 @RestController
 @RequestMapping("/api/v1/payments")
@@ -25,27 +29,27 @@ public class PaymentController {
     private final PaymentService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'BILLING_USER')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<PaymentResponseDTO> create(@Valid @RequestBody PaymentRequestDTO request) {
         return ApiResponse.ok("Created", service.create(request));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'BILLING_USER')")
     public ApiResponse<PaymentResponseDTO> update(@PathVariable Long id,
                                                     @Valid @RequestBody PaymentRequestDTO request) {
         return ApiResponse.ok("Updated", service.update(id, request));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<PaymentResponseDTO> getById(@PathVariable Long id) {
         return ApiResponse.ok(service.getById(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<Page<PaymentResponseDTO>> list(Pageable pageable) {
         return ApiResponse.ok(service.list(pageable));
     }
@@ -58,7 +62,7 @@ public class PaymentController {
      * Restricted to the same roles that may already read a payment by id.
      */
     @GetMapping("/invoice/{invoiceId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<Page<PaymentResponseDTO>> listByInvoice(
             @PathVariable Long invoiceId,
             Pageable pageable) {
@@ -66,7 +70,7 @@ public class PaymentController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'BILLING_USER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);

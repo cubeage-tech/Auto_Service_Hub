@@ -29,6 +29,31 @@ public class JobCardResponseDTO {
     private String inspectionStatus;
     private List<InspectionItemResponseDTO> inspectionItems;
 
+    /* ---- Linked service package (display only) ---- */
+
+    /**
+     * The applied package this job is carried out under, when one is linked.
+     * Null for a job card raised without a package, which is the normal case.
+     */
+    private Long packageApplicationId;
+
+    /** The linked package's terms, read from the application snapshot. */
+    private String packageName;
+    private String packageType;
+    private String packageDuration;
+    private BigDecimal packagePrice;
+    private BigDecimal packageGstRate;
+    private BigDecimal packageDiscountPercentage;
+
+    /**
+     * The SERVICE items the linked package includes, in catalogue order.
+     *
+     * <p>Presentation only. Nothing here is marked complete or consumed, and an
+     * empty list means the linked package bundles no service tasks — not that
+     * the job has none outstanding.
+     */
+    private List<String> packageServices;
+
     private Integer odometerReading;
     private LocalDateTime estimatedDelivery;
     private BigDecimal estimatedCost;

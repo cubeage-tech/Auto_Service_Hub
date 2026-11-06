@@ -17,7 +17,7 @@ public class DashboardController {
     private final ReportService reportService;
 
     @GetMapping("/summary")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<DashboardSummaryDTO> summary() {
         return ApiResponse.ok(reportService.getDashboardSummary());
     }

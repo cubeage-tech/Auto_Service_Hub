@@ -63,5 +63,10 @@ public enum AuditAction {
     CUSTOMER_DELETE,
     VEHICLE_CREATE,
     VEHICLE_UPDATE,
-    VEHICLE_DELETE
+    VEHICLE_DELETE,
+
+    // ── User accounts (SRS 13 Roles & Permissions) ───────────────────────
+    // Handing out access is a change of who can do what, which is exactly the
+    // kind of change this trail exists to answer for.
+    USER_CREATE
 }

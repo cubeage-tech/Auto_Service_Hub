@@ -1,8 +1,34 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import "./CustomerLogin.css";
 
 function CustomerLogin() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [rememberMe, setRememberMe] = useState(true);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    const formData = new FormData(e.currentTarget);
+    try {
+      await login(
+        formData.get("username"),
+        formData.get("password"),
+        rememberMe
+      );
+      navigate("/customer-dashboard");
+    } catch (loginError) {
+      setError(loginError.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="login-container">
       {/* LEFT SIDE - BRANDING */}
@@ -54,28 +80,44 @@ function CustomerLogin() {
             <h2 className="form-title">SIGN IN</h2>
             <p className="form-subtitle">Enter your credentials to access the Customer workspace.</p>
 
-            <form onSubmit={(e) => e.preventDefault()}>
+            <form onSubmit={handleLogin}>
+              {error && <p role="alert">{error}</p>}
               <div className="input-group">
                 <label>EMAIL ADDRESS</label>
-                <input type="email" placeholder="you@garage.com" defaultValue="you@garage.com" />
+                <input
+                  name="username"
+                  type="text"
+                  placeholder="you@garage.com"
+                  autoComplete="username"
+                  required
+                />
               </div>
 
               <div className="input-group">
                 <label>PASSWORD</label>
-                <input type="password" defaultValue="••••••••••••" />
+                <input
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                />
               </div>
 
               <div className="form-actions">
                 <label className="remember-me">
-                  <input type="checkbox" defaultChecked />
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  />
                   <span>Remember me</span>
                 </label>
                 <a href="#forgot" className="forgot-pass">Forgot password?</a>
               </div>
 
-              <Link to="/dashboard" className="submit-btn">
-                ACCESS PLATFORM →
-              </Link>
+              <button type="submit" className="submit-btn" disabled={loading}>
+                {loading ? "SIGNING IN..." : "ACCESS PLATFORM →"}
+              </button>
             </form>
           </div>
         </div>

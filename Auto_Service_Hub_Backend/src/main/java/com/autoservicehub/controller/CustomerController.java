@@ -30,7 +30,7 @@ public class CustomerController {
      * POST /api/v1/customers
      */
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<CustomerResponseDTO> create(
             @Valid @RequestBody CustomerRequestDTO request) {
@@ -42,7 +42,7 @@ public class CustomerController {
      * PUT /api/v1/customers/{id}
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     public ApiResponse<CustomerResponseDTO> update(
             @PathVariable Long id,
             @Valid @RequestBody CustomerRequestDTO request) {
@@ -75,7 +75,7 @@ public class CustomerController {
      * PATCH /api/v1/customers/{id}/deactivate
      */
     @PatchMapping("/{id}/deactivate")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     public ApiResponse<Void> deactivate(@PathVariable Long id) {
         service.deactivate(id);
         return ApiResponse.ok("Customer deactivated", null);
@@ -86,7 +86,7 @@ public class CustomerController {
      * DELETE /api/v1/customers/{id}
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);

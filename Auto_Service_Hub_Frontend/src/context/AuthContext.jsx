@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useEffect, useState } from "react";
+import React, { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import { getUser, login as authenticate, logout as clearSession } from "../services/authService";
 
 export const AuthContext = createContext(null);
@@ -6,8 +6,8 @@ export const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(getUser);
 
-  const login = useCallback(async (username, password) => {
-    const authenticatedUser = await authenticate(username, password);
+  const login = useCallback(async (username, password, rememberMe) => {
+    const authenticatedUser = await authenticate(username, password, rememberMe);
     setUser(authenticatedUser);
     return authenticatedUser;
   }, []);
@@ -23,9 +23,10 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener("autoservicehub:unauthorized", expireSession);
   }, []);
 
-  return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: Boolean(user) }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ user, login, logout, isAuthenticated: Boolean(user) }),
+    [user, login, logout]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

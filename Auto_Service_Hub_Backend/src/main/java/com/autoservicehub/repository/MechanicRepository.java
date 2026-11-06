@@ -19,4 +19,7 @@ public interface MechanicRepository extends JpaRepository<Mechanic, Long>, JpaSp
      * candidate pool for AI Mechanic Assignment. Derived query — no schema change.
      */
     List<Mechanic> findByStatusIgnoreCase(String status);
+
+    /** Used by MechanicServiceImpl to guarantee employee-code uniqueness. */
+    boolean existsByEmployeeCode(String employeeCode);
 }

@@ -28,9 +28,18 @@ public class InvoiceResponseDTO {
     private BigDecimal subtotal;
     private BigDecimal discount;
     private BigDecimal gst;
+
+    /**
+     * The GST percentage actually applied to this document. Null means the
+     * configured workshop default was used.
+     */
+    private BigDecimal gstRate;
     private BigDecimal total;
     private String status;
     private LocalDate invoiceDate;
+
+    /** Free-text remarks saved with this invoice, or null when none were given. */
+    private String notes;
     private List<InvoiceItemResponseDTO> items;
 
     /** Sum of this invoice's successful payments. */

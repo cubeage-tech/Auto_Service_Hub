@@ -34,6 +34,14 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long>, JpaSpec
      */
     Optional<Invoice> findByEstimateId(Long estimateId);
 
+    /**
+     * Whether an invoice has already been raised from this estimate.
+     *
+     * <p>Exists so estimate deletion can refuse with a readable reason before
+     * the {@code invoices.estimate_id} foreign key rejects the delete.
+     */
+    boolean existsByEstimateId(Long estimateId);
+
     // ── Existing dashboard / report queries ───────────────────────────────
     @Query("SELECT COALESCE(SUM(i.total), 0) FROM Invoice i WHERE i.invoiceDate = CURRENT_DATE")
     BigDecimal sumTodayRevenue();

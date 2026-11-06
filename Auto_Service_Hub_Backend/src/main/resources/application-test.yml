@@ -37,6 +37,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        # The git-ignored application.yml pins MySQLDialect for the real MySQL
+        # deployment. Profile files MERGE over the base file, so without an
+        # explicit override the test profile would inherit MySQLDialect and the
+        # MySQL DDL it generates is not executable on H2, so the schema never
+        # gets created. Pin H2Dialect here exactly like the @DataJpaTest classes
+        # (e.g. ServicePackagePersistenceTest) do.
+        dialect: org.hibernate.dialect.H2Dialect
 
   # ── Mail disabled for tests ──────────────────────────────────────────────
   mail:
@@ -49,6 +56,10 @@ app:
     # Base64-encoded 48 bytes; satisfies the HS256 minimum key length.
     secret: dGVzdC1vbmx5LW5vbi1wcm9kdWN0aW9uLWp3dC1zaWduaW5nLWtleS0tLTAwMDAwMDAwMDA=
     access-token-expiry-ms: 3600000
+    # JwtTokenProvider reads all three props; supplying them here keeps the test
+    # context self-sufficient on any checkout (the real values live in the
+    # git-ignored application.yml and must not be relied on by tests).
+    refresh-token-expiry-ms: 604800000
 
   cors:
     allowed-origins: http://localhost:5173,http://localhost:3000

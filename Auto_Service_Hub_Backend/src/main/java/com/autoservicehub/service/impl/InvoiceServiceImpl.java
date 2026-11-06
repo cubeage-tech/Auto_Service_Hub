@@ -155,6 +155,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         Invoice existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found: " + id));
         assertNotSettled(existing);
+        assertHasNoPayments(existing);
 
         // Lines are owned by the invoice, so they are removed with it.
         itemRepository.deleteAll(itemRepository.findByInvoiceIdOrderByIdAsc(id));
@@ -232,6 +233,13 @@ public class InvoiceServiceImpl implements InvoiceService {
         // The one client-decided money value carries across; it is re-validated
         // against the recalculated subtotal below.
         invoice.setDiscount(estimate.getDiscount());
+        // The quoted GST rate carries across with it, so converting an estimate
+        // never re-prices the customer. Null falls back to the configured default.
+        invoice.setGstRate(estimate.getGstRate());
+        // Whatever was written on the quote carries onto the invoice, for the
+        // same reason the discount and rate do: converting must not silently
+        // discard the advisor's remarks. Null stays null.
+        invoice.setNotes(estimate.getNotes());
 
         Invoice saved = repository.save(invoice);
         convertLines(lines, saved);
@@ -316,12 +324,40 @@ public class InvoiceServiceImpl implements InvoiceService {
         // not a computation, so it is carried onto the entity here and validated
         // against the calculated subtotal in recalculate().
         e.setDiscount(r.getDiscount());
+        // The GST rate is the second client decision. Validated to 0-100 here so
+        // a bad rate is rejected before anything is written, then normalised and
+        // stored by recalculate(). Omitted means "use the configured default".
+        if (r.getGstRate() != null) {
+            e.setGstRate(calculator.resolveRate(r.getGstRate()));
+        }
         if (r.getStatus() != null) {
             e.setStatus(resolveClientStatus(r.getStatus()));
         }
         if (r.getInvoiceDate() != null) {
             e.setInvoiceDate(r.getInvoiceDate());
         }
+        // Notes are a free-text remark, not a computed value, so unlike the
+        // money columns they are taken straight from the client. Blank is
+        // normalised to null: clearing the textarea is a real edit, and storing
+        // "" instead of null would make "no notes" and "cleared notes" two
+        // different stored states for the same meaning. This mirrors how
+        // JobTask clears work notes.
+        e.setNotes(normalizeNotes(r.getNotes()));
+    }
+
+    /**
+     * Collapses a client-supplied note to null when it carries no content.
+     *
+     * <p>Null, empty and whitespace-only all mean "no notes". The result is
+     * trimmed so a stored note never carries the trailing newline a textarea
+     * adds on blur.
+     */
+    private String normalizeNotes(String notes) {
+        if (notes == null) {
+            return null;
+        }
+        String trimmed = notes.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     /**
@@ -555,11 +591,15 @@ public class InvoiceServiceImpl implements InvoiceService {
         BigDecimal subtotal = calculator.subtotal(lineSum);
         BigDecimal discount = calculator.discount(invoice.getDiscount(), subtotal);
         BigDecimal taxable  = calculator.taxableAmount(subtotal, discount);
-        BigDecimal gst      = calculator.tax(taxable);
+        // The rate is stored on the invoice, so a converted invoice keeps the
+        // rate its estimate was quoted at. Falls back to the configured default.
+        BigDecimal gstRate  = calculator.resolveRate(invoice.getGstRate());
+        BigDecimal gst      = calculator.tax(taxable, gstRate);
         BigDecimal total    = calculator.total(taxable, gst);
 
         invoice.setSubtotal(subtotal);
         invoice.setDiscount(discount);
+        invoice.setGstRate(gstRate);
         invoice.setGst(gst);
         invoice.setTotal(total);
     }
@@ -569,6 +609,28 @@ public class InvoiceServiceImpl implements InvoiceService {
         if ("PAID".equalsIgnoreCase(invoice.getStatus())) {
             throw new BusinessRuleException(
                     "Invoice " + invoice.getId() + " is already PAID and can no longer be modified or deleted.");
+        }
+    }
+
+    /**
+     * An invoice that has a payment recorded against it cannot be deleted.
+     *
+     * <p>{@code payments.invoice_id} is a restrictive foreign key with no
+     * cascade, so the delete would fail at the database and surface as an
+     * opaque HTTP 500 {@code DataIntegrityViolationException}. Worse, the
+     * only ways to "make it work" — nulling the FK or cascading the delete —
+     * would silently discard a customer's proof of payment.
+     *
+     * <p>So the invoice is kept and the caller is told why. A PARTIALLY_PAID
+     * invoice is deliberately deletable in name only: once any payment exists
+     * this guard answers first, because the payment history is the part that
+     * must survive. Voiding a payment is the supported way to reverse one.
+     */
+    private void assertHasNoPayments(Invoice invoice) {
+        if (paymentRepository.existsByInvoiceId(invoice.getId())) {
+            throw new BusinessRuleException(
+                    "Invoice " + invoice.getId() + " has recorded payments and cannot be deleted. "
+                    + "Void or delete the payments first if the invoice was raised in error.");
         }
     }
 
@@ -608,9 +670,11 @@ public class InvoiceServiceImpl implements InvoiceService {
         dto.setSubtotal(e.getSubtotal());
         dto.setDiscount(e.getDiscount());
         dto.setGst(e.getGst());
+        dto.setGstRate(e.getGstRate());
         dto.setTotal(e.getTotal());
         dto.setStatus(e.getStatus());
         dto.setInvoiceDate(e.getInvoiceDate());
+        dto.setNotes(e.getNotes());
         dto.setCreatedAt(e.getCreatedAt());
         dto.setUpdatedAt(e.getUpdatedAt());
 

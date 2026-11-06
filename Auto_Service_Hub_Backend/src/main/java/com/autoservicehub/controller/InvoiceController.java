@@ -26,6 +26,10 @@ import java.nio.charset.StandardCharsets;
  * Billing - Invoices (SRS 4.9)
  * Base path: /api/v1/invoices
  * All endpoints require a valid JWT and are further restricted by role (SRS 13).
+ *
+ * <p>SRS 13 gives the Manager view-only access to billing, so MANAGER appears on
+ * every read guard below and on none of the write guards: create, update, delete
+ * and add-labour stay with OWNER and BILLING_USER.
  */
 @RestController
 @RequestMapping("/api/v1/invoices")
@@ -38,27 +42,27 @@ public class InvoiceController {
     private final InvoiceDocumentService documentService;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'BILLING_USER')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<InvoiceResponseDTO> create(@Valid @RequestBody InvoiceRequestDTO request) {
         return ApiResponse.ok("Created", service.create(request));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'BILLING_USER')")
     public ApiResponse<InvoiceResponseDTO> update(@PathVariable Long id,
                                                     @Valid @RequestBody InvoiceRequestDTO request) {
         return ApiResponse.ok("Updated", service.update(id, request));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<InvoiceResponseDTO> getById(@PathVariable Long id) {
         return ApiResponse.ok(service.getById(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<Page<InvoiceResponseDTO>> list(Pageable pageable) {
         return ApiResponse.ok(service.list(pageable));
     }
@@ -68,7 +72,7 @@ public class InvoiceController {
      * GET /api/v1/invoices/job-card/{jobCardId}?page=0&size=20
      */
     @GetMapping("/job-card/{jobCardId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<Page<InvoiceResponseDTO>> listByJobCard(
             @PathVariable Long jobCardId,
             Pageable pageable) {
@@ -83,7 +87,7 @@ public class InvoiceController {
      * invoice is never more permissive than reading one.
      */
     @GetMapping("/{id}/pdf")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ResponseEntity<byte[]> pdf(@PathVariable Long id) {
         return download(documentService.toPdf(id));
     }
@@ -93,7 +97,7 @@ public class InvoiceController {
      * GET /api/v1/invoices/{id}/xlsx
      */
     @GetMapping("/{id}/xlsx")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ResponseEntity<byte[]> excel(@PathVariable Long id) {
         return download(documentService.toExcel(id));
     }
@@ -128,7 +132,7 @@ public class InvoiceController {
      * for an unknown invoice or task.
      */
     @PostMapping("/{id}/labour")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'BILLING_USER')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<InvoiceResponseDTO> addLabourItem(
             @PathVariable Long id,
@@ -141,13 +145,13 @@ public class InvoiceController {
      * GET /api/v1/invoices/{id}/outstanding
      */
     @GetMapping("/{id}/outstanding")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<BigDecimal> getOutstandingAmount(@PathVariable Long id) {
         return ApiResponse.ok(service.getOutstandingAmount(id));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'BILLING_USER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);

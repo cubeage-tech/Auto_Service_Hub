@@ -37,13 +37,13 @@ public class JobTaskController {
     private final JobTaskService service;
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<JobTaskResponseDTO> getById(@PathVariable Long id) {
         return ApiResponse.ok(service.getById(id));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     public ApiResponse<JobTaskResponseDTO> update(@PathVariable Long id,
                                                    @Valid @RequestBody JobTaskRequestDTO request) {
         return ApiResponse.ok("Updated", service.update(id, request));
@@ -58,7 +58,7 @@ public class JobTaskController {
      * PENDING / IN_PROGRESS / COMPLETED / CANCELLED.
      */
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     public ApiResponse<JobTaskResponseDTO> updateStatus(
             @PathVariable Long id,
             @Valid @RequestBody JobTaskStatusRequestDTO request) {
@@ -73,7 +73,7 @@ public class JobTaskController {
      * {@code workNotes} clears the notes rather than storing a blank string.
      */
     @PutMapping("/{id}/work-notes")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     public ApiResponse<JobTaskResponseDTO> updateWorkNotes(
             @PathVariable Long id,
             @RequestBody JobTaskWorkNotesRequestDTO request) {
@@ -89,7 +89,7 @@ public class JobTaskController {
      * the task's cost. Returns 404 for an unknown task or mechanic.
      */
     @PutMapping("/{id}/mechanic")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     public ApiResponse<JobTaskResponseDTO> assignMechanic(
             @PathVariable Long id,
             @RequestBody JobTaskAssignMechanicRequestDTO request) {
@@ -97,7 +97,7 @@ public class JobTaskController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);

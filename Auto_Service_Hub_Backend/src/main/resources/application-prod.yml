@@ -37,10 +37,16 @@ app:
     full-name: ${ADMIN_BOOTSTRAP_FULL_NAME:}
   jwt:
     # No default. The development placeholder must not be reachable in prod —
-    # a known signing key would let anyone forge an ADMIN token.
+    # a known signing key would let anyone forge an OWNER token.
     secret: ${JWT_SECRET}
     access-token-expiry-ms: 3600000
     refresh-token-expiry-ms: 604800000
+
+  govid:
+    # No default. Government / Aadhaar IDs are encrypted with AES-GCM and the
+    # key must come from the environment. A missing variable therefore blocks
+    # Government ID submission loudly instead of silently storing nothing.
+    encryption-key: ${MECHANIC_GOVID_ENCRYPTION_KEY}
 
   cors:
     # No default: the deployed frontend origins must be stated explicitly, so

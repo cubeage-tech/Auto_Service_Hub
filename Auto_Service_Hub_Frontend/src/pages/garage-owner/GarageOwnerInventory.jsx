@@ -1,7 +1,98 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { partsApi } from "../../services/resources";
-import { getErrorMessage } from "../../services/api";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  createPart,
+  createSupplier,
+  getLowStockParts,
+  getParts,
+  getSuppliers,
+} from "../../services/inventoryService";
 import "./GarageOwnerInventory.css";
+
+const DEFAULT_SUPPLIER_ORDER = [
+  "Castrol India",
+  "Bosch India",
+  "Shell India",
+  "NGK India",
+  "MRF Ltd",
+  "Amaron India",
+  "Mahle Filters",
+  "Mann Filters",
+];
+
+/**
+ * Part categories, mirroring the backend's PartCategory enum.
+ *
+ * <p>The API sends each category as its readable label ("Engine Parts") and
+ * accepts either that label or the enum constant name, so these values can be
+ * posted straight back.
+ */
+const PART_CATEGORIES = [
+  "Lubricants",
+  "Brakes",
+  "Filters",
+  "Ignition",
+  "Tyres",
+  "Electrical",
+  "Engine Parts",
+  "Suspension",
+  "Other",
+];
+
+const UNCATEGORISED = "Uncategorised";
+const NOT_SET = "—";
+const NO_SUPPLIER = "Not Assigned";
+
+const EMPTY_PART_FORM = {
+  partName: "",
+  sku: "",
+  category: "Lubricants",
+  unit: "Piece",
+  openingStock: "0",
+  minimumQty: "0",
+  unitPrice: "",
+  sellingPrice: "",
+  supplier: "",
+  storageLocation: "",
+  hsnCode: "",
+};
+
+const formatPrice = (value) =>
+  `₹${Number(value ?? 0).toLocaleString("en-IN")}`;
+
+const toCount = (value) => {
+  const count = Number(value);
+  return Number.isFinite(count) ? count : 0;
+};
+
+/** Map a PartResponseDTO onto the row shape the existing table renders. */
+function toInventoryRow(part) {
+  const stock = toCount(part.stockQty);
+  const minQty = toCount(part.minStock);
+
+  return {
+    id: part.id,
+    sku: part.sku ?? "",
+    name: part.name ?? "",
+    category: part.category ?? UNCATEGORISED,
+    location: part.storageLocation ?? NOT_SET,
+    hsnCode: part.hsnCode ?? NOT_SET,
+    stock,
+    minQty,
+    unitCost:
+      part.purchasePrice == null ? null : Number(part.purchasePrice),
+    price:
+      part.purchasePrice == null
+        ? NOT_SET
+        : formatPrice(part.purchasePrice),
+    supplier: part.supplierName ?? NO_SUPPLIER,
+    status:
+      stock === 0
+        ? "Out of Stock"
+        : stock <= minQty
+        ? "Low Stock"
+        : "OK",
+  };
+}
 
 function GarageOwnerInventory() {
   /* =====================================================
@@ -9,16 +100,33 @@ function GarageOwnerInventory() {
   ===================================================== */
 
   const [inventory, setInventory] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [suppliers, setSuppliers] = useState([]);
+  const [lowStockIds, setLowStockIds] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+  const [loadError, setLoadError] = useState("");
+  const [createError, setCreateError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  useEffect(() => {
-    partsApi.list()
-      .then(setInventory)
-      .catch((requestError) => setError(getErrorMessage(requestError)))
-      .finally(() => setLoading(false));
-  }, []);
+  const orderedSuppliers = useMemo(() => {
+    const map = new Map(suppliers.map((s) => [s.name, s]));
+    const result = [];
+
+    DEFAULT_SUPPLIER_ORDER.forEach((name) => {
+      if (map.has(name)) {
+        result.push(map.get(name));
+        map.delete(name);
+      } else {
+        result.push({ id: name, name });
+      }
+    });
+
+    map.forEach((s) => {
+      result.push(s);
+    });
+
+    return result;
+  }, [suppliers]);
 
 
   /* =====================================================
@@ -26,6 +134,7 @@ function GarageOwnerInventory() {
   ===================================================== */
 
   const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All Categories");
   const [stockFilter, setStockFilter] = useState("All Stock");
 
 
@@ -34,29 +143,75 @@ function GarageOwnerInventory() {
   ===================================================== */
 
   const [showAddPart, setShowAddPart] = useState(false);
-  const [movementPart, setMovementPart] = useState(null);
-  const [movementForm, setMovementForm] = useState({ movementType: "IN", quantity: "1", reason: "" });
-  const [savingMovement, setSavingMovement] = useState(false);
 
 
   /* =====================================================
      ADD PART FORM
   ===================================================== */
 
-  const [partForm, setPartForm] = useState({
-    partName: "",
-    sku: "",
-    unit: "Piece",
-    openingStock: "0",
-    minimumQty: "0",
-    unitPrice: "",
-    sellingPrice: "",
-  });
+  const [partForm, setPartForm] = useState(EMPTY_PART_FORM);
+
+
+  /* =====================================================
+     LOAD INVENTORY
+  ===================================================== */
+
+  const loadInventory = useCallback(async ({ showLoading = true } = {}) => {
+    if (showLoading) {
+      setIsLoading(true);
+    }
+    setLoadError("");
+
+    try {
+      // The low-stock feed and the supplier list are supporting detail: if
+      // either is unavailable the page still renders from the parts list.
+      const [parts, lowStockParts, supplierList] = await Promise.all([
+        getParts(),
+        getLowStockParts().catch(() => null),
+        getSuppliers().catch(() => []),
+      ]);
+
+      setInventory(parts.map(toInventoryRow));
+      setLowStockIds(
+        lowStockParts
+          ? new Set(lowStockParts.map((part) => String(part.id)))
+          : null
+      );
+      setSuppliers(supplierList);
+
+      return true;
+    } catch (error) {
+      setLoadError(
+        error instanceof Error
+          ? error.message
+          : "Unable to load inventory."
+      );
+      return false;
+    } finally {
+      if (showLoading) {
+        setIsLoading(false);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadInventory();
+  }, [loadInventory]);
 
 
   /* =====================================================
      CATEGORIES
   ===================================================== */
+
+// "All Categories" plus every category actually present in the loaded parts.
+const categories = useMemo(
+    () => [
+      "All Categories",
+      ...Array.from(new Set(inventory.map((item) => item.category))),
+    ],
+    [inventory]
+  );
+
 
   /* =====================================================
      FILTERED INVENTORY
@@ -68,38 +223,74 @@ function GarageOwnerInventory() {
 
       const searchMatch =
         item.sku.toLowerCase().includes(searchValue) ||
-        item.name.toLowerCase().includes(searchValue);
+        item.name.toLowerCase().includes(searchValue) ||
+        item.category.toLowerCase().includes(searchValue) ||
+        item.location.toLowerCase().includes(searchValue) ||
+        item.hsnCode.toLowerCase().includes(searchValue) ||
+        item.supplier.toLowerCase().includes(searchValue);
+
+      const categoryMatch =
+        category === "All Categories" ||
+        item.category === category;
 
       let stockMatch = true;
 
       if (stockFilter === "Low Stock") {
-        stockMatch = item.lowStock && item.stockQty > 0;
+        stockMatch =
+          item.stock <= item.minQty &&
+          item.stock > 0;
       }
 
       if (stockFilter === "Out of Stock") {
-        stockMatch = item.stockQty === 0;
+        stockMatch = item.stock === 0;
       }
 
       if (stockFilter === "In Stock") {
-        stockMatch = !item.lowStock && item.stockQty > 0;
+        stockMatch = item.stock > item.minQty;
       }
 
-      return searchMatch && stockMatch;
+      return (
+        searchMatch &&
+        categoryMatch &&
+        stockMatch
+      );
     });
-  }, [inventory, search, stockFilter]);
+  }, [inventory, search, category, stockFilter]);
 
 
   /* =====================================================
      STATISTICS
   ===================================================== */
 
-  const lowStock = inventory.filter(
-    (item) => item.lowStock && item.stockQty > 0
-  ).length;
+  const lowStock = lowStockIds
+    ? inventory.filter(
+        (item) =>
+          item.stock > 0 &&
+          lowStockIds.has(String(item.id))
+      ).length
+    : inventory.filter(
+        (item) =>
+          item.stock <= item.minQty &&
+          item.stock > 0
+      ).length;
 
   const outOfStock = inventory.filter(
-    (item) => item.stockQty === 0
+    (item) => item.stock === 0
   ).length;
+
+  const inventoryValue = inventory.reduce((total, item) => {
+    if (item.unitCost == null) {
+      return total;
+    }
+    return total + item.unitCost * item.stock;
+  }, 0);
+
+  const formatInventoryValue = (value) =>
+    value >= 100000
+      ? `₹${(value / 100000).toLocaleString("en-IN", {
+          maximumFractionDigits: 1,
+        })}L`
+      : formatPrice(value);
 
 
   /* =====================================================
@@ -107,6 +298,7 @@ function GarageOwnerInventory() {
   ===================================================== */
 
   const openAddPart = () => {
+    setCreateError("");
     setShowAddPart(true);
   };
 
@@ -116,6 +308,10 @@ function GarageOwnerInventory() {
   ===================================================== */
 
   const closeAddPart = () => {
+    if (isCreating) {
+      return;
+    }
+    setCreateError("");
     setShowAddPart(false);
   };
 
@@ -124,8 +320,38 @@ function GarageOwnerInventory() {
      FORM INPUT CHANGE
   ===================================================== */
 
-  const handlePartChange = (e) => {
+  const handlePartChange = async (e) => {
     const { name, value } = e.target;
+
+    setCreateError("");
+
+    if (name === "supplier" && value === "Add New Supplier...") {
+      const newSupplierName = window.prompt("Enter new supplier name:");
+      if (newSupplierName && newSupplierName.trim()) {
+        const trimmed = newSupplierName.trim();
+        try {
+          const created = await createSupplier({ name: trimmed });
+          setSuppliers((previous) => [...previous, created]);
+          setPartForm((previous) => ({
+            ...previous,
+            supplier: String(created.id),
+          }));
+        } catch {
+          const localSupplier = { id: trimmed, name: trimmed };
+          setSuppliers((previous) => [...previous, localSupplier]);
+          setPartForm((previous) => ({
+            ...previous,
+            supplier: trimmed,
+          }));
+        }
+      } else {
+        setPartForm((previous) => ({
+          ...previous,
+          supplier: "",
+        }));
+      }
+      return;
+    }
 
     setPartForm((previous) => ({
       ...previous,
@@ -141,53 +367,71 @@ function GarageOwnerInventory() {
   const handleAddPart = async (e) => {
     e.preventDefault();
 
-    setSaving(true);
-    setError("");
-    try {
-      const part = await partsApi.create({
-        sku: partForm.sku.trim(),
-        name: partForm.partName.trim(),
-        unit: partForm.unit,
-        stockQty: Number(partForm.openingStock),
-        minStock: Number(partForm.minimumQty),
-        purchasePrice: Number(partForm.unitPrice),
-        sellingPrice: Number(partForm.sellingPrice),
-      });
-      setInventory((previous) => [...previous, part]);
-      setShowAddPart(false);
-      setPartForm({
-        partName: "",
-        sku: "",
-        unit: "Piece",
-        openingStock: "0",
-        minimumQty: "0",
-        unitPrice: "",
-        sellingPrice: "",
-      });
-    } catch (requestError) {
-      setError(getErrorMessage(requestError));
-    } finally {
-      setSaving(false);
+    if (isCreating) {
+      return;
     }
-  };
 
-  const handleStockMovement = async (e) => {
-    e.preventDefault();
-    setSavingMovement(true);
-    setError("");
+    const partName = partForm.partName.trim();
+    const sku = partForm.sku.trim();
+
+    if (!partName || !sku) {
+      setCreateError("Please enter Part Name and SKU.");
+      return;
+    }
+
+    const sellingPrice = partForm.sellingPrice.trim();
+
+    if (!sellingPrice) {
+      setCreateError("Selling price is required by the backend.");
+      return;
+    }
+
+    setIsCreating(true);
+    setCreateError("");
+    setSuccessMessage("");
+
+// Every field the form collects is now persisted by PartRequestDTO.
+const request = {
+      name: partName,
+      sku,
+      unit: partForm.unit.trim() || null,
+      stockQty: toCount(partForm.openingStock),
+      minStock: toCount(partForm.minimumQty),
+      purchasePrice:
+        partForm.unitPrice.trim() === ""
+          ? null
+          : Number(partForm.unitPrice),
+      sellingPrice: Number(sellingPrice),
+      category: partForm.category || null,
+      // The dropdown carries the supplier id as its value, so an unsaved part
+      // is left unassigned rather than pointing at the wrong supplier.
+      supplierId:
+        !partForm.supplier || isNaN(Number(partForm.supplier))
+          ? null
+          : Number(partForm.supplier),
+      storageLocation: partForm.storageLocation.trim() || null,
+      hsnCode: partForm.hsnCode.trim() || null,
+    };
+
     try {
-      await partsApi.stockMovement(movementPart.id, {
-        movementType: movementForm.movementType,
-        quantity: Number(movementForm.quantity),
-        reason: movementForm.reason.trim() || null,
-      });
-      setInventory(await partsApi.list());
-      setMovementPart(null);
-      setMovementForm({ movementType: "IN", quantity: "1", reason: "" });
-    } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const savedPart = await createPart(request);
+
+      setShowAddPart(false);
+      setPartForm(EMPTY_PART_FORM);
+      setSearch("");
+      setSuccessMessage(
+        `${savedPart?.name || partName} (${savedPart?.sku || sku}) added successfully.`
+      );
+
+      await loadInventory({ showLoading: false });
+    } catch (error) {
+      setCreateError(
+        error instanceof Error
+          ? error.message
+          : "Unable to add the spare part."
+      );
     } finally {
-      setSavingMovement(false);
+      setIsCreating(false);
     }
   };
 
@@ -213,7 +457,7 @@ function GarageOwnerInventory() {
           </h1>
 
           <p>
-            Manage workshop parts and stock levels.
+            Manage parts, stock levels, suppliers and procurement.
           </p>
 
         </div>
@@ -232,6 +476,38 @@ function GarageOwnerInventory() {
         </button>
 
       </div>
+
+
+      {/* =====================================================
+          FEEDBACK
+      ===================================================== */}
+
+      {successMessage && (
+        <div
+          className="inventory-feedback inventory-feedback-success"
+          role="status"
+        >
+          {successMessage}
+        </div>
+      )}
+
+      {loadError && (
+        <div
+          className="inventory-feedback inventory-feedback-error"
+          role="alert"
+        >
+          <span>
+            {loadError}
+          </span>
+
+          <button
+            type="button"
+            onClick={() => void loadInventory()}
+          >
+            Retry
+          </button>
+        </div>
+      )}
 
 
       {/* =====================================================
@@ -285,7 +561,7 @@ function GarageOwnerInventory() {
           </strong>
 
           <small>
-            Parts currently unavailable
+            Items currently unavailable
           </small>
 
         </div>
@@ -298,11 +574,7 @@ function GarageOwnerInventory() {
           </span>
 
           <strong>
-            ₹{inventory.reduce(
-              (total, item) =>
-                total + Number(item.purchasePrice || 0) * Number(item.stockQty || 0),
-              0,
-            ).toLocaleString("en-IN")}
+            {formatInventoryValue(inventoryValue)}
           </strong>
 
           <small>
@@ -313,8 +585,6 @@ function GarageOwnerInventory() {
 
       </div>
 
-      {error && <div className="api-data-error" role="alert">{error}</div>}
-      {loading && <p role="status">Loading inventory...</p>}
 
       {/* =====================================================
           FILTERS
@@ -330,7 +600,7 @@ function GarageOwnerInventory() {
 
           <input
             type="text"
-            placeholder="Search by SKU or part name..."
+            placeholder="Search by SKU, name, category, supplier..."
             value={search}
             onChange={(e) =>
               setSearch(e.target.value)
@@ -338,6 +608,25 @@ function GarageOwnerInventory() {
           />
 
         </div>
+
+
+        <select
+          value={category}
+          onChange={(e) =>
+            setCategory(e.target.value)
+          }
+        >
+
+          {categories.map((item) => (
+            <option
+              key={item}
+              value={item}
+            >
+              {item}
+            </option>
+          ))}
+
+        </select>
 
 
         <select
@@ -396,11 +685,13 @@ function GarageOwnerInventory() {
               <tr>
                 <th>SKU</th>
                 <th>PART NAME</th>
-                <th>UNIT</th>
+                <th>CATEGORY</th>
+                <th>LOCATION</th>
                 <th>STOCK</th>
                 <th>MIN QTY</th>
-                <th>PURCHASE PRICE</th>
-                <th>SELLING PRICE</th>
+                <th>UNIT PRICE</th>
+                <th>HSN CODE</th>
+                <th>SUPPLIER</th>
                 <th>STATUS</th>
                 <th>ACTION</th>
               </tr>
@@ -410,11 +701,24 @@ function GarageOwnerInventory() {
 
             <tbody>
 
-              {filteredItems.length > 0 ? (
+              {isLoading && inventory.length === 0 ? (
+
+                <tr>
+
+                  <td
+                    colSpan="11"
+                    className="inventory-empty"
+                  >
+                    Loading inventory…
+                  </td>
+
+                </tr>
+
+              ) : filteredItems.length > 0 ? (
 
                 filteredItems.map((item) => (
 
-                  <tr key={item.id}>
+                  <tr key={item.id ?? item.sku}>
 
                     <td className="inventory-sku">
                       {item.sku}
@@ -425,55 +729,67 @@ function GarageOwnerInventory() {
                     </td>
 
                     <td>
-                      {item.unit || "—"}
+                      {item.category}
+                    </td>
+
+                    <td>
+                      {item.location}
                     </td>
 
                     <td
                       className={
-                        item.lowStock
+                        item.stock <= item.minQty
                           ? "inventory-stock-low"
                           : "inventory-stock"
                       }
                     >
-                      {item.stockQty}
+                      {item.stock}
                     </td>
 
                     <td>
-                      {item.minStock}
+                      {item.minQty}
                     </td>
 
                     <td className="inventory-price">
-                      ₹{Number(item.purchasePrice || 0).toLocaleString("en-IN")}
+                      {item.price}
                     </td>
 
                     <td>
-                      ₹{Number(item.sellingPrice || 0).toLocaleString("en-IN")}
+                      {item.hsnCode}
                     </td>
 
                     <td>
+                      {item.supplier}
+                    </td>
+
+                    <td>
+
                       <span
                         className={
-                          item.stockQty === 0 || item.lowStock
+                          item.status === "Low Stock"
+                            ? "inventory-status low"
+                            : item.status === "Out of Stock"
                             ? "inventory-status low"
                             : "inventory-status ok"
                         }
                       >
-                        {item.stockQty === 0
-                          ? "Out of Stock"
-                          : item.lowStock
-                          ? "Low Stock"
-                          : "In Stock"}
+                        {item.status}
                       </span>
+
                     </td>
 
                     <td>
+
                       <button
                         type="button"
                         className="inventory-edit"
-                        onClick={() => setMovementPart(item)}
+                        onClick={() =>
+                          alert(`Edit ${item.sku}`)
+                        }
                       >
-                        Stock movement
+                        Edit
                       </button>
+
                     </td>
 
                   </tr>
@@ -485,10 +801,14 @@ function GarageOwnerInventory() {
                 <tr>
 
                   <td
-                    colSpan="9"
+                    colSpan="11"
                     className="inventory-empty"
                   >
-                    No inventory items found.
+                    {loadError
+                      ? "Inventory could not be loaded."
+                      : search || stockFilter !== "All Stock"
+                      ? "No inventory items match your filters."
+                      : "No inventory items found."}
                   </td>
 
                 </tr>
@@ -563,6 +883,18 @@ function GarageOwnerInventory() {
             >
 
 
+              {createError && (
+                <div
+                  className="inventory-feedback inventory-feedback-error"
+                  role="alert"
+                >
+                  <span>
+                    {createError}
+                  </span>
+                </div>
+              )}
+
+
               {/* PART NAME + SKU */}
 
               <div className="inventory-form-row">
@@ -605,8 +937,33 @@ function GarageOwnerInventory() {
               </div>
 
 
-              {/* UNIT */}
+              {/* CATEGORY + UNIT */}
+
               <div className="inventory-form-row">
+
+                <div className="inventory-form-group">
+
+                  <label>
+                    CATEGORY
+                  </label>
+
+                  <select
+                    name="category"
+                    value={partForm.category}
+                    onChange={handlePartChange}
+                  >
+
+                    {PART_CATEGORIES.map((option) => (
+                      <option key={option}>
+                        {option}
+                      </option>
+                    ))}
+
+                  </select>
+
+                </div>
+
+
                 <div className="inventory-form-group">
 
                   <label>
@@ -696,10 +1053,8 @@ function GarageOwnerInventory() {
                     type="number"
                     name="unitPrice"
                     min="0"
-                    step="0.01"
                     value={partForm.unitPrice}
                     onChange={handlePartChange}
-                    required
                   />
 
                 </div>
@@ -715,13 +1070,81 @@ function GarageOwnerInventory() {
                     type="number"
                     name="sellingPrice"
                     min="0"
-                    step="0.01"
                     value={partForm.sellingPrice}
                     onChange={handlePartChange}
-                    required
                   />
 
                 </div>
+
+              </div>
+
+
+              {/* SUPPLIER */}
+
+              <div className="inventory-form-group full">
+
+                <label>
+                  SUPPLIER
+                </label>
+
+                <select
+                  name="supplier"
+                  value={partForm.supplier}
+                  onChange={handlePartChange}
+                >
+                  <option value="">
+                    Select supplier...
+                  </option>
+
+                  {orderedSuppliers.map((supplier) => (
+                    <option
+                      key={supplier.id}
+                      value={supplier.id}
+                    >
+                      {supplier.name}
+                    </option>
+                  ))}
+
+                  <option value="Add New Supplier...">Add New Supplier...</option>
+                </select>
+
+              </div>
+
+
+              {/* STORAGE LOCATION */}
+
+              <div className="inventory-form-group full">
+
+                <label>
+                  STORAGE LOCATION
+                </label>
+
+                <input
+                  type="text"
+                  name="storageLocation"
+                  value={partForm.storageLocation}
+                  onChange={handlePartChange}
+                  placeholder="Rack A1, Shelf 2"
+                />
+
+              </div>
+
+
+              {/* HSN CODE */}
+
+              <div className="inventory-form-group full">
+
+                <label>
+                  HSN CODE (FOR GST)
+                </label>
+
+                <input
+                  type="text"
+                  name="hsnCode"
+                  value={partForm.hsnCode}
+                  onChange={handlePartChange}
+                  placeholder="27101990"
+                />
 
               </div>
 
@@ -735,15 +1158,16 @@ function GarageOwnerInventory() {
                 <button
                   type="submit"
                   className="inventory-modal-add-button"
-                  disabled={saving}
+                  disabled={isCreating}
                 >
-                  {saving ? "SAVING..." : "ADD PART"}
+                  {isCreating ? "ADDING…" : "ADD PART"}
                 </button>
 
                 <button
                   type="button"
                   className="inventory-modal-cancel-button"
                   onClick={closeAddPart}
+                  disabled={isCreating}
                 >
                   Cancel
                 </button>
@@ -756,43 +1180,6 @@ function GarageOwnerInventory() {
 
         </div>
 
-      )}
-
-      {movementPart && (
-        <div className="inventory-modal-overlay" onMouseDown={(e) => {
-          if (e.target === e.currentTarget && !savingMovement) setMovementPart(null);
-        }}>
-          <div className="inventory-modal" onMouseDown={(e) => e.stopPropagation()}>
-            <div className="inventory-modal-header">
-              <h2>STOCK MOVEMENT — {movementPart.sku}</h2>
-              <button type="button" className="inventory-modal-close" onClick={() => setMovementPart(null)} aria-label="Close">×</button>
-            </div>
-            <p>{movementPart.name} · current stock: {movementPart.stockQty}</p>
-            <form className="inventory-add-form" onSubmit={handleStockMovement}>
-              <div className="inventory-form-row">
-                <div className="inventory-form-group">
-                  <label>MOVEMENT</label>
-                  <select value={movementForm.movementType} onChange={(e) => setMovementForm({ ...movementForm, movementType: e.target.value })}>
-                    <option value="IN">Receive stock</option>
-                    <option value="OUT">Remove stock</option>
-                  </select>
-                </div>
-                <div className="inventory-form-group">
-                  <label>QUANTITY</label>
-                  <input type="number" min="1" step="1" required value={movementForm.quantity} onChange={(e) => setMovementForm({ ...movementForm, quantity: e.target.value })} />
-                </div>
-              </div>
-              <div className="inventory-form-group full">
-                <label>REASON (OPTIONAL)</label>
-                <input value={movementForm.reason} onChange={(e) => setMovementForm({ ...movementForm, reason: e.target.value })} />
-              </div>
-              <div className="inventory-modal-actions">
-                <button type="submit" className="inventory-modal-add-button" disabled={savingMovement}>{savingMovement ? "SAVING..." : "RECORD MOVEMENT"}</button>
-                <button type="button" className="inventory-modal-cancel-button" onClick={() => setMovementPart(null)} disabled={savingMovement}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
       )}
 
     </div>

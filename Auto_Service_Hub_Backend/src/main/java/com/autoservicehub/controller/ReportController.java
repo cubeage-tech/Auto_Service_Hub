@@ -51,14 +51,14 @@ public class ReportController {
     private final ReportService reportService;
 
     @GetMapping("/dashboard")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'INVENTORY_MANAGER', 'BILLING_USER')")
     public ApiResponse<DashboardSummaryDTO> dashboard() {
         return ApiResponse.ok(reportService.getDashboardSummary());
     }
 
     /** FR-REP-1: jobs on one day (defaults to today), with the status breakdown. */
     @GetMapping("/daily-workshop")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     public ApiResponse<DailyWorkshopReportDTO> dailyWorkshop(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
@@ -72,7 +72,7 @@ public class ReportController {
 
     /** FR-REP-4: invoiced revenue alongside payments actually collected. */
     @GetMapping("/revenue")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
     public ApiResponse<RevenuePaymentReportDTO> revenue(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
@@ -85,7 +85,7 @@ public class ReportController {
 
     /** FR-REP-2: one entry per mechanic. */
     @GetMapping("/mechanic-performance")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     public ApiResponse<List<MechanicPerformanceReportDTO>> mechanicPerformance(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
@@ -96,7 +96,7 @@ public class ReportController {
 
     /** FR-REP-3: parts consumed, counting OUT movements only. */
     @GetMapping("/parts-usage")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'INVENTORY_MANAGER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'INVENTORY_MANAGER')")
     public ApiResponse<PartsUsageReportDTO> partsUsage(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
@@ -108,7 +108,7 @@ public class ReportController {
 
     /** FR-REP-5: new customers and returning customers. */
     @GetMapping("/customer-growth")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'BILLING_USER')")
     public ApiResponse<CustomerGrowthReportDTO> customerGrowth(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
@@ -123,7 +123,7 @@ public class ReportController {
      * rather than a fabricated margin — see {@link ProfitAnalysisReportDTO}.
      */
     @GetMapping("/profit-analysis")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'BILLING_USER')")
     public ApiResponse<ProfitAnalysisReportDTO> profitAnalysis(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
@@ -143,7 +143,7 @@ public class ReportController {
      * on it unsupervised — mechanics, inventory and billing staff included.
      */
     @GetMapping("/ai-insights")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     public ApiResponse<AiInsightsReportDTO> aiInsights(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {

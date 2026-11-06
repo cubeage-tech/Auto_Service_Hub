@@ -749,4 +749,82 @@ class InvoiceServiceImplTest {
                 .isInstanceOf(BusinessRuleException.class)
                 .hasMessageContaining("derived from recorded payments");
     }
+
+    /* ================================================================
+       Per-document GST rate (gstRate)
+       ================================================================ */
+
+    @Test
+    @DisplayName("I19 — a supplied gstRate is applied, not the configured default")
+    void i19_suppliedGstRate_isApplied() {
+        InvoiceRequestDTO req = request();
+        req.setItems(List.of(item("Brake pads", 1, "1000.00")));
+        req.setGstRate(new BigDecimal("5"));
+
+        when(jobCardRepository.findById(55L)).thenReturn(Optional.of(jobCard(55L)));
+        givenPersisted();
+        givenNoPayments();
+
+        InvoiceResponseDTO response = service.create(req);
+
+        // 1000 x 5% = 50, not the configured 18% (180).
+        assertThat(response.getGstRate()).isEqualByComparingTo("5");
+        assertThat(response.getGst()).isEqualByComparingTo("50.00");
+        assertThat(response.getTotal()).isEqualByComparingTo("1050.00");
+    }
+
+    @Test
+    @DisplayName("I20 — omitting gstRate keeps the configured default")
+    void i20_omittedGstRate_usesDefault() {
+        InvoiceRequestDTO req = request();
+        req.setItems(List.of(item("Brake pads", 1, "1000.00")));
+
+        when(jobCardRepository.findById(55L)).thenReturn(Optional.of(jobCard(55L)));
+        givenPersisted();
+        givenNoPayments();
+
+        InvoiceResponseDTO response = service.create(req);
+
+        assertThat(response.getGstRate()).isEqualByComparingTo("18");
+        assertThat(response.getGst()).isEqualByComparingTo("180.00");
+        assertThat(response.getTotal()).isEqualByComparingTo("1180.00");
+    }
+
+    @Test
+    @DisplayName("I21 — the client still cannot dictate the GST amount")
+    void i21_clientSuppliedGstAmount_isIgnored() {
+        InvoiceRequestDTO req = request();
+        req.setItems(List.of(item("Brake pads", 1, "1000.00")));
+        req.setGstRate(new BigDecimal("5"));
+        req.setGst(new BigDecimal("999999"));
+        req.setSubtotal(new BigDecimal("888888"));
+        req.setTotal(new BigDecimal("777777"));
+
+        when(jobCardRepository.findById(55L)).thenReturn(Optional.of(jobCard(55L)));
+        givenPersisted();
+        givenNoPayments();
+
+        InvoiceResponseDTO response = service.create(req);
+
+        assertThat(response.getSubtotal()).isEqualByComparingTo("1000.00");
+        assertThat(response.getGst()).isEqualByComparingTo("50.00");
+        assertThat(response.getTotal()).isEqualByComparingTo("1050.00");
+    }
+
+    @Test
+    @DisplayName("I22 — an out-of-range gstRate is rejected before anything is written")
+    void i22_invalidGstRate_rejected() {
+        for (String bad : List.of("-1", "101")) {
+            InvoiceRequestDTO req = request();
+            req.setItems(List.of(item("Brake pads", 1, "100.00")));
+            req.setGstRate(new BigDecimal(bad));
+
+            when(jobCardRepository.findById(55L)).thenReturn(Optional.of(jobCard(55L)));
+
+            assertThatThrownBy(() -> service.create(req))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("gstRate");
+        }
+        verify(repository, never()).save(any(Invoice.class));
+    }
 }

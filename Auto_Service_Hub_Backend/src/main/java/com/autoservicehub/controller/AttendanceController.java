@@ -35,7 +35,7 @@ public class AttendanceController {
      * POST /api/v1/attendance/check-in
      */
     @PostMapping("/check-in")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<AttendanceResponseDTO> checkIn(
             @Valid @RequestBody AttendanceCheckRequestDTO request) {
@@ -47,7 +47,7 @@ public class AttendanceController {
      * POST /api/v1/attendance/check-out
      */
     @PostMapping("/check-out")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     public ApiResponse<AttendanceResponseDTO> checkOut(
             @Valid @RequestBody AttendanceCheckRequestDTO request) {
         return ApiResponse.ok("Checked out", service.checkOut(request.getMechanicId(), request.getDate()));
@@ -59,7 +59,7 @@ public class AttendanceController {
      * GET /api/v1/attendance?mechanicId=&from=&to=
      */
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC')")
     public ApiResponse<List<AttendanceResponseDTO>> list(
             @RequestParam(required = false) Long mechanicId,
             @RequestParam(required = false)

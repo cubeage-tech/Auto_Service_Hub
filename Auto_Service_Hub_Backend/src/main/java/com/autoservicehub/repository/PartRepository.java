@@ -51,4 +51,15 @@ public interface PartRepository extends JpaRepository<Part, Long>, JpaSpecificat
     Page<Part> findLowStock(Pageable pageable);
 
     Optional<Part> findBySkuIgnoreCase(String sku);
+
+    /**
+     * Whether any part still names this supplier as its usual source.
+     *
+     * <p>Exists so {@code SupplierServiceImpl.delete} can refuse with a 409
+     * instead of letting the {@code parts.supplier_id} foreign key fail. An
+     * unguarded delete would surface as a raw
+     * {@code DataIntegrityViolationException} and therefore a 500, which blames
+     * the server for what is really a business rule.
+     */
+    boolean existsBySupplierId(Long supplierId);
 }

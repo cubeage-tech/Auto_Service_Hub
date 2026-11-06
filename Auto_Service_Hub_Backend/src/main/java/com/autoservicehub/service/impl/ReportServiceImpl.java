@@ -191,7 +191,17 @@ public class ReportServiceImpl implements ReportService {
                         f.getFrom(), f.getTo(), f.getStatus(), f.getMechanicId(), f.getVehicleId()))
                 : nz(invoiceRepository.sumTotalByInvoiceDateBetween(f.getFrom(), f.getTo()));
 
-        long invoiceCount = invoiceRepository.countByInvoiceDateBetween(f.getFrom(), f.getTo());
+        // The count must come from the SAME dataset as the sum it divides.
+        // Previously this was always the unfiltered count, so any job filter made
+        // the average a filtered total over an unfiltered count: a single invoice
+        // matching a mechanic filter reported that invoice's whole value as the
+        // "average invoice value", which is meaningless. Both branches now match
+        // the branch that produced `invoiced`.
+        long invoiceCount = jobFiltered
+                ? invoiceRepository.countByDateRangeWithJobFilters(
+                        f.getFrom(), f.getTo(), f.getStatus(), f.getMechanicId(), f.getVehicleId())
+                : invoiceRepository.countByInvoiceDateBetween(f.getFrom(), f.getTo());
+
         BigDecimal collected = nz(paymentRepository.sumAmountByStatusAndPaidAtBetween(
                 PAYMENT_SUCCESS, from, to));
         long paymentCount = paymentRepository

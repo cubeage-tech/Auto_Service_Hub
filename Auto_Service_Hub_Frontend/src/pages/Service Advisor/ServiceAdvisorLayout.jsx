@@ -15,6 +15,7 @@ const nav = [
 export default function ServiceAdvisorLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+
   const currentPage = nav.find(([, , to]) =>
     to === "/service-advisor"
       ? location.pathname === to

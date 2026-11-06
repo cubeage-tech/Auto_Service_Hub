@@ -31,7 +31,7 @@ public class CommunicationController {
      * POST /api/v1/communications
      */
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<CommunicationResponseDTO> create(
             @Valid @RequestBody CommunicationRequestDTO request) {
@@ -43,7 +43,7 @@ public class CommunicationController {
      * PUT /api/v1/communications/{id}
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     public ApiResponse<CommunicationResponseDTO> update(
             @PathVariable Long id,
             @Valid @RequestBody CommunicationRequestDTO request) {
@@ -55,7 +55,7 @@ public class CommunicationController {
      * GET /api/v1/communications/{id}
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'BILLING_USER')")
     public ApiResponse<CommunicationResponseDTO> getById(@PathVariable Long id) {
         return ApiResponse.ok(service.getById(id));
     }
@@ -67,7 +67,7 @@ public class CommunicationController {
      * customerId is required — prevents loading the entire communications table.
      */
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'BILLING_USER')")
     public ApiResponse<Page<CommunicationResponseDTO>> listByCustomer(
             @RequestParam Long customerId,
             Pageable pageable) {
@@ -79,7 +79,7 @@ public class CommunicationController {
      * DELETE /api/v1/communications/{id}
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);

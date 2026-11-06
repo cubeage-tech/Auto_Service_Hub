@@ -192,4 +192,85 @@ class BillingCalculatorTest {
         assertThat(BillingCalculator.money(new BigDecimal("2.345"))).isEqualByComparingTo("2.35");
         assertThat(BillingCalculator.money(null)).isEqualByComparingTo("0.00");
     }
+
+    /* ================================================================
+       Per-document GST rate (gstRate on the request)
+       ================================================================ */
+
+    @Test
+    @DisplayName("GR1 — resolveRate(null) falls back to the configured default")
+    void gr1_nullRate_usesConfiguredDefault() {
+        assertThat(calculator().resolveRate(null)).isEqualByComparingTo("18");
+    }
+
+    @Test
+    @DisplayName("GR2 — resolveRate accepts the rates the UI offers")
+    void gr2_offeredRates_accepted() {
+        BillingCalculator calc = calculator();
+        assertThat(calc.resolveRate(new BigDecimal("18"))).isEqualByComparingTo("18");
+        assertThat(calc.resolveRate(new BigDecimal("5"))).isEqualByComparingTo("5");
+        assertThat(calc.resolveRate(new BigDecimal("12"))).isEqualByComparingTo("12");
+        assertThat(calc.resolveRate(new BigDecimal("28"))).isEqualByComparingTo("28");
+    }
+
+    @Test
+    @DisplayName("GR3 — tax at an explicit rate ignores the configured default")
+    void gr3_tax_usesExplicitRate() {
+        BillingCalculator calc = calculator(); // configured 18
+        assertThat(calc.tax(new BigDecimal("1000.00"), new BigDecimal("5"))).isEqualByComparingTo("50.00");
+        assertThat(calc.tax(new BigDecimal("1000.00"), new BigDecimal("12"))).isEqualByComparingTo("120.00");
+        assertThat(calc.tax(new BigDecimal("1000.00"), new BigDecimal("28"))).isEqualByComparingTo("280.00");
+        assertThat(calc.tax(new BigDecimal("1000.00"), new BigDecimal("0"))).isEqualByComparingTo("0.00");
+    }
+
+    @Test
+    @DisplayName("GR4 — a 0% rate really does produce a zero-tax total")
+    void gr4_zeroRate_zeroTax() {
+        BillingCalculator calc = calculator();
+        BigDecimal taxable = calc.taxableAmount(new BigDecimal("1000.00"), BigDecimal.ZERO);
+        BigDecimal gst = calc.tax(taxable, calc.resolveRate(BigDecimal.ZERO));
+        BigDecimal total = calc.total(taxable, gst);
+        assertThat(gst).isEqualByComparingTo("0.00");
+        assertThat(total).isEqualByComparingTo("1000.00");
+    }
+
+    @Test
+    @DisplayName("GR5 — a null explicit rate falls back to the default, never to zero")
+    void gr5_nullExplicitRate_fallsBack() {
+        BillingCalculator calc = calculator();
+        assertThat(calc.tax(new BigDecimal("1000.00"), null)).isEqualByComparingTo("180.00");
+    }
+
+    @Test
+    @DisplayName("GR6 — a negative rate is rejected")
+    void gr6_negativeRate_throws() {
+        assertThatThrownBy(() -> calculator().resolveRate(new BigDecimal("-1")))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("gstRate must not be negative");
+    }
+
+    @Test
+    @DisplayName("GR7 — a rate above 100 is rejected")
+    void gr7_rateAboveHundred_throws() {
+        assertThatThrownBy(() -> calculator().resolveRate(new BigDecimal("101")))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("gstRate must not exceed 100");
+    }
+
+    @Test
+    @DisplayName("GR8 — the full chain honours a per-document rate")
+    void gr8_fullChain_honoursExplicitRate() {
+        BillingCalculator calc = calculator();
+        BigDecimal subtotal = calc.subtotal(new BigDecimal("2400.00"));
+        BigDecimal discount = calc.discount(new BigDecimal("50"), subtotal);
+        BigDecimal taxable = calc.taxableAmount(subtotal, discount);
+        BigDecimal rate = calc.resolveRate(new BigDecimal("12"));
+        BigDecimal tax = calc.tax(taxable, rate);
+        BigDecimal total = calc.total(taxable, tax);
+        assertThat(subtotal).isEqualByComparingTo("2400.00");
+        assertThat(taxable).isEqualByComparingTo("2350.00");
+        assertThat(rate).isEqualByComparingTo("12");
+        assertThat(tax).isEqualByComparingTo("282.00");
+        assertThat(total).isEqualByComparingTo("2632.00");
+    }
 }

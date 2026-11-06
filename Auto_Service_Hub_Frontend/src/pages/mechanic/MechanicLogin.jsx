@@ -5,7 +5,6 @@ import { useApiLogin } from "../../hooks/useApiLogin";
 import "./MechanicLogin.css";
 
 function MechanicLogin() {
-
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const { submitForm, error, loading } = useApiLogin(
@@ -217,8 +216,8 @@ function MechanicLogin() {
 
               <input
                 id="mechanic-password"
-                type={showPassword ? "text" : "password"}
                 name="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••••••"
                 autoComplete="current-password"
                 required
@@ -252,6 +251,7 @@ function MechanicLogin() {
 
                 <input
                   type="checkbox"
+                  name="rememberMe"
                   checked={rememberMe}
                   onChange={(e) =>
                     setRememberMe(e.target.checked)

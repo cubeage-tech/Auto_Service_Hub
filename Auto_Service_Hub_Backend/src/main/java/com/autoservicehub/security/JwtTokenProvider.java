@@ -1,6 +1,10 @@
 package com.autoservicehub.security;
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,6 +144,7 @@ public class JwtTokenProvider {
 
     private boolean validate(String token, String expectedType) {
         if (token == null || token.isBlank()) {
+            log.warn("JWT validation rejected: reason=missing_token expectedType={}", expectedType);
             return false;
         }
         try {
@@ -148,11 +153,28 @@ public class JwtTokenProvider {
             // A token minted before the type claim existed has no type, so it is
             // treated as an access token rather than rejected outright.
             String type = claims.get(CLAIM_TOKEN_TYPE, String.class);
-            return type == null ? TYPE_ACCESS.equals(expectedType)
-                                : expectedType.equals(type);
+            boolean valid = type == null ? TYPE_ACCESS.equals(expectedType)
+                                         : expectedType.equals(type);
+            if (!valid) {
+                log.warn("JWT validation rejected: reason=token_type_mismatch expectedType={} actualType={}",
+                        expectedType, type == null ? "legacy-access" : type);
+            }
+            return valid;
+        } catch (ExpiredJwtException ex) {
+            log.warn("JWT validation rejected: reason=expired expectedType={}", expectedType);
+            return false;
+        } catch (SignatureException ex) {
+            log.warn("JWT validation rejected: reason=signature_invalid expectedType={}", expectedType);
+            return false;
+        } catch (MalformedJwtException ex) {
+            log.warn("JWT validation rejected: reason=malformed expectedType={}", expectedType);
+            return false;
+        } catch (UnsupportedJwtException ex) {
+            log.warn("JWT validation rejected: reason=unsupported expectedType={}", expectedType);
+            return false;
         } catch (Exception ex) {
-            // An expired, tampered or wrongly-signed token is simply not valid;
-            // the caller decides how to respond, so the cause is not propagated.
+            log.warn("JWT validation rejected: reason=validation_error errorType={} expectedType={}",
+                    ex.getClass().getSimpleName(), expectedType);
             return false;
         }
     }

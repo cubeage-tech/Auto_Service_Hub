@@ -40,10 +40,37 @@ public class Estimate extends BaseEntity {
     @Column(name = "tax")
     private BigDecimal tax;
 
+    /**
+     * The GST percentage actually applied to this estimate.
+     *
+     * <p>Recorded for the same reason as {@code Invoice.gstRate}: the quoted
+     * rate must stay visible on the document after the configured default moves.
+     * Null means the configured default was used.
+     */
+    @Column(name = "gst_rate")
+    private BigDecimal gstRate;
+
     /** (subtotal - discount) + tax, calculated server-side. */
     @Column(name = "total")
     private BigDecimal total;
 
     @Column(name = "status")
     private String status;
+
+    /**
+     * Free-text remarks typed by the service advisor on the quote itself
+     * (FR-BILL-9).
+     *
+     * <p>Nullable and deliberately not {@code @NotBlank}: most estimates carry
+     * no notes, and clearing the box must be a legal edit. A blank string is
+     * normalised to {@code null} on the way in (see
+     * {@code EstimateServiceImpl.mapToEntity}) so "cleared" and "never filled
+     * in" are stored identically.
+     *
+     * <p>Carried onto the invoice when an estimate is converted, alongside the
+     * discount and GST rate, so converting never loses what was written on the
+     * quote.
+     */
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
 }

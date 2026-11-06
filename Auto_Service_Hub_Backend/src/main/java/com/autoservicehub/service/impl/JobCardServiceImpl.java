@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Job Card (SRS 4.5) — the repair job raised once a vehicle has been inspected.
@@ -43,6 +44,7 @@ public class JobCardServiceImpl implements JobCardService {
     private final AppointmentRepository appointmentRepository;
     private final InspectionRepository inspectionRepository;
     private final InspectionItemRepository inspectionItemRepository;
+    private final PackageApplicationRepository packageApplicationRepository;
     private final JobTaskRepository jobTaskRepository;
     private final BillingCalculator calculator;
     private final AuditService auditService;
@@ -59,6 +61,7 @@ public class JobCardServiceImpl implements JobCardService {
         entity.setJobCardNumber(generateJobCardNumber());
         JobCard saved = repository.save(entity);
         linkInspection(request.getInspectionId(), saved);
+        linkPackageApplication(request.getPackageApplicationId(), saved);
 
         JobCardResponseDTO response = toResponse(saved);
         auditService.recordSuccess(AUDIT_ENTITY, saved.getId(), AuditAction.JOB_CARD_CREATE,
@@ -82,6 +85,7 @@ public class JobCardServiceImpl implements JobCardService {
         }
         JobCard saved = repository.save(existing);
         linkInspection(request.getInspectionId(), saved);
+        linkPackageApplication(request.getPackageApplicationId(), saved);
 
         JobCardResponseDTO response = toResponse(saved);
         // A status change is the audit question that matters on a job card —
@@ -158,6 +162,54 @@ public class JobCardServiceImpl implements JobCardService {
 
         inspection.setJobCard(jobCard);
         inspectionRepository.save(inspection);
+    }
+
+    /**
+     * Attaches an applied service package to a saved job card, so the technician
+     * can see what the job is covered by without a second lookup.
+     *
+     * <p>Both ownership checks are made here rather than trusted from the
+     * client: an application names a customer and a vehicle, and the job card
+     * names its own. Linking is only valid when they agree on both, otherwise a
+     * package sold to one customer could be attached to another's car and would
+     * read as though that work were covered. The rule is the same one enforced
+     * when the application was created, re-checked at the point of linking.
+     *
+     * <p>An absent id is "not mentioned", not "unlink" — an ordinary edit that
+     * omits the field leaves an existing link exactly as it was, the same
+     * convention the service package endpoint uses for {@code active}.
+     */
+    private void linkPackageApplication(Long packageApplicationId, JobCard jobCard) {
+        if (packageApplicationId == null) {
+            return;
+        }
+
+        PackageApplication application = packageApplicationRepository.findById(packageApplicationId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "PackageApplication not found: " + packageApplicationId));
+
+        Long applicationVehicleId = application.getVehicle() != null
+                ? application.getVehicle().getId() : null;
+        Long jobCardVehicleId = jobCard.getVehicle() != null ? jobCard.getVehicle().getId() : null;
+
+        if (!Objects.equals(applicationVehicleId, jobCardVehicleId)) {
+            throw new BusinessRuleException(
+                    "PackageApplication " + packageApplicationId + " was applied to a different vehicle "
+                    + "and cannot be attached to JobCard " + jobCard.getId() + ".");
+        }
+
+        Long applicationCustomerId = application.getCustomer() != null
+                ? application.getCustomer().getId() : null;
+        Long jobCardCustomerId = jobCard.getCustomer() != null ? jobCard.getCustomer().getId() : null;
+
+        if (!Objects.equals(applicationCustomerId, jobCardCustomerId)) {
+            throw new BusinessRuleException(
+                    "PackageApplication " + packageApplicationId + " belongs to a different customer "
+                    + "and cannot be attached to JobCard " + jobCard.getId() + ".");
+        }
+
+        jobCard.setPackageApplication(application);
+        repository.save(jobCard);
     }
 
     private void mapToEntity(JobCardRequestDTO r, JobCard e) {
@@ -243,7 +295,52 @@ public class JobCardServiceImpl implements JobCardService {
         // job card was raised without an inspection.
         applyInspection(e, dto);
 
+        // Same idea for an applied package: report what the job is covered by.
+        applyPackageApplication(e, dto);
+
         return dto;
+    }
+
+    /**
+     * Copies the linked package application onto the job-card response, together
+     * with the SERVICE items it includes.
+     *
+     * <p>Read-only and deliberately inert. Nothing here marks a task complete,
+     * consumes a part or applies a price — the terms are the snapshot the
+     * customer agreed to, reported so staff can see them, and are not folded
+     * into {@code estimatedCost} or any total.
+     *
+     * <p>PART items are left out: they are consumables, not work, and a job card
+     * tracks consumed parts separately through stock movements.
+     */
+    private void applyPackageApplication(JobCard e, JobCardResponseDTO dto) {
+        PackageApplication application = e.getPackageApplication();
+        if (application == null) {
+            dto.setPackageServices(List.of());
+            return;
+        }
+
+        dto.setPackageApplicationId(application.getId());
+        dto.setPackageName(application.getPackageName());
+        dto.setPackageType(application.getPackageType());
+        dto.setPackageDuration(application.getPackageDuration());
+        dto.setPackagePrice(application.getPackagePrice());
+        dto.setPackageGstRate(application.getPackageGstRate());
+        dto.setPackageDiscountPercentage(application.getPackageDiscountPercentage());
+
+        ServicePackage servicePackage = application.getServicePackage();
+        if (servicePackage == null) {
+            dto.setPackageServices(List.of());
+            return;
+        }
+
+        // fromStored is the lenient lookup: an item whose stored type this build
+        // does not recognise reads as neither kind and is skipped, rather than
+        // failing the whole job-card GET.
+        dto.setPackageServices(servicePackage.getItems().stream()
+                .filter(item -> PackageItemType.fromStored(item.getItemType()) == PackageItemType.SERVICE)
+                .map(PackageItem::getItemName)
+                .toList());
     }
 
     /**

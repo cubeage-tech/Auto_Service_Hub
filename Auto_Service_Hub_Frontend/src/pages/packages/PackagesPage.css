@@ -1,6 +1,6 @@
 /* =========================================================
    PACKAGES PAGE
-   Auto_Service_Hub / FIGMA STYLE
+   SMARTGARAGE / FIGMA STYLE
 ========================================================= */
 
 .packages-page {
@@ -392,6 +392,7 @@
 
 .package-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     padding: 15px 18px;
     border-top: 1px solid #292b2c;
@@ -446,6 +447,131 @@
 .package-edit-button:hover {
     color: #ffffff;
     border-color: #454747;
+}
+
+
+/* =========================================================
+   TEXT-LABELLED CARD ACTIONS
+   The default .package-edit-button is a fixed 48px square sized for
+   the word "Edit"; these carry whole words, so they size to content.
+========================================================= */
+
+.package-edit-button.package-action-text {
+    width: auto;
+    min-width: 48px;
+    padding: 0 12px;
+    white-space: nowrap;
+}
+
+.package-delete-button {
+    color: #ff818b;
+    border-color: rgba(255, 59, 75, 0.35);
+}
+
+.package-delete-button:hover {
+    color: #ffffff;
+    background: rgba(255, 59, 75, 0.14);
+    border-color: rgba(255, 59, 75, 0.6);
+}
+
+
+/* =========================================================
+   INACTIVE PACKAGES
+========================================================= */
+
+.package-card.package-inactive {
+    opacity: 0.55;
+}
+
+.package-inactive-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 28px;
+    padding: 0 13px;
+    display: flex;
+    align-items: center;
+    background: #2b2e2f;
+    color: #8f9698;
+    border-bottom-right-radius: 5px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+}
+
+
+/* =========================================================
+   GRID EMPTY / LOADING STATE
+========================================================= */
+
+.packages-grid-empty {
+    grid-column: 1 / -1;
+    padding: 60px 20px;
+    text-align: center;
+    color: #6b7173;
+    font-size: 13px;
+    letter-spacing: 0.4px;
+}
+
+
+/* =========================================================
+   FEEDBACK BANNERS
+========================================================= */
+
+.packages-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 18px;
+    padding: 11px 14px;
+    border: 1px solid #292b2c;
+    border-radius: 7px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.packages-feedback.full {
+    margin: 0 0 4px;
+}
+
+.packages-feedback-success {
+    border-color: rgba(186, 255, 0, 0.35);
+    background: rgba(186, 255, 0, 0.08);
+    color: #baff00;
+}
+
+.packages-feedback-error {
+    border-color: rgba(255, 59, 75, 0.4);
+    background: rgba(255, 59, 75, 0.08);
+    color: #ff818b;
+}
+
+.packages-feedback-warning {
+    border-color: rgba(255, 176, 32, 0.4);
+    background: rgba(255, 176, 32, 0.08);
+    color: #ffb020;
+}
+
+.packages-feedback button {
+    flex-shrink: 0;
+    border: 0;
+    background: transparent;
+    color: #baff00;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.packages-feedback button:hover {
+    text-decoration: underline;
+}
+
+.package-create-button:disabled,
+.package-cancel-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 
@@ -759,3 +885,46 @@
         grid-column: auto;
     }
 }
+
+
+/* =========================================================
+   APPLY PACKAGE DIALOG
+========================================================= */
+
+.package-apply-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 22px 24px;
+}
+
+.package-apply-form .packages-feedback {
+    margin: 0;
+}
+
+.package-apply-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #151616;
+    border: 1px solid #292b2c;
+    border-radius: 7px;
+    padding: 10px 14px;
+}
+
+.package-apply-summary-label {
+    color: #747a7c;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+.package-apply-summary-value {
+    color: #baff00;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.package-apply-dialog {
+    width: min(460px, 100%);
+}

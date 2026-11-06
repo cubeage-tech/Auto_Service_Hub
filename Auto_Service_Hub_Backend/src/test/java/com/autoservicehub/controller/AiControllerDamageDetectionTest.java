@@ -338,7 +338,7 @@ class AiControllerDamageDetectionTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "OWNER")
     @DisplayName("CT13 — response body leaks no API key or provider internals")
     void ct13_noSensitiveInformationLeakage() throws Exception {
         when(damageDetectionService.assess(any()))

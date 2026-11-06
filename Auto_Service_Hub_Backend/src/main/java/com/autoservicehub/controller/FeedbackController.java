@@ -31,7 +31,7 @@ public class FeedbackController {
      * POST /api/v1/feedback
      */
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<FeedbackResponseDTO> create(
             @Valid @RequestBody FeedbackRequestDTO request) {
@@ -43,7 +43,7 @@ public class FeedbackController {
      * PUT /api/v1/feedback/{id}
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     public ApiResponse<FeedbackResponseDTO> update(
             @PathVariable Long id,
             @Valid @RequestBody FeedbackRequestDTO request) {
@@ -55,7 +55,7 @@ public class FeedbackController {
      * GET /api/v1/feedback/{id}
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'BILLING_USER')")
     public ApiResponse<FeedbackResponseDTO> getById(@PathVariable Long id) {
         return ApiResponse.ok(service.getById(id));
     }
@@ -67,7 +67,7 @@ public class FeedbackController {
      * GET /api/v1/feedback?jobCardId={id}    — feedback for a specific job card
      */
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'BILLING_USER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR', 'MECHANIC', 'BILLING_USER')")
     public ApiResponse<Page<FeedbackResponseDTO>> list(
             @RequestParam(required = false) Long customerId,
             @RequestParam(required = false) Long jobCardId,
@@ -88,7 +88,7 @@ public class FeedbackController {
      * DELETE /api/v1/feedback/{id}
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'MANAGER', 'SERVICE_ADVISOR')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);
